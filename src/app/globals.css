@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Stardom';
+  src: url('/fonts/Stardom_Complete/Fonts/WEB/fonts/Stardom-Regular.woff2') format('woff2'),
+       url('/fonts/Stardom_Complete/Fonts/WEB/fonts/Stardom-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chubbo';
+  src: url('/fonts/Chubbo_Complete/Fonts/WEB/fonts/Chubbo-Variable.woff2') format('woff2'),
+       url('/fonts/Chubbo_Complete/Fonts/WEB/fonts/Chubbo-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-stardom: "Stardom", serif;
+  --font-chubbo: "Chubbo", serif;
+  
+  --color-gold: #c5a059;
+  --color-obsidian: #0d0d0d;
+  --color-ivory: #fafafa;
+  --color-accent: #c5a059;
+}
+
+@layer base {
+  body {
+    @apply bg-ivory text-obsidian font-chubbo selection:bg-gold/30 antialiased;
+  }
+  
+  h1, h2, h3, h4, .serif {
+    @apply font-chubbo;
+  }
+}
+
+@layer utilities {
+  .clip-path-reveal {
+    clip-path: inset(100% 0 0 0);
+  }
+  
+  .reveal-active {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .text-luxury {
+    @apply text-gold uppercase tracking-[0.4em] text-[10px] font-black;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5a059;
+}
+
+/* Smooth Scroll Classes */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Mobile touch improvements */
+@media (max-width: 768px) {
+  .custom-scrollbar {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+}

@@ -1,0 +1,1154 @@
+# Product Catalog Project: Source, Flow, and Complete Code
+
+## Overview
+This document explains how the product catalog works, lists all relevant files, and includes the complete code for each file with explanations of how each part functions.
+
+---
+
+## Table of Contents
+1. Project Structure
+2. How the Catalog Works (Flow)
+3. File List
+4. Complete Code for Each File (with explanations)
+
+---
+
+## 1. Project Structure
+
+- src/
+  - app/
+    - globals.css
+    - layout.tsx
+    - page.tsx
+    - catalog/
+      - page.tsx
+      - [id]/
+        - page.tsx
+  - components/
+    - Catalog.tsx
+    - CustomCursor.tsx
+    - Footer.tsx
+    - Header.tsx
+    - LiveCatalog.tsx
+    - SmoothScroll.tsx
+  - data/
+    - catalog.ts
+- public/
+  - fonts/
+  - images/
+  - robots.txt
+- package.json
+- tsconfig.json
+- next.config.ts
+- README.md
+
+---
+
+## 2. How the Catalog Works (Flow)
+
+1. **Data Source**: All catalog data is stored in `src/data/catalog.ts` as a TypeScript array/object.
+2. **Catalog Page**: The main catalog page is at `src/app/catalog/page.tsx`. It fetches data from `catalog.ts` and renders a list of products using the `Catalog` component.
+3. **Catalog Component**: `src/components/Catalog.tsx` receives the catalog data as props and displays each product.
+4. **Product Detail Page**: Each product has a detail page at `src/app/catalog/[id]/page.tsx`, which fetches the product by ID from `catalog.ts` and displays its details.
+5. **Layout and Styling**: `layout.tsx` provides the main layout, and `globals.css` contains global styles. Additional components like `Header`, `Footer`, and `CustomCursor` enhance the UI.
+6. **Routing**: Next.js handles routing between the main catalog, product detail pages, and other pages.
+
+---
+
+## 3. File List
+
+- src/data/catalog.ts
+- src/app/catalog/page.tsx
+- src/app/catalog/[id]/page.tsx
+- src/components/Catalog.tsx
+- src/app/layout.tsx
+- src/app/globals.css
+- src/components/Header.tsx
+- src/components/Footer.tsx
+- src/components/CustomCursor.tsx
+- src/components/LiveCatalog.tsx
+- src/components/SmoothScroll.tsx
+
+---
+
+## 4. Complete Code for Each File (with explanations)
+
+[Code for each file will be included below, with explanations for each section.]
+
+---
+
+### src/data/catalog.ts
+
+
+#### Code:
+
+```typescript
+export type Dimensions = {
+  length: number;
+  width: number;
+  height: number;
+  unit: "cm";
+};
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  price: number;
+  priceRange: string;
+  dimensions: Dimensions;
+  materials: string[];
+  finish: string;
+  description: string;
+  construction: string;
+  origin: string;
+  weight: string;
+  leadTime: string;
+  tags: string[];
+  hotspot: { x: string; y: string };
+  images: {
+    hero: string;
+    gallery: string[];
+    details: string[];
+  };
+};
+
+export type Spread = {
+  id: string;
+  pageNumber: string;
+  title: string;
+  description: string;
+  image: string;
+  products: Product[];
+};
+
+export const CATALOG_DATA: Spread[] = [
+  {
+    id: "archetype",
+    pageNumber: "01-02",
+    title: "The Archetype",
+    description: "A study in fundamental repose. The first artifact of the sofa collection.",
+    image: "/sofa/sofa-model.jpeg",
+    products: [
+      {
+        id: "archetype-01",
+        slug: "archetype-sofa",
+        name: "ARCHETYPE",
+        category: "Central Seating",
+        price: 4200,
+        priceRange: "$4,200 - $5,500",
+        dimensions: { length: 240, width: 100, height: 75, unit: "cm" },
+        materials: ["Full-Grain Analine Leather", "Solid Walnut"],
+        finish: "Natural Waxed Leather",
+        description: "The definitive statement in volume and material honesty.",
+        construction: "Solid timber frame with dual-density foam suspension.",
+        origin: "London Studio",
+        weight: "95kg",
+        leadTime: "12-14 weeks",
+        tags: ["Leather", "Walnut", "Archetype"],
+        hotspot: { x: "45%", y: "55%" },
+        images: { hero: "/sofa/sofa-model.jpeg", gallery: [], details: [] }
+      }
+    ]
+  },
+  {
+    id: "azure",
+    pageNumber: "03-04",
+    title: "Celestial Azure",
+    description: "A dialogue with depth. Blue as a material, not just a color.",
+    image: "/sofa/blue-sofa.jpeg",
+    products: [
+      {
+        id: "azure-sofa",
+        slug: "azure-collection-sofa",
+        name: "AZURE",
+        category: "Sectional Seating",
+        price: 3800,
+        priceRange: "$3,800 - $4,800",
+        dimensions: { length: 210, width: 95, height: 70, unit: "cm" },
+        materials: ["Belgian Linen", "Brushed Steel"],
+        finish: "Stonewashed Indigo",
+        description: "An immersive landscape of soft texture and structural precision.",
+        construction: "Engineered steel-reinforced frame with down-filled cushions.",
+        origin: "Kyoto Atelier",
+        weight: "82kg",
+        leadTime: "10-12 weeks",
+        tags: ["Linen", "Blue", "Landscape"],
+        hotspot: { x: "50%", y: "60%" },
+        images: { hero: "/sofa/blue-sofa.jpeg", gallery: [], details: [] }
+      }
+    ]
+  },
+  {
+    id: "verdant",
+    pageNumber: "05-06",
+    title: "Verdant Stillness",
+    description: "Grounding the room in the hues of the deep forest.",
+    image: "/sofa/green-sofa.jpeg",
+    products: [
+      {
+        id: "verdant-sofa",
+        slug: "verdant-forest-sofa",
+        name: "VERDANT",
+        category: "Lounge Seating",
+        price: 4500,
+        priceRange: "$4,500 - $5,200",
+        dimensions: { length: 220, width: 105, height: 72, unit: "cm" },
+        materials: ["Italian Velvet", "Smoked Oak"],
+        finish: "Deep Moss Velvet",
+        description: "A textural refuge designed for acoustic and physical comfort.",
+        construction: "Traditional coil-spring suspension with velvet upholstery.",
+        origin: "London Studio",
+        weight: "88kg",
+        leadTime: "14-16 weeks",
+        tags: ["Velvet", "Green", "Refuge"],
+        hotspot: { x: "48%", y: "58%" },
+        images: { hero: "/sofa/green-sofa.jpeg", gallery: [], details: [] }
+      }
+    ]
+  },
+  {
+    id: "monolith",
+    pageNumber: "07-08",
+    title: "The Monolith",
+    description: "Structural purity. A sofa that defines the architecture of the space.",
+    image: "/sofa/full-sofa.jpeg",
+    products: [
+      {
+        id: "monolith-sofa",
+        slug: "monolith-structural-sofa",
+        name: "MONOLITH",
+        category: "Architectural Seating",
+        price: 5500,
+        priceRange: "$5,500 - $7,200",
+        dimensions: { length: 300, width: 110, height: 68, unit: "cm" },
+        materials: ["Bouclé", "Travertine Base"],
+        finish: "Raw Ivory Bouclé",
+        description: "Scaling the domestic landscape through monumental form.",
+        construction: "Solid stone base integration with high-performance upholstery.",
+        origin: "London Studio",
+        weight: "160kg",
+        leadTime: "18-20 weeks",
+        tags: ["Bouclé", "Stone", "Monolith"],
+        hotspot: { x: "55%", y: "45%" },
+        images: { hero: "/sofa/full-sofa.jpeg", gallery: [], details: [] }
+      }
+    ]
+  },
+  {
+    id: "cobalt",
+    pageNumber: "09-10",
+    title: "Cobalt Perspectives",
+    description: "Exploring the geometry of repose from every angle.",
+    image: "/sofa/angle-blue-2.jpeg",
+    products: [
+      {
+        id: "cobalt-sofa",
+        slug: "cobalt-geometric-sofa",
+        name: "COBALT II",
+        category: "Modular Seating",
+        price: 3200,
+        priceRange: "$3,200 - $4,100",
+        dimensions: { length: 180, width: 90, height: 75, unit: "cm" },
+        materials: ["Cotton Twill", "Lacquer Base"],
+        finish: "High-Gloss Cobalt",
+        description: "A compact geometric artifact for the modern atelier.",
+        construction: "Modular block construction with high-resilience core.",
+        origin: "Kyoto Atelier",
+        weight: "65kg",
+        leadTime: "8-10 weeks",
+        tags: ["Modular", "Cobalt", "Geometry"],
+        hotspot: { x: "42%", y: "52%" },
+        images: { hero: "/sofa/angle-blue-2.jpeg", gallery: [], details: [] }
+      }
+    ]
+  },
+  {
+    id: "saphir",
+    pageNumber: "11-12",
+    title: "Saphir Nuance",
+    description: "The final movement in the Aurelian sofa archive.",
+    image: "/sofa/blue-angle-3.jpeg",
+    products: [
+      {
+        id: "saphir-sofa",
+        slug: "saphir-nuance-sofa",
+        name: "SAPHIR III",
+        category: "Corner Seating",
+        price: 3900,
+        priceRange: "$3,900 - $4,600",
+        dimensions: { length: 200, width: 200, height: 70, unit: "cm" },
+        materials: ["Nubuck Leather", "Alder Wood"],
+        finish: "Frosted Saphir Leather",
+        description: "Softening the edge. A corner artifact designed for stillness.",
+        construction: "Solid alder frame with nubuck skin wrapping.",
+        origin: "London Studio",
+        weight: "110kg",
+        leadTime: "12-16 weeks",
+        tags: ["Nubuck", "Corner", "Nuance"],
+        hotspot: { x: "58%", y: "62%" },
+        images: { hero: "/sofa/blue-angle-3.jpeg", gallery: [], details: [] }
+      }
+    ]
+  }
+];
+```
+
+#### Explanation:
+This file defines the data types and the actual catalog data for the product catalog. It exports types for product dimensions, products, and spreads (pages in the catalog). The `CATALOG_DATA` array contains all the catalog spreads, each with its own products and metadata. This is the single source of truth for all catalog content.
+
+---
+
+### src/app/catalog/page.tsx
+
+
+#### Code:
+
+```tsx
+import Catalog from '@/components/Catalog';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Digital Archive | AURELIAN STUDIO',
+  description: 'Explore the 2024 Artifact Collection in immersive detail.',
+};
+
+export default function CatalogPage() {
+  return (
+    <main>
+      <Catalog />
+    </main>
+  );
+}
+```
+
+#### Explanation:
+This file defines the main catalog page. It imports the `Catalog` component and renders it inside a `<main>` tag. The page also exports metadata for SEO. All catalog logic and UI are handled by the `Catalog` component.
+
+---
+
+### src/app/catalog/[id]/page.tsx
+
+
+#### Code:
+
+```tsx
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { CATALOG_DATA } from '@/data/catalog';
+import { ChevronLeft, Info, Star } from 'lucide-react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const product = CATALOG_DATA.flatMap(s => s.products).find(p => p.id === id);
+
+  if (!product) {
+    notFound();
+  }
+
+  return (
+    <main className="bg-white min-h-screen selection:bg-gold/20 scroll-smooth">
+      <Header />
+      <div className="pt-32 pb-48 px-8 md:px-20 max-w-[1500px] mx-auto">
+        <Link href="/catalog" className="flex items-center gap-2 text-luxury text-gold mb-12 hover:-translate-x-2 transition-all font-chubbo">
+          <ChevronLeft size={16} /> Back to Archive
+        </Link>
+        
+        <div className="flex flex-col lg:flex-row gap-20 lg:gap-32">
+          {/* PRODUCT VISUAL */}
+          <div className="w-full lg:w-3/5">
+             <div className="aspect-[4/5] bg-ivory rounded-3xl overflow-hidden relative group">
+                <img 
+                  src={product.images.hero} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+                <div className="absolute top-8 left-8 bg-white/80 backdrop-blur-md px-6 py-2 rounded-full border border-gray-100 flex items-center gap-2 shadow-sm font-chubbo">
+                   <Star size={12} className="fill-gold text-gold" />
+                   <span className="text-[10px] font-black uppercase tracking-widest text-obsidian">Limited Edition Archive</span>
+                </div>
+             </div>
+          </div>
+
+          {/* PRODUCT INFO */}
+          <div className="w-full lg:w-2/5 flex flex-col pt-8">
+            <div className="mb-16">
+              <span className="text-luxury text-gold underline underline-offset-8 decoration-gold/30 mb-8 block font-chubbo tracking-[0.4em]">{product.category}</span>
+              <h1 className="text-6xl md:text-8xl font-chubbo font-black tracking-tighter mb-8 leading-[0.9]">{product.name}</h1>
+              <p className="text-4xl font-chubbo text-obsidian font-bold italic">${product.price}</p>
+            </div>
+
+            <div className="space-y-12">
+               <p className="text-xl text-gray-500 font-chubbo font-light leading-relaxed border-l-4 border-gold/10 pl-8italic">
+                 {product.description}
+               </p>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-12 border-y border-gray-100 font-chubbo">
+                  <div>
+                    <span className="text-luxury block mb-4 opacity-50 tracking-[0.3em] text-[8px]">Materials & Texture</span>
+                    <p className="font-bold text-xl leading-tight">{product.materials.join(' • ')}</p>
+                    <p className="text-xs text-gold mt-2 uppercase font-black">{product.finish}</p>
+                  </div>
+                  <div>
+                    <span className="text-luxury block mb-4 opacity-50 tracking-[0.3em] text-[8px]">Artifact Scale</span>
+                    <p className="font-bold text-xl leading-tight">
+                      {product.dimensions.length}L x {product.dimensions.width}W x {product.dimensions.height}H {product.dimensions.unit}
+                    </p>
+                  </div>
+               </div>
+
+               <div className="bg-ivory/50 p-10 rounded-3xl space-y-8 font-chubbo">
+                  <div className="flex items-center gap-4 text-xs font-black uppercase tracking-[0.4em] text-gold"><Info size={16} /> Technical Provenance</div>
+                  <ul className="space-y-6">
+                    <li className="flex justify-between items-end border-b border-gray-100 pb-4">
+                      <span className="text-[10px] uppercase font-black text-obsidian/30 tracking-widest">Internal Build</span>
+                      <span className="text-sm font-bold text-obsidian/80">{product.construction}</span>
+                    </li>
+                    <li className="flex justify-between items-end border-b border-gray-100 pb-4">
+                      <span className="text-[10px] uppercase font-black text-obsidian/30 tracking-widest">Studio Origin</span>
+                      <span className="text-sm font-bold text-obsidian/80">{product.origin}</span>
+                    </li>
+                    <li className="flex justify-between items-end border-b border-gray-100 pb-4">
+                      <span className="text-[10px] uppercase font-black text-obsidian/30 tracking-widest">Shipment Window</span>
+                      <span className="text-sm font-bold text-gold">{product.leadTime}</span>
+                    </li>
+                  </ul>
+               </div>
+
+               <div className="pt-12 space-y-4 font-chubbo">
+                  <button className="w-full py-7 bg-obsidian text-gold text-luxury tracking-[0.5em] transition-all hover:bg-gold hover:text-white shadow-2xl hover:-translate-y-1">
+                    Acquire Artifact
+                  </button>
+                  <button className="w-full py-7 border border-gray-100 text-luxury tracking-[0.5em] hover:border-gold hover:text-gold transition-all">
+                    Book Atelier Consultation
+                  </button>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </main>
+  );
+}
+```
+
+#### Explanation:
+This file defines the product detail page for each catalog item. It fetches the product by ID from the catalog data and displays all its details, including images, description, materials, and technical information. If the product is not found, it triggers a 404 page.
+
+---
+
+### src/components/Catalog.tsx
+
+
+#### Code:
+
+```tsx
+'use client';
+
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { CATALOG_DATA, Spread, Product } from '@/data/catalog';
+import { 
+  ChevronLeft, ChevronRight, Info, Plus, 
+  X, ShoppingBag, Eye, Maximize2, MousePointer2 
+} from 'lucide-react';
+import Link from 'next/link';
+
+// --- SUB-COMPONENT: HOTSPOT ---
+const Hotspot = ({ product, onSelect }: { product: Product, onSelect: (p: Product) => void }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div 
+      className="absolute z-30"
+      style={{ left: product.hotspot.x, top: product.hotspot.y }}
+    >
+      <button 
+        onClick={() => onSelect(product)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="relative flex items-center justify-center group"
+      >
+        {/* Animated Pulse */}
+        <motion.div 
+          animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute w-12 h-12 bg-white rounded-full"
+        />
+        <div className="w-4 h-4 bg-white rounded-full border-2 border-gold shadow-2xl transition-transform group-hover:scale-125" />
+
+        {/* Tooltip */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 10, scale: 1 }}
+              exit={{ opacity: 0, x: 20, scale: 0.9 }}
+              className="absolute left-full ml-4 whitespace-nowrap bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-gray-100 pointer-events-none"
+            >
+              <span className="text-[10px] font-black uppercase tracking-widest text-gold block mb-1 font-chubbo">{product.category}</span>
+              <p className="text-xl font-chubbo font-bold text-obsidian tracking-tight">{product.name}</p>
+              <div className="flex items-center gap-3 mt-2">
+                <span className="text-sm font-chubbo font-medium text-gray-500">${product.price}</span>
+                <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest font-chubbo">Technical Dossier</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </button>
+    </div>
+  );
+};
+
+// --- MAIN COMPONENT: CATALOG ENGINE ---
+export default function Catalog() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const totalPages = CATALOG_DATA.length;
+
+  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % totalPages);
+  const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'Escape') setSelectedProduct(null);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  return (
+    <section className="relative h-screen w-full bg-obsidian overflow-hidden selection:bg-gold/20">
+      
+      {/* 1. LAYER: BROCHURE SPREADS */}
+      <div className="relative h-full w-full">
+        <AnimatePresence mode="wait">
+          {CATALOG_DATA.map((spread, idx) => (
+            idx === currentIndex && (
+              <motion.div 
+                key={spread.id}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 w-full h-full"
+              >
+                {/* Scene Image */}
+                <div className="absolute inset-0">
+                  <img 
+                    src={spread.image} 
+                    alt={spread.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Cinematic Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-obsidian/40 via-transparent to-obsidian/40" />
+                  <div className="absolute inset-0 bg-black/10" />
+                </div>
+
+                {/* Hotspots */}
+                {spread.products.map(p => (
+                  <Hotspot key={p.id} product={p} onSelect={setSelectedProduct} />
+                ))}
+
+                {/* Spread Content */}
+                <div className="absolute bottom-20 left-12 md:left-24 max-w-xl z-20">
+                  <motion.span 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-luxury text-white mb-6 block"
+                  >
+                    Volume Archive — {spread.id.toUpperCase()}
+                  </motion.span>
+                  <motion.h2 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-6xl md:text-8xl font-stardom text-white tracking-tighter italic leading-none mb-8"
+                  >
+                    {spread.title}
+                  </motion.h2>
+                  <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 0.6, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="text-white text-lg font-light leading-relaxed mb-4 max-w-md"
+                  >
+                    {spread.description}
+                  </motion.p>
+                </div>
+              </motion.div>
+            )
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* 2. LAYER: OVERLAY UI (HUD) */}
+      <div className="absolute inset-0 z-40 pointer-events-none">
+        {/* Top Header Placeholder Integration */}
+        <div className="p-8 md:p-12 flex justify-between items-start pointer-events-auto">
+          <Link href="/" className="text-xl font-serif text-white tracking-widest hover:text-gold transition-colors">AURELIAN.</Link>
+          <div className="flex flex-col items-end">
+             <span className="text-[10px] text-white/40 uppercase tracking-[0.4em] font-black mb-2">Artifact Catalog</span>
+             <span className="text-3xl font-serif text-white italic">{CATALOG_DATA[currentIndex].pageNumber}</span>
+          </div>
+        </div>
+
+        {/* Navigation HUD */}
+        <div className="absolute bottom-12 right-12 md:right-24 flex items-center gap-12 pointer-events-auto">
+          <div className="flex flex-col items-end gap-1">
+             <span className="text-[10px] text-gold uppercase tracking-[0.2em] font-black">Archive Navigation</span>
+             <div className="flex items-center gap-4">
+                <button 
+                  onClick={prevSlide}
+                  className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-gold hover:border-gold transition-all"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button 
+                  onClick={nextSlide}
+                  className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-gold hover:border-gold transition-all"
+                >
+                  <ChevronRight size={20} />
+                </button>
+             </div>
+          </div>
+          
+          {/* Page Counter */}
+          <div className="h-12 w-px bg-white/10 mx-6 hidden md:block" />
+          
+          <div className="flex items-center gap-4 text-white font-serif italic text-2xl hidden md:flex">
+             <span className="text-gold">{String(currentIndex + 1).padStart(2, '0')}</span>
+             <span className="text-white/20">/</span>
+             <span className="text-white/40">{String(totalPages).padStart(2, '0')}</span>
+          </div>
+        </div>
+
+        {/* Global Progress Line */}
+        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/5">
+           <motion.div 
+             initial={false}
+             animate={{ width: `${((currentIndex + 1) / totalPages) * 100}%` }}
+             className="h-full bg-gold transition-all duration-1000"
+           />
+        </div>
+      </div>
+
+      {/* 3. LAYER: PRODUCT PANEL (Step 2 Preview - Functional for Phase 1) */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <div className="fixed inset-0 z-50 pointer-events-none">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProduct(null)}
+              className="absolute inset-0 bg-obsidian/40 backdrop-blur-sm pointer-events-auto"
+            />
+            
+            {/* Panel */}
+            <motion.div 
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="absolute top-0 right-0 h-full w-full md:w-[450px] bg-white pointer-events-auto shadow-[-20px_0_60px_rgba(0,0,0,0.5)] flex flex-col"
+            >
+              <div className="p-12 overflow-y-auto flex-1">
+                <div className="flex justify-between items-start mb-12">
+                   <span className="text-luxury text-gold font-chubbo tracking-[0.3em]">{selectedProduct.category}</span>
+                   <button 
+                     onClick={() => setSelectedProduct(null)}
+                     className="w-10 h-10 rounded-full bg-ivory flex items-center justify-center hover:bg-gold hover:text-white transition-all shadow-sm"
+                   >
+                     <X size={18} />
+                   </button>
+                </div>
+
+                <h3 className="text-6xl font-chubbo font-black tracking-tighter mb-4 leading-none">{selectedProduct.name}</h3>
+                <p className="text-2xl font-chubbo text-obsidian mb-8">${selectedProduct.price}</p>
+                
+                <p className="text-gray-500 font-chubbo font-light leading-relaxed mb-12 border-l-2 border-gold/20 pl-6 py-2 italic text-lg">
+                  {selectedProduct.description}
+                </p>
+
+                <div className="space-y-10 font-chubbo">
+                   <div>
+                      <span className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] mb-4 block">Composition & Finish</span>
+                      <p className="text-xl font-bold">{selectedProduct.materials.join(' • ')}</p>
+                      <p className="text-sm text-gold mt-1 uppercase font-black tracking-widest">{selectedProduct.finish}</p>
+                   </div>
+                   <div>
+                      <span className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] mb-4 block">Physical Scale</span>
+                      <p className="text-xl font-bold">
+                        {selectedProduct.dimensions.length}L x {selectedProduct.dimensions.width}W x {selectedProduct.dimensions.height}H {selectedProduct.dimensions.unit}
+                      </p>
+                   </div>
+                   <div>
+                      <span className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em] mb-4 block">Craft Heritage</span>
+                      <p className="text-xl font-bold">{selectedProduct.origin} — {selectedProduct.construction}</p>
+                   </div>
+                </div>
+
+                <div className="mt-16 pt-12 border-t border-gray-100 space-y-4">
+                   <Link 
+                     href={`/catalog/${selectedProduct.id}`}
+                     className="w-full py-6 bg-obsidian text-gold text-luxury tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-gold hover:text-white transition-all shadow-xl font-chubbo"
+                   >
+                     Explore Full Details <Eye size={16} />
+                   </Link>
+                   <button className="w-full py-6 border border-gray-100 text-luxury hover:border-gold hover:text-gold transition-all shadow-sm font-chubbo tracking-[0.4em]">
+                      Acquire Artifact
+                   </button>
+                </div>
+              </div>
+
+              {/* Panel Footer */}
+              <div className="p-8 bg-ivory border-t border-gray-200 flex justify-between items-center font-chubbo">
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-obsidian/60">Limited Edition Archive</span>
+                 </div>
+                 <span className="text-[10px] font-black uppercase tracking-widest text-gold font-bold">Wait Time: {selectedProduct.leadTime}</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 4. LAYER: INTERACTION CUES */}
+      {!selectedProduct && (
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-4 z-40 text-white/20 select-none">
+           <MousePointer2 size={12} />
+           <span className="text-[9px] uppercase tracking-[0.5em] font-black">Interact with scene artifacts</span>
+        </div>
+      )}
+
+    </section>
+  );
+}
+```
+
+#### Explanation:
+This file is the main engine for the interactive catalog. It displays each catalog spread as a full-screen scene, overlays interactive hotspots for each product, and provides navigation and product preview panels. The component manages navigation, keyboard shortcuts, and product selection state.
+
+---
+
+### src/app/layout.tsx
+
+
+#### Code:
+
+```tsx
+import type { Metadata } from "next";
+import { Inter, Cormorant_Garamond, Italiana } from "next/font/google";
+import "./globals.css";
+import { SmoothScroll } from "@/components/SmoothScroll";
+import CustomCursor from "@/components/CustomCursor";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const italiana = Italiana({
+  subsets: ["latin"],
+  variable: "--font-italiana",
+  weight: ["400"],
+});
+
+export const metadata: Metadata = {
+  title: "AURELIAN STUDIO | Specialized Sofa Archive",
+  description: "Experience the exclusive Aurelian Sofa Collection. Handcrafted artifacts for the modern sanctuary.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className={`${inter.variable} ${cormorant.variable} ${italiana.variable}`}>
+       <body className="antialiased font-sans">
+        <CustomCursor />
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
+      </body>
+    </html>
+  );
+}
+```
+
+#### Explanation:
+This is the root layout for the app. It sets up global fonts, imports global CSS, and wraps all content in a smooth scrolling and custom cursor provider. All pages are rendered inside this layout.
+
+---
+
+### src/app/globals.css
+
+
+#### Code:
+
+```css
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Stardom';
+  src: url('/fonts/Stardom_Complete/Fonts/WEB/fonts/Stardom-Regular.woff2') format('woff2'),
+       url('/fonts/Stardom_Complete/Fonts/WEB/fonts/Stardom-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chubbo';
+  src: url('/fonts/Chubbo_Complete/Fonts/WEB/fonts/Chubbo-Variable.woff2') format('woff2'),
+       url('/fonts/Chubbo_Complete/Fonts/WEB/fonts/Chubbo-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-stardom: "Stardom", serif;
+  --font-chubbo: "Chubbo", serif;
+  
+  --color-gold: #c5a059;
+  --color-obsidian: #0d0d0d;
+  --color-ivory: #fafafa;
+  --color-accent: #c5a059;
+}
+
+@layer base {
+  body {
+    @apply bg-ivory text-obsidian font-sans selection:bg-gold/30 antialiased;
+  }
+  
+  h1, h2, h3, h4, .serif {
+    @apply font-serif;
+  }
+}
+
+@layer utilities {
+  .clip-path-reveal {
+    clip-path: inset(100% 0 0 0);
+  }
+  
+  .reveal-active {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .text-luxury {
+    @apply text-gold uppercase tracking-[0.4em] text-[10px] font-black;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5a059;
+}
+
+/* Smooth Scroll Classes */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+```
+
+#### Explanation:
+This file contains global CSS for the app, including font-face declarations, theme variables, base styles, utility classes, and custom scrollbar styling. It also includes classes for smooth scrolling integration.
+
+---
+
+### src/components/Header.tsx
+
+
+#### Code:
+
+```tsx
+'use client';
+
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+export default function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <motion.header
+      initial={{ y: -100 }} animate={{ y: 0 }}
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-8 py-6 md:px-20 ${isScrolled ? 'bg-white/90 backdrop-blur-md py-4 border-b border-gray-100' : 'bg-transparent'}`}
+    >
+      <div className="max-w-[1800px] mx-auto flex justify-between items-center">
+        <Link href="/"><h1 className="text-2xl md:text-3xl font-serif tracking-widest text-obsidian tracking-[0.3em]">AURELIAN</h1></Link>
+        <nav className="hidden md:flex items-center gap-10">
+          <Link href="/catalog" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gold transition-colors">Catalog</Link>
+          <Link href="/bespoke" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gold transition-colors">Bespoke</Link>
+          <Link href="/contact" className="px-8 py-3 bg-obsidian text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all">Enquire</Link>
+        </nav>
+      </div>
+    </motion.header>
+  );
+}
+```
+
+#### Explanation:
+This is the main header component. It animates into view, changes style on scroll, and provides navigation links to the catalog, bespoke, and contact pages.
+
+---
+
+### src/components/Footer.tsx
+
+
+#### Code:
+
+```tsx
+import Link from 'next/link';
+
+export default function Footer() {
+  return (
+    <footer className="bg-obsidian text-white py-32 px-8 md:px-20 font-sans">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-20">
+        <div className="lg:col-span-1">
+          <h2 className="text-3xl font-serif mb-12 tracking-widest leading-none">AURELIAN</h2>
+          <p className="text-sm text-white/40 leading-relaxed mb-8 max-w-xs">Designing the legacy of tomorrow through the materials of today.</p>
+        </div>
+        <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Archives</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Artifacts</li><li>Ateliers</li><li>Bespoke</li></ul></div>
+        <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Inquiries</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Contact</li><li>Press</li><li>Careers</li></ul></div>
+        <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Legals</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Privacy</li><li>Terms</li><li>Cookies</li></ul></div>
+      </div>
+      <div className="pt-32 border-t border-white/10 mt-32 text-center">
+         <p className="text-[10px] uppercase tracking-[0.3em] text-white/20">© 2024 Aurelian Studio. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+```
+
+#### Explanation:
+This is the footer component. It provides branding, navigation, and legal links, styled for the bottom of the page.
+
+---
+
+### src/components/CustomCursor.tsx
+
+
+#### Code:
+
+```tsx
+'use client';
+
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
+export default function CustomCursor() {
+  const [isHovered, setIsHovered] = useState(false);
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const springConfig = { damping: 25, stiffness: 400 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => { cursorX.set(e.clientX); cursorY.set(e.clientY); };
+    const handleHover = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      setIsHovered(!!target.closest('button, a, .cursor-pointer'));
+    };
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleHover);
+    return () => { window.removeEventListener('mousemove', moveCursor); window.removeEventListener('mouseover', handleHover); };
+  }, [cursorX, cursorY]);
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 w-8 h-8 border border-gold rounded-full pointer-events-none z-[9999] hidden md:block"
+      style={{ translateX: cursorXSpring, translateY: cursorYSpring, scale: isHovered ? 2.5 : 1, backgroundColor: isHovered ? 'rgba(197, 160, 89, 0.1)' : 'transparent' }}
+    />
+  );
+}
+```
+
+#### Explanation:
+This component creates a custom animated cursor that follows the mouse and grows when hovering over interactive elements.
+
+---
+
+### src/components/LiveCatalog.tsx
+
+
+#### Code:
+
+```tsx
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CATALOG_DATA, Product } from '@/data/catalog';
+import Link from 'next/link';
+import { ShoppingBag, ChevronRight, Ruler } from 'lucide-react';
+
+export default function LiveCatalog() {
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  
+  const categories = useMemo(() => {
+    const cats = new Set(CATALOG_DATA.flatMap(s => s.products.map(p => p.category)));
+    return ['All', ...Array.from(cats)];
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    const all = CATALOG_DATA.flatMap(s => s.products);
+    if (activeCategory === 'All') return all;
+    return all.filter(p => p.category === activeCategory);
+  }, [activeCategory]);
+
+  return (
+    <section className="py-24 px-8 md:px-20 bg-ivory" id="collection">
+      <div className="max-w-[1400px] mx-auto">
+        
+        {/* QUICK FILTER BAR */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8 border-b border-gray-100 pb-12">
+           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+             {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-obsidian text-gold shadow-2xl' : 'bg-white text-gray-400 hover:text-obsidian hover:bg-gray-50 border border-gray-100'}`}
+                >
+                  {cat}
+                </button>
+             ))}
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
+             {filteredProducts.length} Artifacts Showing
+           </p>
+        </div>
+
+        {/* PRODUCT GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-20">
+          <AnimatePresence mode="popLayout">
+            {filteredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Link href={`/catalog/${product.id}`} className="group flex flex-col">
+                  {/* Image Card */}
+                  <div className="aspect-[4/5] bg-white rounded-3xl overflow-hidden mb-10 relative border border-gray-50 flex items-center justify-center p-16 shadow-sm group-hover:shadow-2xl transition-all duration-700">
+                    <div className="absolute inset-0 bg-gold/0 group-hover:bg-gold/5 transition-all duration-500 z-10" />
+                    <ShoppingBag size={120} strokeWidth={0.2} className="text-gold/20 group-hover:scale-110 transition-transform duration-1000" />
+                    <div className="absolute bottom-10 right-10 w-12 h-12 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 shadow-2xl transition-all duration-500 z-20 text-gold">
+                       <ChevronRight size={20} />
+                    </div>
+                  </div>
+
+                  {/* Meta Data */}
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">{product.category}</span>
+                        <h3 className="text-4xl font-serif tracking-tighter group-hover:text-gold transition-colors">{product.name}</h3>
+                    </div>
+                    <p className="text-2xl font-serif text-obsidian">${product.price}</p>
+                  </div>
+
+                  <div className="flex items-center gap-6 mb-8 py-6 border-y border-gray-50">
+                     <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase"><Ruler size={14} className="text-gold/50" /> {product.dimensions}</div>
+                     <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{product.materials.split(',')[0]}</div>
+                  </div>
+
+                  {/* Trust Micro-line */}
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/60">
+                    Handcrafted • Solid Wood • Studio Archetype
+                  </p>
+                </Link>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}
+```
+
+#### Explanation:
+This component renders a live, filterable grid of all catalog products. Users can filter by category and click to view product details. It uses Framer Motion for smooth animations.
+
+---
+
+### src/components/SmoothScroll.tsx
+
+
+#### Code:
+
+```tsx
+'use client';
+
+import { ReactLenis } from 'lenis/react';
+
+export function SmoothScroll({ children }: { children: React.ReactNode }) {
+  return (
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
+      {children}
+    </ReactLenis>
+  );
+}
+```
+
+#### Explanation:
+This component wraps its children in a smooth scrolling context using the Lenis library for a modern, fluid scroll experience.
+
+---
+
+[Continue with code and explanations for each file.]

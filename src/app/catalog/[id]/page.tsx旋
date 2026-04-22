@@ -1,0 +1,496 @@
+'use client';
+
+import Header from '@/components/Header';
+import { PRODUCTS, Product } from '@/data/catalog';
+import { 
+  ChevronLeft, ShieldCheck, Ruler, 
+  Zap, Maximize2, CheckCircle2, ArrowRightLeft,
+  Users, HandMetal, Trees, X, MoveHorizontal, Box
+} from 'lucide-react';
+import Link from 'next/link';
+import { use, useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
+
+// --- SUB-COMPONENT: IMMERSIVE VIEWER ---
+const ImmersiveViewer = ({ image, onClose }: { image: string; onClose: () => void }) => {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-2xl flex flex-col items-center justify-center p-12 cursor-zoom-out"
+      onClick={onClose}
+    >
+      <button className="absolute top-12 right-12 text-white/40 hover:text-white transition-colors">
+        <X size={32} />
+      </button>
+      
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-7xl aspect-[16/9] md:aspect-[4/3] rounded-sm overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/5"
+      >
+        <img src={image} alt="Detail View" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-12 text-center"
+      >
+        <span className="text-gold font-black uppercase tracking-[0.8em] text-[10px] mb-4 block">Archive Documentation</span>
+        <p className="text-white/30 font-light text-sm italic tracking-widest">Detail Study — Volumetric Mass & Surface Integrity</p>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  
+  const product = useMemo(() => {
+    return PRODUCTS.find(p => p.id === id) || PRODUCTS[0];
+  }, [id]);
+
+  const [activeImage, setActiveImage] = useState(product.images.hero);
+  const [isZooming, setIsZooming] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Inertia-based Zoom Logic
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springX = useSpring(mouseX, { damping: 50, stiffness: 200 });
+  const springY = useSpring(mouseY, { damping: 50, stiffness: 200 });
+
+  if (!product) return null;
+
+  // Cognitive Categorization
+  const galleryGroups = [
+    { label: 'Identity', images: [product.images.hero], desc: 'Pure architectural form' },
+    { label: 'In Space', images: product.images.gallery.slice(0, 2), desc: 'Atmospheric context' },
+    { label: 'Craft Detail', images: [...product.images.gallery.slice(2), ...product.images.details.slice(0, 2)], desc: 'Material honesty' },
+    { label: 'Scale Reference', images: [product.images.details[2] || product.images.hero], desc: 'Human proportion' }
+  ];
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - left) / width);
+    mouseY.set((e.clientY - top) / height);
+  };
+
+  return (
+    <main className="bg-white min-h-screen selection:bg-gold/20 font-chubbo overflow-x-hidden">
+      <Header />
+      
+      {/* 1. LAYER: Z-PATTERN SCANNING ARCHITECTURE (ABOVE FOLD) */}
+      <section className="relative h-screen min-h-[900px] flex flex-col pt-32 px-6 md:px-12 lg:px-24">
+        <div className="flex justify-between items-start mb-12">
+           {/* Top Left: Category & Identity */}
+           <motion.div 
+             initial={{ opacity: 0, x: -20 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ duration: 1 }}
+           >
+              <Link href="/catalog" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.6em] text-gold hover:text-black transition-all group">
+                <ChevronLeft size={16} className="group-hover:-translate-x-2 transition-transform" /> Artifact Collection
+              </Link>
+              <div className="mt-8 flex items-center gap-4">
+                 <span className="text-[12px] font-black uppercase tracking-[0.4em] text-black/20">Volume 01</span>
+                 <div className="w-12 h-[1px] bg-black/10" />
+                 <span className="text-[12px] font-black uppercase tracking-[0.4em] text-black/60">{product.category}</span>
+              </div>
+           </motion.div>
+        </div>
+
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+          
+          {/* CENTER-LEFT: DOMINANT HERO IMAGE */}
+          <div className="lg:col-span-8 h-full">
+             <div className="relative w-full h-[70vh] md:h-full group cursor-zoom-in overflow-hidden border border-gray-50 rounded-sm">
+                <div 
+                  className="absolute inset-0 bg-gray-50 transition-all duration-1000 group-hover:scale-105"
+                  onMouseMove={handleMouseMove}
+                  onMouseEnter={() => setIsZooming(true)}
+                  onMouseLeave={() => setIsZooming(false)}
+                  onClick={() => setShowViewer(true)}
+                >
+                   <AnimatePresence mode="wait">
+                     <motion.div 
+                        key={activeImage}
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-full h-full relative"
+                     >
+                        <img 
+                          src={activeImage} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover transition-opacity duration-700"
+                        />
+                        {/* Smooth Inertia Zoom Overlay */}
+                        <motion.div 
+                          className="absolute inset-0 z-20 pointer-events-none origin-center"
+                          style={{
+                            backgroundImage: `url(${activeImage})`,
+                            backgroundSize: '220%',
+                            backgroundPosition: `${springX.get() * 100}% ${springY.get() * 100}%`,
+                            opacity: isZooming ? 1 : 0,
+                            scale: isZooming ? 1.05 : 1
+                          }}
+                        >
+                           <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.1)]" />
+                        </motion.div>
+                     </motion.div>
+                   </AnimatePresence>
+                </div>
+                
+                {/* Visual Anchors */}
+                <div className="absolute top-8 left-8 flex flex-col gap-4 pointer-events-none z-30">
+                    <div className="bg-white/90 backdrop-blur-md px-6 py-2.5 border border-gray-100 rounded-full flex items-center gap-3 shadow-xl">
+                       <HandMetal size={14} className="text-gold" />
+                       <span className="text-[10px] font-black uppercase tracking-widest">Handcrafted Excellence</span>
+                    </div>
+                </div>
+
+                {!isZooming && (
+                  <div className="absolute bottom-8 right-8 w-16 h-16 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 shadow-2xl z-30 translate-y-4 group-hover:translate-y-0">
+                    <Maximize2 size={24} className="text-black/80" />
+                  </div>
+                )}
+             </div>
+          </div>
+
+          {/* RIGHT SIDE: THE DECISION BLOCK */}
+          <div className="lg:col-span-4 flex flex-col justify-between py-4">
+             <div className="space-y-4">
+                <motion.h1 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-8xl md:text-[120px] font-chubbo tracking-[-0.04em] leading-none text-black"
+                >
+                  {product.name}
+                </motion.h1>
+                
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex flex-col gap-2"
+                >
+                  <p className="text-5xl font-chubbo text-black/90 tracking-tighter">${product.price.toLocaleString()}</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    or from <span className="text-black">${(product.price / 12).toLocaleString()} / month</span>
+                  </p>
+                </motion.div>
+
+                <motion.p 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-lg text-gray-400 font-light leading-relaxed max-w-sm pt-4"
+                >
+                  {product.description}
+                </motion.p>
+             </div>
+
+             <div className="space-y-8 pt-12">
+                <div className="flex flex-col gap-4">
+                   <motion.button 
+                     whileHover={{ scale: 1.02 }}
+                     whileTap={{ scale: 0.97 }}
+                     className="w-full py-10 bg-black text-white text-[12px] font-black uppercase tracking-[0.6em] transition-all hover:bg-gold shadow-2xl flex items-center justify-center gap-4 group rounded-sm"
+                   >
+                     Begin Acquisition
+                   </motion.button>
+                   <p className="text-center text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">
+                     Limited production — crafted on request
+                   </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                   <button className="py-7 border border-gray-100 text-[10px] font-black uppercase tracking-[0.4em] hover:border-black transition-all active:scale-[0.97] rounded-sm">
+                     Reserve Piece
+                   </button>
+                   <button className="py-7 border border-gray-100 text-[10px] font-black uppercase tracking-[0.4em] hover:border-black transition-all active:scale-[0.97] rounded-sm">
+                     Consult Atelier
+                   </button>
+                </div>
+                
+                <div className="flex justify-between items-center px-2">
+                   <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">120+ hours of mastery</span>
+                   </div>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">FSC Certified Wood</span>
+                </div>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. LAYER: COGNITIVE CATEGORIZATION (GALLERY) */}
+      <section className="py-48 px-6 md:px-12 lg:px-24 bg-gray-50/50">
+         <div className="mb-24 flex justify-between items-end">
+            <div>
+               <span className="text-gold font-black uppercase tracking-[0.5em] text-[11px] mb-4 block">Visual Evidence</span>
+               <h2 className="text-5xl font-chubbo tracking-tighter">The Archival Study</h2>
+            </div>
+            <div className="flex gap-12">
+               {galleryGroups.map((group, i) => (
+                 <div key={i} className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-black">{group.label}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-300">{group.images.length} Images</span>
+                 </div>
+               ))}
+            </div>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {galleryGroups.map((group, i) => (
+              <div key={i} className="space-y-6">
+                 <div className="flex flex-col gap-1 mb-8">
+                    <h4 className="text-[11px] font-black uppercase tracking-widest text-gold">{group.label}</h4>
+                    <p className="text-[10px] text-gray-400 font-light">{group.desc}</p>
+                 </div>
+                 <div className="flex flex-col gap-8">
+                    {group.images.map((img, idx) => (
+                      <motion.button 
+                        key={idx}
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        onClick={() => { setActiveImage(img); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className={`aspect-[4/5] rounded-sm overflow-hidden border transition-all duration-700 ${activeImage === img ? 'border-gold shadow-2xl ring-4 ring-gold/5' : 'border-gray-100 opacity-60 hover:opacity-100 shadow-sm'}`}
+                      >
+                         <img src={img} alt={group.label} className="w-full h-full object-cover" />
+                      </motion.button>
+                    ))}
+                 </div>
+              </div>
+            ))}
+         </div>
+      </section>
+
+      {/* 3. LAYER: REDUCED COGNITIVE LOAD (TABBED DOSSIER) */}
+      <section className="py-60 px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto">
+         <div className="flex justify-center gap-12 md:gap-24 mb-32 border-b border-gray-100 pb-12">
+            {[
+              { id: 'overview', label: 'Overview', icon: <Info size={16} /> },
+              { id: 'craft', label: 'The Craft', icon: <HandMetal size={16} /> },
+              { id: 'specs', label: 'Specifications', icon: <Box size={16} /> },
+              { id: 'story', label: 'The Narrative', icon: <Zap size={16} /> }
+            ].map((tab) => (
+              <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.4em] transition-all ${activeTab === tab.id ? 'text-black scale-110' : 'text-gray-300 hover:text-black'}`}
+              >
+                 {tab.icon} {tab.label}
+                 {activeTab === tab.id && <motion.div layoutId="tab-underline" className="absolute -bottom-12 left-0 right-0 h-1 bg-gold rounded-full" />}
+              </button>
+            ))}
+         </div>
+
+         <div className="min-h-[600px] flex items-center justify-center">
+            <AnimatePresence mode="wait">
+               {activeTab === 'overview' && (
+                 <motion.div key="ov" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+                    <div className="space-y-12">
+                       <h3 className="text-7xl font-chubbo tracking-tighter leading-tight">Mastery of <br />Repositional Stillness</h3>
+                       <p className="text-2xl font-light text-gray-500 leading-relaxed italic">"Designed to be the silent anchor of the contemporary living space, the Celestial Sofa balances monumental mass with ethereal lightness."</p>
+                       <ul className="space-y-6">
+                          {product.designedFor.map((item, i) => (
+                            <li key={i} className="flex items-center gap-4 text-sm font-medium">
+                               <CheckCircle2 size={18} className="text-gold" /> {item}
+                            </li>
+                          ))}
+                       </ul>
+                    </div>
+                    <div className="aspect-square bg-gray-50 rounded-sm overflow-hidden relative group">
+                       <img src={product.images.gallery[0]} alt="Overview" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                       <div className="absolute inset-0 bg-black/5" />
+                    </div>
+                 </motion.div>
+               )}
+
+               {activeTab === 'craft' && (
+                 <motion.div key="cr" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid grid-cols-1 md:grid-cols-3 gap-16">
+                    {[
+                      { icon: <Zap />, title: '120 Hours Handcrafted', desc: 'Each chassis is manually carved and tension-balanced over a five-week period.' },
+                      { icon: <ShieldCheck />, title: 'Heritage Joinery', desc: 'Utilizing century-old mortise and tenon techniques for structural permanence.' },
+                      { icon: <Trees />, title: 'Source Integrity', desc: 'FSC Certified European Oak, selected for grain density and thermal stability.' }
+                    ].map((item, i) => (
+                      <div key={i} className="p-12 bg-gray-50 rounded-sm space-y-8 group hover:bg-black hover:text-white transition-all duration-700">
+                         <div className="w-16 h-16 bg-white flex items-center justify-center text-gold rounded-full shadow-sm group-hover:bg-gold group-hover:text-white transition-all">{item.icon}</div>
+                         <h4 className="text-xl font-bold tracking-tight">{item.title}</h4>
+                         <p className="text-gray-400 font-light leading-relaxed group-hover:text-white/60">{item.desc}</p>
+                      </div>
+                    ))}
+                 </motion.div>
+               )}
+
+               {activeTab === 'specs' && (
+                 <motion.div key="sp" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-4xl mx-auto bg-gray-50 p-20 rounded-sm">
+                    <ul className="space-y-12">
+                       {[
+                         { l: 'Primary Structure', v: product.construction },
+                         { l: 'Material Finish', v: product.finish },
+                         { l: 'Technical Mass', v: product.weight },
+                         { l: 'Wait Time', v: product.leadTime },
+                         { l: 'Provenance', v: product.origin }
+                       ].map((spec, i) => (
+                          <li key={i} className="flex justify-between items-end border-b border-gray-200/50 pb-8">
+                             <span className="text-[11px] uppercase font-black text-gray-400 tracking-[0.4em]">{spec.l}</span>
+                             <span className="text-xl font-bold text-black">{spec.v}</span>
+                          </li>
+                       ))}
+                    </ul>
+                 </motion.div>
+               )}
+
+               {activeTab === 'story' && (
+                 <motion.div key="st" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center max-w-3xl mx-auto space-y-16">
+                    <span className="text-gold font-black uppercase tracking-[0.6em] text-[11px]">The Narrative Arc</span>
+                    <h3 className="text-6xl font-chubbo tracking-tighter leading-tight italic">"Evolution from structural blueprint to material finality."</h3>
+                    <p className="text-xl text-gray-400 leading-relaxed font-light">Every Celestial Sofa begins as a mathematical study in repose. We document the journey from the first pencil sketch on oak-pulp paper to the final application of natural waxes.</p>
+                    <div className="grid grid-cols-2 gap-8 pt-8">
+                       <img src={product.images.details[0]} className="w-full aspect-[4/3] object-cover rounded-sm border border-gray-100" />
+                       <img src={product.images.details[1]} className="w-full aspect-[4/3] object-cover rounded-sm border border-gray-100" />
+                    </div>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+         </div>
+      </section>
+
+      {/* 4. LAYER: OWNERSHIP VISUALIZATION (MENTAL SIMULATION) */}
+      <section className="py-60 px-6 md:px-12 lg:px-24 border-t border-gray-100 overflow-hidden bg-black text-white">
+         <div className="max-w-[1200px] mx-auto text-center mb-40">
+            <span className="text-gold font-black uppercase tracking-[0.6em] text-[11px] mb-8 block">Mental Simulation</span>
+            <h2 className="text-6xl md:text-[8vw] font-chubbo tracking-tighter leading-none mb-12">Imagine This <br />In Your Space</h2>
+            <p className="text-white/40 font-light text-xl max-w-2xl mx-auto">A monumental presence that anchors the room through its weight and defines it through its silence.</p>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+            <div className="aspect-[4/5] bg-white/5 rounded-sm overflow-hidden relative group">
+               <img src="/sofa/room image.jpeg" className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" />
+               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-1000" />
+               <div className="absolute bottom-12 left-12">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-2">Setting 01</span>
+                  <h4 className="text-2xl font-bold tracking-tight">The Brutalist Loft</h4>
+               </div>
+            </div>
+            <div className="aspect-[4/5] bg-white/5 rounded-sm overflow-hidden relative group translate-y-24">
+               <img src={product.images.hero} className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" />
+               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-1000" />
+               <div className="absolute bottom-12 left-12">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-2">Setting 02</span>
+                  <h4 className="text-2xl font-bold tracking-tight">The Zenith Studio</h4>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* 5. LAYER: SPATIAL UNDERSTANDING (SCALE) */}
+      <section className="py-60 px-6 md:px-12 lg:px-24 bg-white">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div className="relative aspect-square flex items-end justify-center bg-gray-50 rounded-sm overflow-hidden p-20 shadow-inner">
+               {/* 180cm Human Silhouette Reference */}
+               <div className="absolute bottom-20 left-[20%] flex flex-col items-center">
+                  <div className="h-48 w-px bg-gold/50 relative">
+                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-black text-gray-400">180cm</div>
+                  </div>
+                  <Users size={48} className="text-gray-300 mt-4" />
+               </div>
+               
+               {/* Product Scale with Overlays */}
+               <div className="relative w-full h-[40%] bg-black/10 backdrop-blur-sm border border-black/5 shadow-2xl flex items-center justify-center group">
+                  <span className="absolute -top-12 left-0 right-0 text-center text-[10px] font-black uppercase tracking-[0.5em] text-gold">{product.dimensions.length}cm Component Width</span>
+                  <div className="flex flex-col items-center gap-2">
+                     <Box size={32} className="text-black/20" />
+                     <span className="text-[11px] font-black uppercase tracking-[0.3em] text-black/20">The Celestial Mass</span>
+                  </div>
+                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-gray-300">
+                     <MoveHorizontal size={14} /> Spatial footprint calibrated for repose
+                  </div>
+               </div>
+            </div>
+
+            <div className="space-y-16">
+               <span className="text-gold font-black uppercase tracking-[0.5em] text-[11px]">Volumetric Data</span>
+               <h2 className="text-6xl font-chubbo tracking-tighter leading-tight">Presence <br />Documented</h2>
+               <div className="space-y-12">
+                  {[
+                    { title: 'Floor Requirement', desc: 'Optimal visual repose requires a minimum of 4.5m of clear linear wall space.' },
+                    { title: 'Visual Displacement', desc: 'Architecturally balanced to occupy significant volume without impeding vertical sightlines.' }
+                  ].map((item, i) => (
+                    <div key={i} className="flex gap-8 group">
+                       <div className="w-px h-12 bg-gold/30 group-hover:h-24 transition-all duration-700" />
+                       <div>
+                          <h4 className="text-sm font-black uppercase tracking-widest mb-4 text-black">{item.title}</h4>
+                          <p className="text-gray-500 font-light text-lg leading-relaxed">{item.desc}</p>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* 6. LAYER: CONTINUITY (RELATED) */}
+      <section className="py-60 px-6 md:px-12 lg:px-24 border-t border-gray-100 bg-gray-50/30">
+         <div className="flex justify-between items-end mb-24">
+            <div>
+               <span className="text-gold font-black uppercase tracking-[0.5em] text-[11px] mb-6 block">Curated Pairings</span>
+               <h2 className="text-6xl font-chubbo tracking-tighter">You may also consider</h2>
+            </div>
+            <Link href="/catalog" className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400 hover:text-black transition-all border-b border-gray-200 hover:border-black pb-2">Full Archive</Link>
+         </div>
+         
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            {PRODUCTS.filter(p => p.id !== product.id).slice(0, 3).map((p) => (
+              <Link key={p.id} href={`/catalog/${p.id}`} className="group relative">
+                <div className="aspect-[4/5] bg-white mb-10 overflow-hidden border border-gray-100 shadow-sm transition-all duration-1000 group-hover:shadow-2xl group-hover:-translate-y-4">
+                   <img src={p.images.hero} alt={p.name} className="w-full h-full object-cover grayscale-[0.3] transition-all duration-[2000ms] group-hover:grayscale-0 group-hover:scale-110" />
+                   <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="flex justify-between items-start px-2">
+                   <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gold mb-3 block">{p.category}</span>
+                      <h3 className="text-3xl font-chubbo tracking-tight group-hover:text-gold transition-colors">{p.name}</h3>
+                   </div>
+                   <p className="text-2xl font-chubbo text-black/80">${p.price.toLocaleString()}</p>
+                </div>
+              </Link>
+            ))}
+            {PRODUCTS.length === 1 && (
+              <div className="md:col-span-3 py-48 text-center bg-white border border-dashed border-gray-200 rounded-sm">
+                 <p className="text-gray-300 font-light italic text-xl tracking-widest">"More signature artifacts are being recalibrated. Return soon."</p>
+              </div>
+            )}
+         </div>
+      </section>
+
+      {/* IMMERSIVE MODAL */}
+      <AnimatePresence>
+        {showViewer && (
+          <ImmersiveViewer image={activeImage} onClose={() => setShowViewer(false)} />
+        )}
+      </AnimatePresence>
+      
+    </main>
+  );
+}
