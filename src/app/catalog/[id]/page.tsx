@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { use, useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import EnquireModal from '@/components/EnquireModal';
+import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
    LIGHTBOX — Full-screen image viewer
@@ -54,10 +55,11 @@ const StoryImage = ({ src, alt, caption, onClick, delay = 0, aspect = "aspect-[4
     className="group cursor-pointer w-full flex flex-col"
     onClick={onClick}
   >
-    <div className={`w-full overflow-hidden bg-neutral-100 ${aspect}`}>
-      <img
+    <div className={`w-full overflow-hidden bg-neutral-100 relative ${aspect}`}>
+      <Image
         src={src}
         alt={alt}
+        fill
         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
         draggable={false}
       />
@@ -133,18 +135,24 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               onClick={() => openLightbox(activeImage)}
             >
               <AnimatePresence mode="wait">
-                <motion.img
+                <motion.div
                   key={activeImage}
-                  src={activeImage}
-                  alt={product.name}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full h-full object-cover will-change-transform"
-                  style={{ scale, x: tx, y: ty }}
-                  draggable={false}
-                />
+                  className="w-full h-full absolute inset-0"
+                >
+                  <Image
+                    src={activeImage}
+                    alt={product.name}
+                    fill
+                    priority
+                    className="w-full h-full object-cover will-change-transform"
+                    style={{ scale, x: tx, y: ty }}
+                    draggable={false}
+                  />
+                </motion.div>
               </AnimatePresence>
             </div>
 
@@ -160,7 +168,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       : 'opacity-50 hover:opacity-100'
                   }`}
                 >
-                  <img src={src} alt="" className="w-full h-full object-cover" draggable={false} />
+                  <Image 
+                    src={src} 
+                    alt="" 
+                    fill 
+                    className="w-full h-full object-cover" 
+                    draggable={false} 
+                  />
                 </button>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PRODUCTS, Product } from '@/data/catalog';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LiveCatalog() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -89,9 +90,10 @@ export default function LiveCatalog() {
                   <Link href={`/catalog/${product.id}`} className="group block">
                     {/* Image Card - Higher Quality, No Icons */}
                     <div className="aspect-[4/5] bg-gray-50 overflow-hidden mb-8 relative border border-gray-100 transition-colors group-hover:border-black/10">
-                      <img 
+                      <Image 
                         src={product.images.hero} 
                         alt={product.name} 
+                        fill
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                       <div className="absolute bottom-6 right-6 w-10 h-10 bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
