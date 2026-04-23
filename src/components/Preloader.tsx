@@ -8,17 +8,40 @@ export default function Preloader() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate loading progress
-    const interval = setInterval(() => {
+    let interval: NodeJS.Timeout;
+    const startTime = Date.now();
+    const minimumDuration = 2500; // Minimum 2.5 seconds for the cinematic feel
+
+    const finishLoading = () => {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+
+      setTimeout(() => {
+        setProgress(100);
+        setTimeout(() => setLoading(false), 600);
+      }, remainingTime);
+    };
+
+    // Increment progress naturally
+    interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
+        if (prev >= 95) {
           clearInterval(interval);
-          setTimeout(() => setLoading(false), 500);
-          return 100;
+          return 95;
         }
-        return prev + Math.floor(Math.random() * 10) + 2;
+        return prev + 1;
       });
-    }, 100);
+    }, 40);
+
+    if (document.readyState === 'complete') {
+      finishLoading();
+    } else {
+      window.addEventListener('load', finishLoading);
+      return () => {
+        window.removeEventListener('load', finishLoading);
+        clearInterval(interval);
+      };
+    }
 
     return () => clearInterval(interval);
   }, []);
