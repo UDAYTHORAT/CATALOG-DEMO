@@ -34,7 +34,7 @@ export default function Header() {
   return (
     <motion.header
       initial={{ y: -100 }} animate={{ y: 0 }}
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-6 py-4 md:px-20 md:py-6 ${isScrolled ? 'bg-white/90 backdrop-blur-md border-b border-gray-100' : 'bg-transparent'}`}
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-6 py-4 md:px-20 md:py-6 ${isScrolled || mobileMenuOpen ? 'bg-white border-b border-gray-100' : 'bg-transparent'}`}
     >
       <div className="max-w-[1800px] mx-auto flex justify-between items-center relative z-[110]">
         <Link href="/">
