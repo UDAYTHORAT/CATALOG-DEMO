@@ -10,9 +10,9 @@ import Link from 'next/link';
 import EnquireModal from '@/components/EnquireModal';
 
 // --- MOTION CONSTANTS ---
-const TRANSITION_MAIN = { duration: 0.8, ease: [0.22, 1, 0.36, 1] };
-const TRANSITION_PANEL = { type: "spring", damping: 25, stiffness: 200, mass: 0.8 };
-const TRANSITION_MICRO = { duration: 0.2, ease: [0.22, 1, 0.36, 1] };
+const TRANSITION_MAIN = { duration: 0.8, ease: [0.22, 1, 0.36, 1] } as const;
+const TRANSITION_PANEL = { type: "spring" as const, damping: 25, stiffness: 200, mass: 0.8 };
+const TRANSITION_MICRO = { duration: 0.2, ease: [0.22, 1, 0.36, 1] } as const;
 
 // --- SUB-COMPONENT: PRODUCT PANEL ---
 const ProductPanel = ({ 

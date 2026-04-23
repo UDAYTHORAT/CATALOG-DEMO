@@ -9,7 +9,7 @@ export default function Footer() {
           <p className="text-sm text-white/40 leading-relaxed mb-8 max-w-xs">Designing the legacy of tomorrow through the materials of today.</p>
         </div>
         <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Archives</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Artifacts</li><li>Ateliers</li></ul></div>
-        <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Inquiries</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Contact</li><li>Press</li><li>Careers</li></ul></div>
+        <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Inquiries</span><ul className="space-y-4 text-sm font-medium text-white/60"><li><Link href="/contact" className="hover:text-gold transition-colors">Contact</Link></li><li>Press</li><li>Careers</li></ul></div>
         <div><span className="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8 block">Legals</span><ul className="space-y-4 text-sm font-medium text-white/60"><li>Privacy</li><li>Terms</li><li>Cookies</li></ul></div>
       </div>
       <div className="pt-32 border-t border-white/10 mt-32 text-center">

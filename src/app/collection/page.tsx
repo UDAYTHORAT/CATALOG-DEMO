@@ -361,7 +361,7 @@ export default function CollectionPage() {
           <p className="text-white/30 text-sm max-w-md mx-auto mb-10">Each piece is made to order. Begin your journey with a private consultation.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/catalog" className="px-12 py-5 bg-gold text-obsidian text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white transition-all">
-              Enter Catalog
+              Enter the Archive
             </Link>
             <button onClick={() => launchStory()} className="px-12 py-5 border border-white/20 text-white text-[11px] font-black uppercase tracking-[0.3em] hover:border-gold hover:text-gold transition-all flex items-center gap-3">
               <Play size={14} /> Story Mode

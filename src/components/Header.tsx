@@ -35,7 +35,7 @@ export default function Header() {
         
         <nav className="hidden md:flex items-center gap-10">
           <Link href="/collection" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Collection</Link>
-          <Link href="/catalog" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Catalog</Link>
+          <Link href="/catalog" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Archive</Link>
           <Link href="/catalog/compare" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Compare</Link>
           <Link href="/contact" className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isScrolled ? 'bg-obsidian text-white hover:bg-gold' : 'bg-white text-obsidian hover:bg-gold hover:text-white'}`}>Enquire</Link>
         </nav>
@@ -75,7 +75,7 @@ export default function Header() {
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gold mb-2 block">Navigation</span>
               {[
                 { href: '/collection', label: 'The Collection' },
-                { href: '/catalog', label: 'Interactive Catalog' },
+                { href: '/catalog', label: 'The Archive' },
                 { href: '/catalog/compare', label: 'Compare Pieces' },
                 { href: '/contact', label: 'Start an Enquiry' },
               ].map((link, i) => (
