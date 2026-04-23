@@ -23,8 +23,8 @@ const italiana = Italiana({
 });
 
 export const metadata: Metadata = {
-  title: "ESTRE FURNITURES | Premium Sofa Archive",
-  description: "Experience the exclusive Ibisca Collection. Handcrafted artifacts for the modern sanctuary by Estre Furnitures.",
+  title: "AURELIAN STUDIO | Specialized Sofa Archive",
+  description: "Experience the exclusive Aurelian Sofa Collection. Handcrafted artifacts for the modern sanctuary.",
 };
 
 export default function RootLayout({

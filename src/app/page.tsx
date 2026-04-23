@@ -68,7 +68,7 @@ export default function Home() {
             transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className="text-[12vw] md:text-[8vw] font-stardom text-white tracking-widest leading-none drop-shadow-2xl text-center">
-              ESTRE FURNITURES
+              AURELIAN STUDIO
             </h1>
           </motion.div>
           

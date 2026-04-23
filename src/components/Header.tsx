@@ -39,7 +39,7 @@ export default function Header() {
       <div className="max-w-[1800px] mx-auto flex justify-between items-center relative z-[110]">
         <Link href="/">
           <h1 className={`text-xl md:text-3xl font-serif tracking-[0.3em] transition-colors duration-500 ${headerTextColor}`}>
-            ESTRE
+            AURELIAN
           </h1>
         </Link>
         

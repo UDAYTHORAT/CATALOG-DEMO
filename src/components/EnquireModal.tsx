@@ -6,8 +6,8 @@ import { X, MessageCircle, Phone, Send, ChevronLeft, Check } from 'lucide-react'
 import { Product } from '@/data/catalog';
 
 /* ── CONFIG ── */
-const BUSINESS_PHONE = '918722200100'; // WhatsApp / Call number
-const BUSINESS_EMAIL = 'estrefurnitures@gmail.com'; // Owner email for enquiry forms
+const BUSINESS_PHONE = '917057619489'; // WhatsApp / Call number (with country code)
+const BUSINESS_EMAIL = 'aurelianstudio@gmail.com'; // Owner email for enquiry forms
 
 interface EnquireModalProps {
   product: Product;
@@ -162,7 +162,7 @@ export default function EnquireModal({ product, onClose }: EnquireModalProps) {
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-bold text-black">Call Us</p>
-                  <p className="text-[11px] text-gray-400">+91 87222 00100 · Mon–Sat 10am–7pm</p>
+                  <p className="text-[11px] text-gray-400">+91 70576 19489 · Mon–Sat 10am–7pm</p>
                 </div>
               </button>
 

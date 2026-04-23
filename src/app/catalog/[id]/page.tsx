@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { use, useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import EnquireModal from '@/components/EnquireModal';
-import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
    LIGHTBOX — Full-screen image viewer
@@ -55,11 +54,10 @@ const StoryImage = ({ src, alt, caption, onClick, delay = 0, aspect = "aspect-[4
     className="group cursor-pointer w-full flex flex-col"
     onClick={onClick}
   >
-    <div className={`w-full overflow-hidden bg-neutral-100 relative ${aspect}`}>
-      <Image
+    <div className={`w-full overflow-hidden bg-neutral-100 ${aspect}`}>
+      <img
         src={src}
         alt={alt}
-        fill
         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
         draggable={false}
       />
@@ -135,24 +133,18 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               onClick={() => openLightbox(activeImage)}
             >
               <AnimatePresence mode="wait">
-                <motion.div
+                <motion.img
                   key={activeImage}
+                  src={activeImage}
+                  alt={product.name}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full h-full absolute inset-0"
-                >
-                  <Image
-                    src={activeImage}
-                    alt={product.name}
-                    fill
-                    priority
-                    className="w-full h-full object-cover will-change-transform"
-                    style={{ scale, x: tx, y: ty }}
-                    draggable={false}
-                  />
-                </motion.div>
+                  className="w-full h-full object-cover will-change-transform"
+                  style={{ scale, x: tx, y: ty }}
+                  draggable={false}
+                />
               </AnimatePresence>
             </div>
 
@@ -168,13 +160,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       : 'opacity-50 hover:opacity-100'
                   }`}
                 >
-                  <Image 
-                    src={src} 
-                    alt="" 
-                    fill 
-                    className="w-full h-full object-cover" 
-                    draggable={false} 
-                  />
+                  <img src={src} alt="" className="w-full h-full object-cover" draggable={false} />
                 </button>
               ))}
             </div>
@@ -272,7 +258,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 block border-b border-gray-200 pb-4">01 — Genesis</span>
               <h3 className="text-3xl font-chubbo tracking-tight">Form follows feeling.</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                {`The ${product.name} didn't start as a piece of furniture; it began as a study in spatial tension. The initial sketches explored the interplay between structure and softness — searching for the ideal proportions that would define its character.`}
+                The {product.name} didn&apos;t start as a piece of furniture; it began as a study in spatial tension. The initial sketches explored the interplay between structure and softness — searching for the ideal proportions that would define its character.
               </p>
             </div>
             <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 md:mt-0">
@@ -301,7 +287,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 block border-b border-gray-200 pb-4">02 — The Craft</span>
               <h3 className="text-3xl font-chubbo tracking-tight">An honest skeleton.</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                {`True luxury lives in the unseen. The ${product.name}'s internal chassis is built from ${product.craftNotes.source.toLowerCase()}, with ${product.craftNotes.joinery.toLowerCase()} engineered to endure decades of daily use without compromise. ${product.craftNotes.buildTime} of meticulous attention in every piece.`}
+                True luxury lives in the unseen. The {product.name}&apos;s internal chassis is built from {product.craftNotes.source.toLowerCase()}, with {product.craftNotes.joinery.toLowerCase()} engineered to endure decades of daily use without compromise. {product.craftNotes.buildTime} of meticulous attention in every piece.
               </p>
             </div>
           </div>
@@ -314,7 +300,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 block border-b border-gray-200 pb-4">03 — Realization</span>
               <h3 className="text-3xl font-chubbo tracking-tight">Tactile resolution.</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                {`The material palette brings the ${product.name} to life. Crafted with ${product.materials[0].toLowerCase()} over a ${product.materials[1].toLowerCase()}, each variant is finished in ${product.finish} — offering a spectrum of moods to complement any interior.`}
+                The material palette brings the {product.name} to life. Crafted with {product.materials[0].toLowerCase()} over a {product.materials[1].toLowerCase()}, each variant is finished in {product.finish} — offering a spectrum of moods to complement any interior.
               </p>
             </div>
             <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 md:mt-0">
@@ -343,7 +329,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </motion.h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <StoryImage src={product.images.gallery[0]} alt={`${product.name} in situ`} caption={`The ${product.name} in situ`} onClick={() => openLightbox(product.images.gallery[0])} aspect="aspect-[4/5] md:aspect-[3/4]" delay={0.1} />
+             <StoryImage src={product.images.hero} alt={`${product.name} in situ`} caption={`The ${product.name} in situ`} onClick={() => openLightbox(product.images.hero)} aspect="aspect-[4/5] md:aspect-[3/4]" delay={0.1} />
              {product.images.gallery[3] && (
                <StoryImage src={product.images.gallery[3]} alt="Living space context" caption="Designed for life" onClick={() => openLightbox(product.images.gallery[3])} aspect="aspect-[4/5] md:aspect-[3/4]" delay={0.3} />
              )}

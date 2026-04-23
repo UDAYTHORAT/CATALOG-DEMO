@@ -56,7 +56,7 @@ export default function ContactPage() {
               Start an Enquiry
             </h1>
             <p className="text-white/40 text-sm md:text-lg font-light max-w-xl mx-auto">
-              Whether you&apos;re looking for a signature piece or a bespoke commission, our team is here to guide your discovery.
+              Whether you're looking for a signature piece or a bespoke commission, our team is here to guide your discovery.
             </p>
           </motion.div>
         </div>
@@ -104,17 +104,17 @@ export default function ContactPage() {
               <div className="space-y-8">
                 <h2 className="text-3xl md:text-4xl font-chubbo tracking-tighter text-obsidian">Direct Access</h2>
                 <div className="space-y-4">
-                  <a href="mailto:studio@estrefurnitures.com" className="group flex items-center gap-4 text-gray-500 hover:text-black transition-colors">
+                  <a href="mailto:studio@aurelian.com" className="group flex items-center gap-4 text-gray-500 hover:text-black transition-colors">
                     <div className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
                       <Mail size={16} />
                     </div>
-                    <span className="text-sm font-medium">studio@estrefurnitures.com</span>
+                    <span className="text-sm font-medium">studio@aurelian.com</span>
                   </a>
-                  <a href="tel:+918722200100" className="group flex items-center gap-4 text-gray-500 hover:text-black transition-colors">
+                  <a href="tel:+442079460958" className="group flex items-center gap-4 text-gray-500 hover:text-black transition-colors">
                     <div className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
                       <Phone size={16} />
                     </div>
-                    <span className="text-sm font-medium">+91 87222 00100</span>
+                    <span className="text-sm font-medium">+44 20 7946 0958</span>
                   </a>
                   <button className="group flex items-center gap-4 text-gray-500 hover:text-black transition-colors">
                     <div className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-[#25D366] group-hover:text-white transition-all group-hover:border-[#25D366]">
@@ -175,7 +175,7 @@ export default function ContactPage() {
                         type="tel" 
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 87222 00100" 
+                        placeholder="+44 XXXX XXXXXX" 
                         className="w-full bg-transparent border-b border-gray-100 py-3 text-sm focus:outline-none focus:border-gold transition-colors placeholder:text-gray-200"
                       />
                     </div>
@@ -239,7 +239,7 @@ export default function ContactPage() {
       {/* ── FOOTER ── */}
       <footer className="py-20 border-t border-gray-100 px-6 text-center">
         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">
-          Estre Furnitures © 2024 · All Rights Reserved
+          Aurelian Studio © 2024 · All Rights Reserved
         </p>
       </footer>
     </main>

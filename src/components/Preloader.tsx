@@ -65,7 +65,7 @@ export default function Preloader() {
               transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
               className="text-4xl md:text-6xl font-serif text-white tracking-[0.4em]"
             >
-              ESTRE
+              AURELIAN
             </motion.h1>
             <motion.div 
               initial={{ scaleX: 0 }}
