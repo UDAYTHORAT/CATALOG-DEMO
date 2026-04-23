@@ -1,0 +1,555 @@
+================================================================================
+  AURELIAN STUDIO — COMPLETE PROJECT DOCUMENTATION
+  Premium Furniture Catalog Web Application
+================================================================================
+
+PROJECT OVERVIEW
+────────────────
+Name:         Aurelian Studio Digital Archive
+Type:         Next.js 16 Web Application (App Router)
+Purpose:      A luxury furniture catalog with cinematic story mode,
+              product detail pages, category browsing, and enquiry system
+Business:     Premium handcrafted furniture studio
+Contact No:   +91 70576 19489 (WhatsApp + Calls)
+Email:        aurelianstudio@gmail.com
+Local URL:    http://localhost:3000
+Dev Command:  npm run dev
+
+================================================================================
+TECH STACK
+================================================================================
+
+Framework:     Next.js 16.2.4 (App Router)
+Language:      TypeScript 5
+Styling:       Tailwind CSS v4
+Animation:     Framer Motion 12
+Scroll:        Lenis (smooth scroll library)
+Icons:         Lucide React
+Utilities:     clsx + tailwind-merge (via cn() helper)
+Fonts:         Stardom (custom), Chubbo (custom), Inter, Cormorant Garamond
+Runtime:       React 19
+
+================================================================================
+FOLDER STRUCTURE
+================================================================================
+
+d:\Product-catelog\
+├── public\
+│   ├── sofa\                    → Celestial sofa images
+│   │   ├── full-sofa.jpeg
+│   │   ├── blue-sofa.jpeg
+│   │   ├── green-sofa.jpeg
+│   │   ├── blue-angle-3.jpeg
+│   │   ├── angle-blue-2.jpeg
+│   │   ├── room image.jpeg
+│   │   ├── sofa-sketch.jpeg
+│   │   ├── sofa-model.jpeg
+│   │   ├── sofa-complete sketch.jpeg
+│   │   └── compete sofa sketch.jpeg
+│   ├── sofa-2\                  → Elysian sofa images
+│   │   ├── sofa-1-white.jpeg
+│   │   ├── red.jpeg
+│   │   ├── green.jpeg
+│   │   ├── diffrent angles.jpeg
+│   │   ├── sketch of sofa.jpeg
+│   │   └── sofa-room-white.jpeg
+│   ├── dining table\            → Meridian dining set images
+│   │   ├── full dining table.jpeg
+│   │   ├── table only.jpeg
+│   │   ├── chair.jpeg
+│   │   ├── chair sketch.jpeg
+│   │   ├── table sketch.jpeg
+│   │   └── table view -4.jpeg
+│   ├── images\                  → General/hero images
+│   │   ├── hero-day.jpeg
+│   │   ├── hero-night.jpeg
+│   │   ├── living-room.png
+│   │   ├── bedroom-spread.png
+│   │   ├── dining.png
+│   │   ├── outdoor.png
+│   │   ├── workspace.png
+│   │   ├── kitchen.png
+│   │   ├── bathroom.png
+│   │   └── about.png
+│   └── fonts\                   → Custom font files (Stardom, Chubbo)
+│
+├── src\
+│   ├── app\                     → Next.js App Router pages
+│   │   ├── layout.tsx           → Root layout (fonts, metadata, providers)
+│   │   ├── globals.css          → Global styles + Tailwind + custom tokens
+│   │   ├── page.tsx             → Home page (hero with day/night transition)
+│   │   ├── catalog\
+│   │   │   ├── [id]\
+│   │   │   │   └── page.tsx     → Product detail page (story mode + lightbox)
+│   │   │   └── compare\
+│   │   │       └── page.tsx     → Side-by-side product comparison
+│   │   └── collection\
+│   │       └── page.tsx         → Collection browsing (categories + grid)
+│   │
+│   ├── components\              → Shared React components
+│   │   ├── Catalog.tsx          → Main cinematic catalog (hero fullscreen)
+│   │   ├── EnquireModal.tsx     → WhatsApp/Call/Form enquiry modal
+│   │   ├── Header.tsx           → Sticky navigation header
+│   │   ├── Footer.tsx           → Site footer
+│   │   ├── LiveCatalog.tsx      → Filterable product grid component
+│   │   ├── CustomCursor.tsx     → Gold ring custom cursor (desktop only)
+│   │   ├── SmoothScroll.tsx     → Lenis smooth scroll wrapper
+│   │   └── ui\                  → Reusable UI primitives
+│   │       ├── image-gallery.tsx → Expanding hover gallery (6 images)
+│   │       └── demo.tsx          → Grid gallery with hover overlays
+│   │
+│   ├── data\
+│   │   └── catalog.ts           → All product data + spread data + types
+│   │
+│   └── lib\
+│       └── utils.ts             → cn() utility (clsx + tailwind-merge)
+│
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+├── postcss.config.mjs
+└── PROJECT_DOCUMENTATION.txt    ← THIS FILE
+
+================================================================================
+DATA MODEL  (src/data/catalog.ts)
+================================================================================
+
+TYPES:
+------
+Dimensions    → { length, width, height, unit: "cm" }
+CraftNotes    → { buildTime, joinery, source }
+Product       → Full product definition (see below)
+IntroPhase    → { image, label, sublabel, type: room|sketch|build|compose|reveal }
+Spread        → A catalog "page" with intro sequence + products
+
+PRODUCT FIELDS:
+---------------
+id            → Unique slug (used in URL: /catalog/[id])
+slug          → Same as id
+name          → Display name (e.g. "CELESTIAL")
+category      → "Sofas" | "Dining"
+price         → Number (base price)
+priceRange    → String (e.g. "$4,800 - $6,200")
+dimensions    → Dimensions object
+materials     → String[] (up to 3 materials)
+finish        → Color/finish options string
+description   → Long product description
+construction  → Build method details
+origin        → "Aurelian Studio"
+weight        → String (e.g. "110kg")
+leadTime      → String (e.g. "10-12 weeks")
+tags          → String[] for filtering
+hotspot       → { x, y } position for catalog dot hotspot
+designedFor   → String[] (3 use cases)
+craftNotes    → CraftNotes object
+images        → { hero, gallery: string[], details: string[] }
+
+CURRENT PRODUCTS (3 total):
+----------------------------
+1. CELESTIAL  (id: celestial-sofa)     Category: Sofas    $4,800
+   → Performance Velvet + Solid Oak Chassis
+   → Hero: /sofa/full-sofa.jpeg
+
+2. ELYSIAN    (id: elysian-sofa)       Category: Sofas    $3,900
+   → Washed Belgian Linen + Reclaimed Oak
+   → Hero: /sofa-2/sofa-1-white.jpeg
+
+3. MERIDIAN   (id: meridian-dining-set) Category: Dining  $7,800
+   → Complete dining set: walnut table + aniline leather chairs
+   → Hero: /dining table/full dining table.jpeg
+
+CATALOG_DATA (CATALOG_DATA array — 3 spreads):
+-----------------------------------------------
+Each spread = one fullscreen slide in the cinematic Catalog component.
+
+Spread 01-02: "Celestial Genesis"    → CELESTIAL sofa  (5-phase intro)
+Spread 03-04: "Elysian Heritage"     → ELYSIAN sofa    (5-phase intro)
+Spread 05-06: "Meridian Convergence" → MERIDIAN dining (6-phase intro)
+
+Each spread has an introSequence array of IntroPhase objects:
+  type "room"    → Full-screen room background (opacity 1)
+  type "sketch"  → Grayscale, high contrast, floated centered image
+  type "build"   → Sepia-toned, full-screen
+  type "compose" → Slight desaturate, full-screen
+  type "reveal"  → Full color, full-screen final reveal
+
+================================================================================
+PAGES & ROUTES
+================================================================================
+
+/  (Home — src/app/page.tsx)
+────────────────────────────
+- Full-screen hero with hero-day.jpeg and hero-night.jpeg
+- Auto transitions from day → night after 3 seconds (8s fade)
+- "AURELIAN STUDIO" centered text with gold underline animation
+- "Enter Archive" CTA → links to /catalog
+- Phase marker bottom-left (Morning Light / Midnight Stillness)
+
+/catalog  (Catalog page — served via layout that renders Catalog.tsx)
+──────────────────────────────────────────────────────────────────────
+NOTE: The /catalog route renders the Catalog.tsx component
+which is a full-screen cinematic experience.
+
+Features:
+- Fullscreen image per spread with parallax mouse movement
+- INTRO SEQUENCE: Cinematic 3–6 phase story plays automatically
+  when switching to a new spread. Each phase = 3 seconds.
+  Phases shown with layered images, labels, sublabels, progress bar.
+  "Skip Intro" button (top-right).
+- Main background: parallax movement follows mouse
+- HOTSPOT: gold pulsing dot on image → click opens ProductPanel
+- ProductPanel: slides in from right (540px wide)
+  Shows: image, name, price, description, materials, dimensions,
+  construction, provenance, lead time, dots to switch products
+  CTA: "View Full Dossier" → /catalog/[id]
+       "Enquire" → opens EnquireModal
+- Navigation: Left/Right arrows, keyboard arrow keys, touch swipe
+- Progress bar: gold line grows at bottom showing spread progress
+- Counter: 01/03 (current/total) bottom-right
+- AURELIAN branding top-left, page number top-right
+
+/catalog/[id]  (Product detail — src/app/catalog/[id]/page.tsx)
+───────────────────────────────────────────────────────────────
+A scroll-driven product story page with 3 acts:
+
+ACT I — The Decision Zone (Hero)
+  - Sticky header (Header.tsx)
+  - Large image viewer (4:3 aspect) with smooth zoom on hover
+    (useMotionValue + useSpring for parallax zoom effect)
+  - Thumbnail strip below main image
+  - Right column: category, name, price, description
+  - "Enquire / Order Yours" button → EnquireModal
+  - Craft badges: build time, material, "Built to last decades"
+  - Specs table: Material, Frame, Dimensions, Finish, Weight
+
+ACT II — Story Mode (scroll-driven narrative)
+  Phase 01 — Genesis:   sketch images + "Form follows feeling" copy
+  Phase 02 — The Craft: gallery image + build/material description
+  Phase 03 — Realization: variant images + material palette copy
+  Phase 04 — Context: lifestyle/room images + final copy
+  Each image block uses StoryImage component (whileInView animation)
+  Click any image → Lightbox (fullscreen dark overlay)
+
+ACT III — Reinforcement CTA
+  - "Ready to bring it home?" heading
+  - "Order Yours — $X,XXX" button → EnquireModal
+  - "or continue browsing" link → /catalog
+
+Lightbox: full-screen dark overlay, Escape to close, click to close
+
+/catalog/compare  (Compare page — src/app/catalog/compare/page.tsx)
+────────────────────────────────────────────────────────────────────
+- Select up to 3 products via toggle buttons
+- Comparison table: image, name, and all spec rows side-by-side
+- Empty slots shown with dashed + icon
+- Sticky left column for spec labels
+- "View Details" link per product → /catalog/[id]
+
+/collection  (Collection page — src/app/collection/page.tsx)
+─────────────────────────────────────────────────────────────
+- Dark hero section with "Launch Story Mode" gold CTA button
+- CATEGORY CARDS: 2 categories (Sofas, Dining) with full-image
+  card, product count, description. Click → scrolls to product grid
+  filtered to that category. Hover → shows Play button for
+  per-category Story Mode
+- EXPANDING IMAGE GALLERY: uses ImageGallery UI component
+  6 product hero images expand on hover
+- PRODUCT GRID: filterable (All / Sofas / Dining)
+  Grid/Gallery view toggle (Grid3X3 / Layers icons)
+  Animated filter transitions (AnimatePresence)
+  Each card: image, category, name, price, material, dimensions
+  Click → /catalog/[id]
+- GALLERY VIEW: uses DemoGallery UI component
+  Square image grid with hover overlay (title + Show More)
+- STORY MODE OVERLAY: fullscreen cinematic auto-play
+  Cycles through products every 5 seconds
+  Play/Pause, left/right arrows, dot navigation
+  Gold progress bar at bottom
+  Product info overlay (category, name, price, Explore link)
+  Escape or X to close
+- Dark footer CTA with "Enter Catalog" + "Story Mode" buttons
+
+================================================================================
+COMPONENTS
+================================================================================
+
+Catalog.tsx  (src/components/Catalog.tsx)
+─────────────────────────────────────────
+Main cinematic catalog engine. Used on the /catalog route.
+State:
+  currentIndex      → which spread is showing (0-2)
+  selectedProduct   → product shown in side panel (null = hidden)
+  enquireProduct    → product to enquire about (opens EnquireModal)
+  touchStart        → for swipe gesture tracking
+  introStep         → current phase index in intro sequence
+  showIntro         → boolean: is the intro playing?
+  mouseX/Y, smoothX/Y → parallax motion values
+
+Sub-components:
+  ProductPanel  → Slide-in right panel with product details
+    Props: product, onClose, allProductsInSpread, onSelectProduct, onEnquire
+  Hotspot       → Pulsing gold dot on background image
+    Props: product, onSelect, isActive
+
+Key logic:
+  - Intro auto-advances every 3 seconds via setInterval
+  - After last phase, waits 1800ms then hides intro
+  - When changing spread (currentIndex), resets intro to step 0
+  - Mouse move → parallax via useMotionValue + useSpring
+  - Keyboard: ArrowLeft, ArrowRight, Escape
+
+Header.tsx  (src/components/Header.tsx)
+────────────────────────────────────────
+Sticky navigation. Transparent on top, white/blur when scrolled.
+Links: Collection, Catalog, Compare, Bespoke, Enquire
+Mobile: hamburger menu with animated lines, full-screen overlay nav
+Scroll detection via window.addEventListener('scroll')
+
+Footer.tsx  (src/components/Footer.tsx)
+────────────────────────────────────────
+Dark obsidian background. 4-column grid.
+Columns: Aurelian branding, Archives links, Inquiries links, Legals
+Bottom: copyright line
+
+EnquireModal.tsx  (src/components/EnquireModal.tsx)
+────────────────────────────────────────────────────
+3-screen animated modal for customer contact.
+Business config at top of file:
+  BUSINESS_PHONE = '917057619489'   (India +91 prefix + 10 digits)
+  BUSINESS_EMAIL = 'aurelianstudio@gmail.com'
+
+Screen 1 — "options":
+  • WhatsApp button → opens wa.me/917057619489 with pre-filled message:
+    "Hello Aurelian Studio! I'm interested in [PRODUCT NAME]..."
+    Includes: product name, category, price range, material, dimensions
+  • Call button → tel:+917057619489
+  • "Send an Enquiry" → goes to screen 2 (form)
+
+Screen 2 — "form":
+  Fields: Full Name (required), Email (required), Phone, Message
+  Product info card shown (read-only, so customer knows what they're buying)
+  Submit → opens mailto:aurelianstudio@gmail.com with pre-filled:
+    Subject: "Enquiry: [PRODUCT NAME] — Aurelian Studio"
+    Body: customer details + full product specs + source URL
+
+Screen 3 — "success":
+  Confirmation message + WhatsApp quick-link + Done button
+
+Props: { product: Product, onClose: () => void }
+Escape key closes modal.
+Used in: Catalog.tsx (Enquire button in ProductPanel)
+         catalog/[id]/page.tsx (Order Yours buttons, x2)
+
+LiveCatalog.tsx  (src/components/LiveCatalog.tsx)
+──────────────────────────────────────────────────
+Filterable product grid. Used on catalog listing pages.
+Filters: by Collection (category) + by Materiality
+Animated grid with AnimatePresence popLayout
+Each product card: image (4:5 aspect), category, name, price, material, size
+Hover: ChevronRight icon appears bottom-right of image
+
+CustomCursor.tsx  (src/components/CustomCursor.tsx)
+────────────────────────────────────────────────────
+Desktop-only custom cursor (hidden md:block).
+Gold ring (border-gold) follows mouse with spring physics.
+Scales to 2.5x and fills gold/10 when hovering buttons/links/cursor-pointer.
+Mounted in layout.tsx, renders above everything (z-9999).
+
+SmoothScroll.tsx  (src/components/SmoothScroll.tsx)
+────────────────────────────────────────────────────
+Wraps all pages with ReactLenis for smooth wheel scrolling.
+Config: lerp 0.1, duration 1.5, smoothWheel true.
+Mounted in layout.tsx wrapping all children.
+
+ui/image-gallery.tsx  (src/components/ui/image-gallery.tsx)
+────────────────────────────────────────────────────────────
+Expanding hover gallery. Row of images at 400px height.
+Each image has flex-grow. On hover, grows to full width via
+transition-all + hover:w-full (duration 500ms).
+Props: title, subtitle, images: { src, alt }[]
+
+ui/demo.tsx  (src/components/ui/demo.tsx)
+──────────────────────────────────────────
+Square grid gallery with hover overlays.
+Each image: 224x224px (size-56), object-cover.
+Hover: dark overlay with title + "Show More" link (ArrowUpRight icon).
+Props: title, subtitle, images: { src, alt, title, href }[]
+
+================================================================================
+GLOBAL STYLES  (src/app/globals.css)
+================================================================================
+
+Tailwind v4 imported via @import "tailwindcss"
+
+Custom fonts loaded via @font-face:
+  Stardom   → /fonts/Stardom_Complete/...woff2
+  Chubbo    → /fonts/Chubbo_Complete/...woff2
+
+@theme tokens:
+  --color-gold:      #c5a059  (gold accent, used throughout)
+  --color-obsidian:  #0d0d0d  (near-black background)
+  --color-ivory:     #fafafa  (near-white)
+  --font-stardom, --font-chubbo, --font-serif, --font-sans
+
+Base layer:
+  body → bg-ivory, text-obsidian, font-chubbo, antialiased
+
+Custom utilities:
+  .text-luxury → gold, uppercase, tracking-[0.4em], text-[10px], font-black
+  .clip-path-reveal / .reveal-active → for clip-path animations
+
+Scrollbar: 4px wide, gold thumb, white track
+Lenis classes: html.lenis, .lenis-smooth, .lenis-stopped, etc.
+
+================================================================================
+ROOT LAYOUT  (src/app/layout.tsx)
+================================================================================
+
+Loads Google Fonts: Inter, Cormorant Garamond, Italiana
+Loads custom fonts via globals.css
+Metadata: title, description (SEO)
+Renders:
+  <CustomCursor />      → Always visible, above all content
+  <SmoothScroll>        → Wraps all page content
+    {children}          → Page content rendered here
+
+================================================================================
+USER FLOW / CUSTOMER JOURNEY
+================================================================================
+
+1. LANDING  →  /
+   User arrives at hero. Day image loads. After 3s transitions to night.
+   Clicks "AURELIAN STUDIO" or "Enter Archive" → goes to /catalog
+
+2. CATALOG  →  /catalog
+   Intro sequence plays automatically (5 phases for sofas, 6 for dining).
+   Each phase = 3 seconds. User can skip with "Skip Intro".
+   After intro, full-screen product image with gold hotspot dot.
+   Click hotspot → side panel opens with product details.
+   Side panel: image, name, price, description, specs.
+   Click "View Full Dossier" → goes to /catalog/[id]
+   Click "Enquire" → EnquireModal opens
+   Navigate spreads with arrows or keyboard or swipe.
+
+3. PRODUCT DETAIL  →  /catalog/[id]
+   Scroll through the narrative story of the product.
+   View all images, click to enlarge in lightbox.
+   Click "Enquire / Order Yours" (at top) or "Order Yours — $X" (bottom).
+   → EnquireModal opens
+
+4. ENQUIRE  (modal overlay, any page)
+   Customer chooses: WhatsApp / Call / Send Enquiry Form
+   WhatsApp: opens WhatsApp with pre-filled message about the product.
+   Call: dials +91 70576 19489 directly.
+   Form: fills name, email, phone, message → opens email client
+   pre-filled to aurelianstudio@gmail.com with all details.
+
+5. COMPARE  →  /catalog/compare
+   Select up to 3 products from toggle buttons.
+   Spec table shown side by side. Click "View Details" → product page.
+
+6. COLLECTION  →  /collection
+   Browse by category cards. Launch Story Mode. Filter product grid.
+   Toggle between grid and gallery views.
+
+================================================================================
+BUSINESS CONTACT CONFIG
+================================================================================
+
+To update the WhatsApp number or email, edit:
+  src/components/EnquireModal.tsx  →  lines 9-10
+
+  const BUSINESS_PHONE = '917057619489';
+  const BUSINESS_EMAIL = 'aurelianstudio@gmail.com';
+
+BUSINESS_PHONE format: country code + number, NO + sign, NO spaces.
+Example: India +91 70576 19489 → '917057619489'
+
+================================================================================
+ADDING A NEW PRODUCT
+================================================================================
+
+Step 1: Add images to /public/[product-folder]/
+Step 2: Add a new Product object to PRODUCTS array in src/data/catalog.ts
+        Follow the existing product structure exactly.
+        Give it a unique id (used as URL slug).
+Step 3: Optionally add a new Spread to CATALOG_DATA in catalog.ts
+        with an introSequence for the cinematic catalog view.
+        Reference the product via PRODUCTS[index].
+Step 4: The product automatically appears in:
+        - LiveCatalog grid (filterable)
+        - Collection page grid
+        - Compare page selector
+
+================================================================================
+ADDING A NEW CATEGORY
+================================================================================
+
+Step 1: Add products with the new category string in catalog.ts
+Step 2: CATEGORIES is auto-derived: Array.from(new Set(PRODUCTS.map(p => p.category)))
+Step 3: Add entry to CATEGORY_IMAGES and CATEGORY_DESCRIPTIONS in
+        src/app/collection/page.tsx (lines 13-29) for the category card image/text.
+
+================================================================================
+DEPENDENCIES (package.json)
+================================================================================
+
+RUNTIME:
+  next: 16.2.4
+  react: 19.2.4
+  react-dom: 19.2.4
+  framer-motion: ^12.38.0
+  lenis: ^1.3.23
+  lucide-react: ^1.8.0
+  clsx: (installed for cn() utility)
+  tailwind-merge: (installed for cn() utility)
+
+DEV:
+  tailwindcss: ^4
+  @tailwindcss/postcss: ^4
+  typescript: ^5
+  @types/react: ^19
+  @types/node: ^20
+  eslint: ^9
+  eslint-config-next: 16.2.4
+
+================================================================================
+KNOWN NOTES & DECISIONS
+================================================================================
+
+- The chair (SOLSTICE) is NOT a separate product. It is part of the MERIDIAN
+  dining set. The MERIDIAN product covers the complete set (table + 6 chairs).
+
+- The Catalog.tsx uses the Spread.products array for hotspots.
+  Each spread currently shows 1 product hotspot.
+  Multiple hotspots per spread are supported by adding more to the products[].
+
+- EnquireModal uses mailto: for the form (no backend required).
+  This opens the user's native email client. If a backend email
+  service is needed later (e.g. Resend, SendGrid), replace the
+  handleFormSubmit function with a POST to an API route.
+
+- SmoothScroll (Lenis) conflicts with overflow:hidden containers.
+  Use data-lenis-prevent on scrollable sub-areas like the ProductPanel.
+
+- CustomCursor is hidden on mobile (hidden md:block).
+
+- The /collection page hero uses /images/living-room.png as background.
+  Update CATEGORY_IMAGES map if product images change.
+
+- Image paths with spaces (e.g. "/dining table/full dining table.jpeg")
+  work fine in Next.js img tags but must match the exact filename on disk.
+
+================================================================================
+SCRIPTS
+================================================================================
+
+npm run dev       → Start development server (http://localhost:3000)
+npm run build     → Build production bundle
+npm run start     → Serve production build
+npm run lint      → Run ESLint
+
+================================================================================
+  END OF DOCUMENTATION
+  Last updated: April 2026
+================================================================================

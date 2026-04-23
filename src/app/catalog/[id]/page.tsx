@@ -6,6 +6,7 @@ import { ChevronLeft, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import { use, useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import EnquireModal from '@/components/EnquireModal';
 
 /* ─────────────────────────────────────────────
    LIGHTBOX — Full-screen image viewer
@@ -78,6 +79,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   const [activeImage, setActiveImage] = useState(product.images.gallery[0]);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [showEnquire, setShowEnquire] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
   // Smooth zoom-follow on hover
@@ -180,8 +182,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </p>
 
             <div className="space-y-3 pt-2">
-              <button className="w-full py-5 bg-black text-white text-[13px] font-bold uppercase tracking-[0.35em] hover:bg-neutral-800 active:scale-[0.98] transition-all">
-                Order Yours
+              <button
+                onClick={() => setShowEnquire(true)}
+                className="w-full py-5 bg-black text-white text-[13px] font-bold uppercase tracking-[0.35em] hover:bg-neutral-800 active:scale-[0.98] transition-all"
+              >
+                Enquire / Order Yours
               </button>
               <p className="text-center text-[11px] text-gray-400">
                 Made to order · Delivered in {product.leadTime}
@@ -342,7 +347,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           <p className="text-gray-400 text-sm">Simple ordering · Premium delivery · Lifetime support</p>
         </div>
         <div className="flex flex-col items-center gap-4">
-          <button className="px-16 py-5 bg-black text-white text-[13px] font-bold uppercase tracking-[0.35em] hover:bg-neutral-800 active:scale-[0.98] transition-all">
+          <button
+            onClick={() => setShowEnquire(true)}
+            className="px-16 py-5 bg-black text-white text-[13px] font-bold uppercase tracking-[0.35em] hover:bg-neutral-800 active:scale-[0.98] transition-all"
+          >
             Order Yours — ${product.price.toLocaleString()}
           </button>
           <Link href="/catalog" className="text-[11px] text-gray-400 hover:text-black transition-colors uppercase tracking-[0.3em]">
@@ -355,6 +363,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
       <AnimatePresence>
         {showLightbox && (
           <Lightbox image={activeImage} onClose={() => setShowLightbox(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* ENQUIRE MODAL */}
+      <AnimatePresence>
+        {showEnquire && (
+          <EnquireModal
+            product={product}
+            onClose={() => setShowEnquire(false)}
+          />
         )}
       </AnimatePresence>
     </main>

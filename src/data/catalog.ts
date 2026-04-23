@@ -59,7 +59,7 @@ export const PRODUCTS: Product[] = [
     id: "celestial-sofa",
     slug: "celestial-sofa",
     name: "CELESTIAL",
-    category: "Signature Collection",
+    category: "Sofas",
     price: 4800,
     priceRange: "$4,800 - $6,200",
     dimensions: { length: 260, width: 110, height: 75, unit: "cm" },
@@ -101,7 +101,7 @@ export const PRODUCTS: Product[] = [
     id: "elysian-sofa",
     slug: "elysian-sofa",
     name: "ELYSIAN",
-    category: "Heritage Collection",
+    category: "Sofas",
     price: 3900,
     priceRange: "$3,900 - $5,100",
     dimensions: { length: 240, width: 100, height: 82, unit: "cm" },
@@ -138,8 +138,53 @@ export const PRODUCTS: Product[] = [
         "/sofa-2/sofa-room-white.jpeg"
       ]
     }
+  },
+  {
+    id: "meridian-dining-set",
+    slug: "meridian-dining-set",
+    name: "MERIDIAN",
+    category: "Dining",
+    price: 7800,
+    priceRange: "$7,800 - $9,400",
+    dimensions: { length: 220, width: 100, height: 76, unit: "cm" },
+    materials: ["Solid Walnut Slab", "Blackened Steel Base", "Aniline Leather Chairs"],
+    finish: "Natural Walnut / Dark Ebony",
+    description: "The Meridian is a complete dining experience — a monolithic slab of old-growth walnut suspended on a precisely engineered blackened steel trestle, paired with six sculptural steam-bent oak chairs dressed in hand-stitched aniline leather. Table and chair, conceived as one unified composition.",
+    construction: "Single-slab walnut top with hand-welded steel trestle frame. Steam-bent solid oak dining chairs with full-grain leather sling seats.",
+    origin: "Aurelian Studio",
+    weight: "188kg (complete set)",
+    leadTime: "12-14 weeks",
+    tags: ["Walnut", "Dining", "Steel", "Leather", "Set"],
+    hotspot: { x: "50%", y: "50%" },
+    designedFor: [
+      "Formal dining rooms",
+      "Open kitchen-dining layouts",
+      "Entertaining and gathering"
+    ],
+    craftNotes: {
+      buildTime: "200 hours handcrafted (table + 6 chairs)",
+      joinery: "Dovetail & through-tenon joinery, steam-bent lamination",
+      source: "Sustainably harvested American Walnut & Italian tannery leather"
+    },
+    images: {
+      hero: "/dining table/full dining table.jpeg",
+      gallery: [
+        "/dining table/full dining table.jpeg",
+        "/dining table/table only.jpeg",
+        "/dining table/chair.jpeg",
+        "/dining table/table view -4.jpeg"
+      ],
+      details: [
+        "/dining table/table sketch.jpeg",
+        "/dining table/chair sketch.jpeg",
+        "/dining table/table only.jpeg"
+      ]
+    }
   }
 ];
+
+// Derive all unique categories
+export const CATEGORIES = Array.from(new Set(PRODUCTS.map(p => p.category)));
 
 export const CATALOG_DATA: Spread[] = [
   {
@@ -221,5 +266,51 @@ export const CATALOG_DATA: Spread[] = [
       }
     ],
     products: [PRODUCTS[1]]
+  },
+  {
+    id: "meridian-intro",
+    pageNumber: "05-06",
+    title: "Meridian Convergence",
+    description: "Where walnut meets steel, and conversation meets craft. A dining set born as one unified composition.",
+    image: "/dining table/full dining table.jpeg",
+    introSequence: [
+      {
+        image: "/dining table/table view -4.jpeg",
+        label: "The Gathering Place",
+        sublabel: "A room designed around the act of sharing",
+        type: "room"
+      },
+      {
+        image: "/dining table/table sketch.jpeg",
+        label: "The Architecture",
+        sublabel: "Structural geometry — every line carries weight",
+        type: "sketch"
+      },
+      {
+        image: "/dining table/chair sketch.jpeg",
+        label: "The Companion",
+        sublabel: "Chair and table, conceived as one voice",
+        type: "sketch"
+      },
+      {
+        image: "/dining table/table only.jpeg",
+        label: "The Slab",
+        sublabel: "Old-growth walnut — a century of patience in every grain",
+        type: "build"
+      },
+      {
+        image: "/dining table/chair.jpeg",
+        label: "The Seat",
+        sublabel: "Steam-bent oak cradling hand-stitched Italian leather",
+        type: "compose"
+      },
+      {
+        image: "/dining table/full dining table.jpeg",
+        label: "The Complete Set",
+        sublabel: "Meridian — where craft meets conversation",
+        type: "reveal"
+      }
+    ],
+    products: [PRODUCTS[2]]
   }
 ];

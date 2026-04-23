@@ -8,34 +8,56 @@ import { AnimatePresence } from 'framer-motion';
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
+  // Determine text color based on scroll state or menu open state
+  const headerTextColor = isScrolled || mobileMenuOpen ? 'text-obsidian' : 'text-white';
 
   return (
     <motion.header
       initial={{ y: -100 }} animate={{ y: 0 }}
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-8 py-6 md:px-20 ${isScrolled ? 'bg-white/90 backdrop-blur-md py-4 border-b border-gray-100' : 'bg-transparent'}`}
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-6 py-4 md:px-20 md:py-6 ${isScrolled ? 'bg-white/90 backdrop-blur-md border-b border-gray-100' : 'bg-transparent'}`}
     >
-      <div className="max-w-[1800px] mx-auto flex justify-between items-center">
-        <Link href="/"><h1 className="text-xl md:text-3xl font-serif tracking-widest text-obsidian tracking-[0.3em]">AURELIAN</h1></Link>
+      <div className="max-w-[1800px] mx-auto flex justify-between items-center relative z-[110]">
+        <Link href="/">
+          <h1 className={`text-xl md:text-3xl font-serif tracking-[0.3em] transition-colors duration-500 ${headerTextColor}`}>
+            AURELIAN
+          </h1>
+        </Link>
+        
         <nav className="hidden md:flex items-center gap-10">
-          <Link href="/catalog" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gold transition-colors">Catalog</Link>
-          <Link href="/catalog/compare" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gold transition-colors">Compare</Link>
-          <Link href="/bespoke" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gold transition-colors">Bespoke</Link>
-          <Link href="/contact" className="px-8 py-3 bg-obsidian text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all">Enquire</Link>
+          <Link href="/collection" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Collection</Link>
+          <Link href="/catalog" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Catalog</Link>
+          <Link href="/catalog/compare" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Compare</Link>
+          <Link href="/contact" className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isScrolled ? 'bg-obsidian text-white hover:bg-gold' : 'bg-white text-obsidian hover:bg-gold hover:text-white'}`}>Enquire</Link>
         </nav>
+
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(v => !v)}
-          className="md:hidden flex flex-col gap-[5px] p-2 z-[110]"
+          className={`md:hidden flex flex-col gap-[6px] p-2 transition-colors ${headerTextColor}`}
           aria-label="Toggle menu"
         >
-          <motion.span animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 7 : 0 }} className="block w-6 h-[2px] bg-current transition-colors" />
-          <motion.span animate={{ opacity: mobileMenuOpen ? 0 : 1 }} className="block w-6 h-[2px] bg-current" />
-          <motion.span animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -7 : 0 }} className="block w-6 h-[2px] bg-current transition-colors" />
+          <motion.span 
+            animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 8 : 0 }} 
+            className="block w-6 h-[1.5px] bg-current transition-all" 
+          />
+          <motion.span 
+            animate={{ opacity: mobileMenuOpen ? 0 : 1, x: mobileMenuOpen ? 10 : 0 }} 
+            className="block w-6 h-[1.5px] bg-current transition-all" 
+          />
+          <motion.span 
+            animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -8 : 0 }} 
+            className="block w-6 h-[1.5px] bg-current transition-all" 
+          />
         </button>
       </div>
 
@@ -43,33 +65,44 @@ export default function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-white z-[105] flex flex-col items-center justify-center gap-8 md:hidden"
+            initial={{ y: '-100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 bg-white z-[105] flex flex-col pt-32 px-8 md:hidden"
           >
-            {[
-              { href: '/catalog', label: 'Catalog' },
-              { href: '/catalog/compare', label: 'Compare' },
-              { href: '/bespoke', label: 'Bespoke' },
-              { href: '/contact', label: 'Enquire' },
-            ].map((link, i) => (
-              <motion.div
-                key={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.05 }}
-              >
-                <Link
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-2xl font-chubbo tracking-tight text-obsidian hover:text-gold transition-colors"
+            <div className="flex flex-col gap-6">
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gold mb-2 block">Navigation</span>
+              {[
+                { href: '/collection', label: 'The Collection' },
+                { href: '/catalog', label: 'Interactive Catalog' },
+                { href: '/catalog/compare', label: 'Compare Pieces' },
+                { href: '/contact', label: 'Start an Enquiry' },
+              ].map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.1 }}
                 >
-                  {link.label}
-                </Link>
-              </motion.div>
-            ))}
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-4xl font-chubbo tracking-tighter text-obsidian hover:text-gold transition-colors block"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-auto pb-12">
+              <div className="h-[1px] bg-gray-100 w-full mb-8" />
+              <div className="flex flex-col gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <span>London — Milan — New York</span>
+                <span className="text-gold">© 2024 Aurelian Studio</span>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

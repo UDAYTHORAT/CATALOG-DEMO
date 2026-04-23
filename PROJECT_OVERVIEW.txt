@@ -1,0 +1,93 @@
+================================================================================
+PROJECT: AURELIAN STUDIO - PREMIUM FURNITURE CATALOG
+================================================================================
+
+1. PROJECT IDENTITY & IDEA
+--------------------------
+Aurelian Studio is a high-end, immersive digital brochure/catalog designed to 
+elevate furniture browsing into a cinematic experience. Unlike traditional 
+e-commerce sites, it focuses on the "story of craft"—moving from initial 
+sketch to raw materials, joinery, and finally the finished product in a 
+lifestyle setting.
+
+Core Tech Stack:
+- Framework: Next.js 16 (App Router)
+- Styling: Tailwind CSS v4
+- Animation: Framer Motion
+- Components: Lucide React (Icons)
+- Deployment: Optimized for Vercel
+
+2. DIRECTORY STRUCTURE & FILE DETAILS
+-------------------------------------
+src/
+├── app/
+│   ├── layout.tsx         # Root layout with fonts, smooth scroll, and global UI.
+│   ├── page.tsx           # Landing Page: Features a Day-to-Night transition.
+│   ├── globals.css        # Tailwind CSS v4 design system and theme tokens.
+│   ├── catalog/
+│   │   ├── page.tsx       # Main Catalog spread view.
+│   │   └── [id]/
+│   │       └── page.tsx   # Story Mode: Cinematic intro sequence for each product.
+│   ├── collection/
+│   │   └── page.tsx       # Grouped collection overview.
+│   └── compare/
+│       └── page.tsx       # Product comparison interface.
+│
+├── components/
+│   ├── Catalog.tsx        # The core interactive spread-based catalog engine.
+│   ├── LiveCatalog.tsx    # Responsive/mobile version of the catalog browsing.
+│   ├── EnquireModal.tsx   # High-end lead generation form for product inquiries.
+│   ├── Header.tsx         # Persistent navigation with brand identity.
+│   ├── Footer.tsx         # Site footer with social/contact links.
+│   ├── CustomCursor.tsx   # Interactive cursor enhancing the premium feel.
+│   ├── SmoothScroll.tsx   # Lenis or custom scroll orchestration.
+│   └── ui/
+│       ├── image-gallery.tsx # Sophisticated gallery for product details.
+│       └── demo.tsx       # Testing/demo components for new UI ideas.
+│
+├── data/
+│   └── catalog.ts         # Central Source of Truth for all products and stories.
+│                          # Defines Types: Product, Spread, IntroPhase, Dimensions.
+│
+└── lib/
+    └── utils.ts           # Shared utility functions (class merging, etc.)
+
+3. CORE WORKFLOWS
+-----------------
+A. The Cinematic Entry:
+   - User lands on / (page.tsx).
+   - Experience: An 8-second slow transition from Day (hero-day.jpeg) to 
+     Night (hero-night.jpeg) occurs, symbolizing the timeless nature of the pieces.
+   - Action: User enters the "Archive" (Catalog).
+
+B. The Discovery Phase:
+   - User navigates through spreads in Catalog.tsx.
+   - Experience: Horizontal/Spread-based layout mimicking a physical luxury magazine.
+   - Interactive Hotspots: Clicking hotspots on room images reveals product cards.
+
+C. Story Mode (Genesis):
+   - Clicking a product enters its specific Story Mode (/catalog/[id]).
+   - Workflow: The site plays a scroll-driven or timed sequence defined in 
+     the `introSequence` of the data.
+     (Canvas/Room -> Blueprint/Sketch -> Skeleton/Build -> Vision/Compose -> Masterpiece/Reveal).
+
+D. Product Deep-Dive & Lead Gen:
+   - After the story, the user reaches the product detail page.
+   - Experience: High-res galleries, technical specs (Weight, Lead Time, 
+     Craft Notes), and "Designed For" context.
+   - Action: Clicking "Enquire" opens the EnquireModal to capture user interest.
+
+4. TECHNICAL HIGHLIGHTS
+-----------------------
+- Tailwind CSS v4: Uses modern CSS-first configuration in globals.css.
+- Framer Motion: Used for complex page transitions and "reveal" effects 
+  in the Story Mode.
+- Data Modeling: Highly structured products with metadata for craft, 
+  materials, and construction phases.
+
+5. CONTENT MANAGEMENT
+---------------------
+To add or update products, edit `src/data/catalog.ts`. The structure allows 
+for easy extension of the "introSequence" to add more storytelling layers 
+to any piece of furniture.
+================================================================================

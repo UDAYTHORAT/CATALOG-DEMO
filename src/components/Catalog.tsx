@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight, X, Eye, Info, ShoppingBag 
 } from 'lucide-react';
 import Link from 'next/link';
+import EnquireModal from '@/components/EnquireModal';
 
 // --- MOTION CONSTANTS ---
 const TRANSITION_MAIN = { duration: 0.8, ease: [0.22, 1, 0.36, 1] };
@@ -18,12 +19,14 @@ const ProductPanel = ({
   product, 
   onClose,
   allProductsInSpread,
-  onSelectProduct 
+  onSelectProduct,
+  onEnquire
 }: { 
   product: Product | null, 
   onClose: () => void,
   allProductsInSpread: Product[],
-  onSelectProduct: (p: Product) => void
+  onSelectProduct: (p: Product) => void,
+  onEnquire: (p: Product) => void
 }) => {
   if (!product) return null;
 
@@ -154,7 +157,10 @@ const ProductPanel = ({
               >
                 View Full Dossier <Eye size={14} />
               </Link>
-              <button className="py-4 md:py-6 border border-gray-200 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] flex items-center justify-center gap-2 md:gap-3 hover:border-black transition-all rounded-sm active:scale-[0.98] group relative overflow-hidden">
+              <button
+                onClick={() => onEnquire(product!)}
+                className="py-4 md:py-6 border border-gray-200 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] flex items-center justify-center gap-2 md:gap-3 hover:border-black transition-all rounded-sm active:scale-[0.98] group relative overflow-hidden"
+              >
                 <span className="relative z-10">Enquire</span>
                 <div className="absolute inset-0 bg-black/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 <ShoppingBag size={14} className="relative z-10" />
@@ -224,6 +230,7 @@ const Hotspot = ({ product, onSelect, isActive }: { product: Product, onSelect: 
 export default function Catalog() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [enquireProduct, setEnquireProduct] = useState<Product | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
   // Parallax Values
@@ -627,6 +634,16 @@ export default function Catalog() {
             onClose={() => setSelectedProduct(null)}
             allProductsInSpread={currentSpread.products}
             onSelectProduct={setSelectedProduct}
+            onEnquire={(p) => { setEnquireProduct(p); }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {enquireProduct && (
+          <EnquireModal
+            product={enquireProduct}
+            onClose={() => setEnquireProduct(null)}
           />
         )}
       </AnimatePresence>
