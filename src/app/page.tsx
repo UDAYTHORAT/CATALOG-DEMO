@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Home() {
   const [isNight, setIsNight] = useState(false);
@@ -26,10 +27,12 @@ export default function Home() {
       <div className="absolute inset-0">
         {/* DAY LAYER (Permanent Base) */}
         <div className="absolute inset-0">
-          <img 
+          <Image 
             src="/images/hero-day.jpeg" 
             alt="Study in Light" 
-            className="w-full h-full object-cover"
+            fill
+            priority
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/10" />
         </div>
@@ -41,10 +44,12 @@ export default function Home() {
           transition={{ duration: 8, ease: [0.4, 0, 0.2, 1] }} // 8s slow sunset transition
           className="absolute inset-0 z-10"
         >
-          <img 
+          <Image 
             src="/images/hero-night.jpeg" 
             alt="Study in Stillness" 
-            className="w-full h-full object-cover"
+            fill
+            priority
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
         </motion.div>

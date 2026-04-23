@@ -8,6 +8,14 @@ import { AnimatePresence } from 'framer-motion';
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -19,7 +27,9 @@ export default function Header() {
   }, [mobileMenuOpen]);
 
   // Determine text color based on scroll state or menu open state
+  // We use obsidian when scrolled or menu is open, otherwise white
   const headerTextColor = isScrolled || mobileMenuOpen ? 'text-obsidian' : 'text-white';
+  const navLinkColor = isScrolled || mobileMenuOpen ? 'text-obsidian/60 hover:text-gold' : 'text-white/80 hover:text-white';
 
   return (
     <motion.header
@@ -34,9 +44,9 @@ export default function Header() {
         </Link>
         
         <nav className="hidden md:flex items-center gap-10">
-          <Link href="/collection" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Collection</Link>
-          <Link href="/catalog" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Archive</Link>
-          <Link href="/catalog/compare" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isScrolled ? 'text-gray-400 hover:text-gold' : 'text-white/60 hover:text-white'}`}>Compare</Link>
+          <Link href="/collection" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${navLinkColor}`}>Collection</Link>
+          <Link href="/catalog" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${navLinkColor}`}>Archive</Link>
+          <Link href="/catalog/compare" className={`text-[10px] font-black uppercase tracking-widest transition-colors ${navLinkColor}`}>Compare</Link>
           <Link href="/contact" className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isScrolled ? 'bg-obsidian text-white hover:bg-gold' : 'bg-white text-obsidian hover:bg-gold hover:text-white'}`}>Enquire</Link>
         </nav>
 

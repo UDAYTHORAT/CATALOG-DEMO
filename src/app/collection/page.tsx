@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { PRODUCTS, CATEGORIES, Product } from '@/data/catalog';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -59,7 +60,13 @@ function StoryMode({ products, onClose }: { products: Product[]; onClose: () => 
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0"
         >
-          <img src={product.images.hero} alt={product.name} className="w-full h-full object-cover" />
+          <Image 
+            src={product.images.hero} 
+            alt={product.name} 
+            fill
+            priority
+            className="object-cover" 
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
         </motion.div>
       </AnimatePresence>
@@ -176,7 +183,13 @@ export default function CollectionPage() {
       {/* ── HERO SECTION ── */}
       <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 px-6 md:px-20 bg-obsidian overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/images/living-room.png" alt="Collection" className="w-full h-full object-cover opacity-30" />
+          <Image 
+            src="/images/living-room.png" 
+            alt="Collection" 
+            fill
+            priority
+            className="object-cover opacity-30" 
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-obsidian/60 via-obsidian/80 to-obsidian" />
         </div>
         <div className="relative max-w-[1600px] mx-auto">
