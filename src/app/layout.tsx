@@ -3,6 +3,7 @@ import { Inter, Cormorant_Garamond, Italiana } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
+import Preloader from "@/components/Preloader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${cormorant.variable} ${italiana.variable}`}>
        <body className="antialiased font-sans">
         <CustomCursor />
+        <Preloader />
         <SmoothScroll>
           {children}
         </SmoothScroll>
