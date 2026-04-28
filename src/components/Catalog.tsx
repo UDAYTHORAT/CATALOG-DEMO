@@ -294,6 +294,7 @@ export default function Catalog() {
 
   useEffect(() => {
     if (currentSpread.introSequence) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIntroStep(0);
       setShowIntro(true);
     } else {

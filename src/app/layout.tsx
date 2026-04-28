@@ -1,30 +1,40 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond, Italiana } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { SmoothScroll } from "@/components/SmoothScroll";
-import CustomCursor from "@/components/CustomCursor";
-import Preloader from "@/components/Preloader";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const italiana = Italiana({
-  subsets: ["latin"],
-  variable: "--font-italiana",
-  weight: ["400"],
+const satoshi = localFont({
+  src: [
+    {
+      path: "../../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Variable.woff2",
+      style: "normal",
+    },
+    {
+      path: "../../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-VariableItalic.woff2",
+      style: "italic",
+    },
+  ],
+  variable: "--font-satoshi",
+  weight: "300 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "AURELIAN STUDIO | Specialized Sofa Archive",
-  description: "Experience the exclusive Aurelian Sofa Collection. Handcrafted artifacts for the modern sanctuary.",
+  title: "FunnelLink — Turn Visitors into WhatsApp Leads",
+  description:
+    "One smart link that guides visitors through a fast decision flow and sends them to WhatsApp with a clear buying message. Set up in 2 minutes.",
+  keywords: [
+    "WhatsApp leads",
+    "sales funnel",
+    "smart link",
+    "lead generation",
+    "WhatsApp marketing",
+  ],
+  openGraph: {
+    title: "FunnelLink — Turn Visitors into WhatsApp Leads",
+    description:
+      "One smart link that guides visitors through a fast decision flow and sends them to WhatsApp with a clear buying message.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -33,14 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${cormorant.variable} ${italiana.variable}`}>
-       <body className="antialiased font-sans">
-        <CustomCursor />
-        <Preloader />
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
-      </body>
+    <html lang="en" className={satoshi.variable} data-scroll-behavior="smooth">
+      <body className="antialiased font-sans">{children}</body>
     </html>
   );
 }

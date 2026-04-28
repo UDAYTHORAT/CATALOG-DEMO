@@ -8,7 +8,6 @@ export default function Preloader() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
     const startTime = Date.now();
     const minimumDuration = 2500; // Minimum 2.5 seconds for the cinematic feel
 
@@ -23,7 +22,7 @@ export default function Preloader() {
     };
 
     // Increment progress naturally
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) {
           clearInterval(interval);

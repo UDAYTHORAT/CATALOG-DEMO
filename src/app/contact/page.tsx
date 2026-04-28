@@ -56,7 +56,7 @@ export default function ContactPage() {
               Start an Enquiry
             </h1>
             <p className="text-white/40 text-sm md:text-lg font-light max-w-xl mx-auto">
-              Whether you're looking for a signature piece or a bespoke commission, our team is here to guide your discovery.
+              Whether you&apos;re looking for a signature piece or a bespoke commission, our team is here to guide your discovery.
             </p>
           </motion.div>
         </div>
@@ -186,7 +186,7 @@ export default function ContactPage() {
                         rows={4}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Tell us about your space or the piece you're interested in..." 
+                        placeholder="Tell us about your space or the piece you are interested in..." 
                         className="w-full bg-transparent border-b border-gray-100 py-3 text-sm focus:outline-none focus:border-gold transition-colors placeholder:text-gray-200 resize-none"
                       />
                     </div>

@@ -1,0 +1,101 @@
+# FunnelLink: The Cinematic Discovery Engine for High-Ticket Artifacts
+
+## 1. The Vision
+FunnelLink is a high-end SaaS platform designed to transform static product catalogs into immersive, story-driven discovery journeys. We bridge the gap between "browsing" and "buying" for high-ticket items (Luxury Furniture, Estates, Jewelry, and Boutique Services) by replacing boring grids with cinematic sales funnels.
+
+**The Goal:** Build a million-dollar SaaS that empowers business owners to capture high-intent leads via WhatsApp through an elite-level UI/UX experience.
+
+---
+
+## 2. The Core Problem
+Traditional e-commerce grids fail high-ticket items. A $5,000 sofa or a luxury estate cannot be "sold" with a generic "Add to Cart" button. They require **context, narrative, and guided discovery**. Most business owners lack the technical skills to build these complex, animated flows.
+
+---
+
+## 3. The FunnelLink Solution
+FunnelLink provides a "Studio" environment where business owners can:
+1. **Archive Artifacts:** Create a master registry of high-resolution products.
+2. **Deploy Discovery Engines:** Use "Studio Blueprints" (templates) to bundle products into 2-second cinematic funnels.
+3. **Qualify Intent:** Guide visitors through a narrative journey and a qualifying quiz (budget, preference, timing).
+4. **Direct Intelligence:** Route qualified prospects directly to the owner's WhatsApp, enriched with visitor data.
+
+---
+
+## 4. Key Pillars & Features
+
+### A. Immersive Story Mode
+- **Cinematic Transitions:** Using Framer Motion to create a liquid, high-end feel.
+- **Narrative Flow:** Guiding the user from "The Arrival" (Hero) to "The Decision" (Quiz) to "The Artifacts" (Results).
+- **Interactive Hotspots:** Visual anchors on lifestyle imagery that reveal technical specs.
+
+### B. Studio Blueprints (Templates)
+- **Niche-Specific Architectures:** Pre-built funnels for Luxury Real Estate, Minimalist Tech, and Organic Skincare.
+- **2-Second Launch:** Deploy a professional sales funnel in seconds by selecting a blueprint and linking artifacts.
+
+### C. Lead Intelligence (CRM)
+- **High-Density Registry:** Track every visitor's journey.
+- **Intent Capture:** Capture names, budget ranges, and specific product interests.
+- **WhatsApp Integration:** Instant "Connect on WhatsApp" buttons that pre-fill messages with lead details.
+
+### D. Professional Dashboard
+- **Admin Command Center:** Manage products, leads, and engines with a premium, glassmorphic interface.
+- **Performance Matrix:** Real-time lead velocity charts and conversion analytics.
+
+---
+
+## 5. Technical Architecture
+- **Framework:** Next.js 15 (App Router) using React 19 features.
+- **Design System:** Tailwind CSS v4 + Vanilla CSS for premium micro-animations.
+- **Backend:** Supabase (Auth, Storage, PostgreSQL) with strict Row Level Security (RLS).
+- **Animations:** Framer Motion for high-fidelity motion design.
+- **Deployment:** Vercel-optimized for sub-second page loads and global edge distribution.
+
+---
+
+## 6. Detailed Operational Workflow
+
+### Phase I: Onboarding & Setup (The Owner)
+1. **Studio Initialization**: Owner signs up via Supabase Auth. A unique `store_id` and `store` record are automatically generated via the `getOrCreateStore` server action.
+2. **Artifact Ingestion**: Owner uploads product assets (High-res images, pricing, dimensions) into the **Artifact Archive**. Images are stored in the `product-images` Supabase bucket.
+3. **Identity Configuration**: Owner sets their WhatsApp number and brand bio in Settings to route future leads.
+
+### Phase II: Engine Deployment (The Architect)
+1. **Blueprint Selection**: Owner chooses a niche-specific template (e.g., "Luxury Estate").
+2. **Bundle & Logic**: Owner selects which artifacts to include and configures the "Decision Engine" quiz (e.g., Budget: <50k, 50k-1L).
+3. **Launch**: The engine is deployed to a public-facing slug (e.g., `funnellink.co/s/summer-collection`).
+
+### Phase III: The Discovery Journey (The Visitor)
+1. **The Arrival**: Visitor lands on a cinematic hero page with auto-playing narratives.
+2. **The Engagement**: Visitor interacts with hotspots and scrolls through "Story Acts" (additional chapters about the craft or lifestyle).
+3. **The Qualification**: Visitor completes a 2-3 question quiz to help the engine understand their intent.
+4. **The Artifacts**: The engine reveals a curated selection of products based on the quiz answers.
+
+### Phase IV: Conversion & Intelligence (The Handover)
+1. **Intent Capture**: Visitor clicks "Enquire via WhatsApp". A modal captures their name and phone number.
+2. **Data Enrichment**: The system creates a `lead` record in Supabase, linking the visitor to the specific `product` and `funnel`.
+3. **The Handshake**: The visitor is redirected to WhatsApp with a pre-filled message: *"Hi [Owner], I'm interested in the [Product] I found on your [Funnel] page. My budget is [Range]."*
+4. **Intelligence Logging**: The lead appears instantly in the Owner's **Lead Intelligence** registry for follow-up.
+
+---
+
+## 7. System Logic & Data Flow
+
+### A. Multi-Tenant Isolation
+Every table (`stores`, `products`, `funnels`, `leads`) has a `store_id` or `user_id` column. **Supabase Row Level Security (RLS)** policies ensure that:
+- Owners only see their own data.
+- Visitors can read public funnels but cannot write to the registry.
+
+### B. Dynamic Rendering
+- **Server Components**: Used for high-speed data fetching (Registry listings, Settings).
+- **Client Components**: Used for high-interactivity layers (Modals, Charts, Funnel Animations).
+- **Edge Caching**: `revalidatePath` is triggered on every CRUD operation to ensure the dashboard and public funnels are always in sync with the database.
+
+---
+
+## 8. Scaling Roadmap
+- **Analytics v2**: Heatmaps of visitor interactions within the story acts.
+- **AI Narrative**: Automated generation of "Story Acts" using GPT-4 based on product descriptions.
+- **Direct Checkout**: Integration with payment gateways for low-friction artifact purchasing.
+
+---
+*This document defines the complete DNA of FunnelLink. It is the master reference for architecture, logic, and user flow.*

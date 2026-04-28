@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header';
 import { PRODUCTS, Product } from '@/data/catalog';
-import { ChevronLeft, X, Plus } from 'lucide-react';
+import { ChevronLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState, useMemo, Suspense } from 'react';
@@ -25,11 +25,20 @@ function CompareContent() {
     });
   };
 
-  const comparisonRows = [
+  type ComparisonRow = {
+    label: string;
+    key: keyof Product;
+    format?: (value: Product[keyof Product]) => string;
+  };
+
+  const comparisonRows: ComparisonRow[] = [
     { label: 'Category', key: 'category' },
-    { label: 'Price', key: 'price', format: (val: number) => `$${val}` },
-    { label: 'Dimensions', key: 'dimensions', format: (val: any) => `${val.length}x${val.width}x${val.height} ${val.unit}` },
-    { label: 'Materials', key: 'materials', format: (val: string[]) => val.join(', ') },
+    { label: 'Price', key: 'price', format: (val) => `$${val}` },
+    { label: 'Dimensions', key: 'dimensions', format: (val) => {
+      const dimensions = val as Product['dimensions'];
+      return `${dimensions.length}x${dimensions.width}x${dimensions.height} ${dimensions.unit}`;
+    } },
+    { label: 'Materials', key: 'materials', format: (val) => (val as Product['materials']).join(', ') },
     { label: 'Finish', key: 'finish' },
     { label: 'Construction', key: 'construction' },
     { label: 'Origin', key: 'origin' },
@@ -106,7 +115,7 @@ function CompareContent() {
                     {selectedProducts.map(p => (
                       <td key={p.id} className="p-8 border-b border-gray-100">
                         <span className="text-sm font-medium">
-                          {row.format ? row.format((p as any)[row.key]) : (p as any)[row.key]}
+                          {row.format ? row.format(p[row.key]) : String(p[row.key])}
                         </span>
                       </td>
                     ))}

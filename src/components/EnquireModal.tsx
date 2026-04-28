@@ -176,7 +176,7 @@ export default function EnquireModal({ product, onClose }: EnquireModalProps) {
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-bold text-black">Send an Enquiry</p>
-                  <p className="text-[11px] text-gray-400">Fill a quick form · We'll call you back</p>
+                  <p className="text-[11px] text-gray-400">Fill a quick form · We&apos;ll call you back</p>
                 </div>
               </button>
 
@@ -286,7 +286,7 @@ export default function EnquireModal({ product, onClose }: EnquireModalProps) {
               </div>
               <h4 className="text-2xl font-chubbo tracking-tight mb-2">Enquiry Sent!</h4>
               <p className="text-sm text-gray-400 max-w-xs mb-8">
-                Your enquiry for <span className="font-bold text-black">{product.name}</span> has been sent. We'll reach out within 24 hours.
+                Your enquiry for <span className="font-bold text-black">{product.name}</span> has been sent. We&apos;ll reach out within 24 hours.
               </p>
               <div className="flex gap-3 w-full">
                 <button
