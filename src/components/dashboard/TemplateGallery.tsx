@@ -18,7 +18,7 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-md">
+          <div className="w-7 h-7 rounded-lg bg-linear-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-md">
             <Sparkles size={14} className="text-white" />
           </div>
           <span className="text-xs font-bold text-amber-600 uppercase tracking-[0.15em]">
@@ -76,13 +76,13 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
             )}
 
             {/* Mini Preview Header */}
-            <div className={`relative h-44 bg-gradient-to-br ${t.bgGradient} p-3 overflow-hidden`}>
+            <div className={`relative h-44 bg-linear-to-br ${t.bgGradient} p-3 overflow-hidden`}>
               <div
                 className="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-[50px] opacity-30"
                 style={{ backgroundColor: t.accentColor }}
               />
               <div
-                className="absolute bottom-0 left-0 w-24 h-24 rounded-full blur-[40px] opacity-15"
+                className="absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl opacity-15"
                 style={{ backgroundColor: t.accentColor }}
               />
 
@@ -109,12 +109,19 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
                       {t.hero.ctaLabel.split(' ').slice(0, 2).join(' ')}
                     </div>
                   </div>
-                  <div className="flex-1 flex flex-col items-center justify-center px-3 text-center gap-1">
-                    <p className={`text-[9px] font-extrabold leading-tight ${
-                      t.theme === 'onyx' || t.theme === 'dark' ? 'text-white' : 'text-slate-900'
-                    }`}>
-                      {t.hero.headline}
-                    </p>
+                    <div className="flex-1 flex flex-col items-center justify-center px-3 text-center gap-1 relative">
+                      {t.id === 'funnelad-elite-furniture' && (
+                        <img 
+                          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=400&q=60" 
+                          className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none"
+                          alt="preview"
+                        />
+                      )}
+                      <p className={`text-[9px] font-extrabold leading-tight relative z-10 ${
+                        t.theme === 'onyx' || t.theme === 'dark' ? 'text-white' : 'text-slate-900'
+                      }`}>
+                        {t.id === 'funnelad-elite-furniture' ? 'Urban Living.' : t.hero.headline}
+                      </p>
                     <p className="text-[6px] text-slate-400 leading-tight max-w-[90%]">
                       {t.hero.subheadline.slice(0, 55)}...
                     </p>
@@ -159,7 +166,7 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
                 {t.features.map((f, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-xs font-medium text-slate-600">
                     <div
-                      className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                      className="w-4 h-4 rounded flex items-center justify-center shrink-0"
                       style={{ backgroundColor: t.accentColor + '12' }}
                     >
                       <Check size={10} strokeWidth={3} style={{ color: t.accentColor }} />

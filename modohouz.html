@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>modohouz · Decide. Chat. Done.</title>
+<meta name="description" content="Mobile-first WhatsApp commerce. Skip the catalog — get 3 hand-picked pieces in 60 seconds." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
+        secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
+        muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
+        accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
+        card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+        sage: "hsl(var(--sage))",
+        whatsapp: { DEFAULT: "hsl(var(--whatsapp))", dark: "hsl(var(--whatsapp-dark))" },
+      },
+      keyframes: {
+        "pulse-soft": { "0%,100%": { opacity: "1" }, "50%": { opacity: "0.6" } },
+      },
+      animation: {
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+      },
+    },
+  },
+};
+</script>
+
+<style>
+:root {
+  --background: 40 25% 94%;
+  --foreground: 20 8% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 8% 16%;
+  --primary: 20 8% 16%;
+  --primary-foreground: 40 25% 96%;
+  --secondary: 38 22% 89%;
+  --secondary-foreground: 20 8% 16%;
+  --muted: 38 18% 88%;
+  --muted-foreground: 30 6% 42%;
+  --accent: 18 55% 60%;
+  --accent-foreground: 0 0% 100%;
+  --sage: 100 12% 61%;
+  --whatsapp: 142 70% 49%;
+  --whatsapp-dark: 142 71% 43%;
+  --border: 36 18% 84%;
+  --input: 36 18% 84%;
+  --ring: 20 8% 16%;
+}
+html, body, #root { height: 100%; }
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.font-serif { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+.gradient-fade-down { background: linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background) / 0)); }
+.gradient-fade-up { background: linear-gradient(to top, hsl(var(--background)) 40%, hsl(var(--background) / 0)); }
+.shadow-soft { box-shadow: 0 8px 30px hsl(20 8% 16% / 0.04); }
+.shadow-elevated { box-shadow: 0 15px 40px hsl(20 8% 16% / 0.08); }
+.shadow-cta { box-shadow: 0 15px 30px hsl(20 8% 16% / 0.18); }
+.shadow-whatsapp { box-shadow: 0 10px 30px hsl(var(--whatsapp) / 0.3); }
+* { border-color: hsl(var(--border)); }
+</style>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/framer-motion@11.3.19/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo } = React;
+const { motion, AnimatePresence } = window.FramerMotion || window.framerMotion || window.Motion;
+
+// ---------- Icons (inline lucide-style) ----------
+const Icon = ({ d, fill, ...p }) => (
+  <svg viewBox="0 0 24 24" fill={fill || "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    {d}
+  </svg>
+);
+const ChevronLeft = (p) => <Icon {...p} d={<polyline points="15 18 9 12 15 6"/>} />;
+const ArrowRight = (p) => <Icon {...p} d={<><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>} />;
+const MessageCircle = (p) => <Icon {...p} d={<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>} />;
+const CheckCircle2 = (p) => <Icon {...p} d={<><circle cx="12" cy="12" r="10"/><polyline points="9 12 12 15 16 9"/></>} />;
+const Star = (p) => <Icon {...p} d={<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>} />;
+const Truck = (p) => <Icon {...p} d={<><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>} />;
+const ShieldCheck = (p) => <Icon {...p} d={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></>} />;
+const Clock = (p) => <Icon {...p} d={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
+const Zap = (p) => <Icon {...p} d={<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>} />;
+const Sparkles = (p) => <Icon {...p} d={<><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z"/></>} />;
+const Loader2 = (p) => <Icon {...p} d={<path d="M21 12a9 9 0 1 1-6.219-8.56"/>} />;
+const Eye = (p) => <Icon {...p} d={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>} />;
+const Award = (p) => <Icon {...p} d={<><circle cx="12" cy="8" r="6"/><polyline points="8.21 13.89 7 22 12 19 17 22 15.79 13.88"/></>} />;
+const TrendingUp = (p) => <Icon {...p} d={<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>} />;
+const Lock = (p) => <Icon {...p} d={<><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />;
+const Heart = (p) => <Icon {...p} d={<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>} />;
+
+// ---------- Data ----------
+const STORE = { name: "modohouz", whatsapp_number: "1234567890" };
+
+const CATEGORIES = [
+  { id: "seating", label: "Living Room", tagline: "Sofas, lounges & chairs", image: "https://images.unsplash.com/photo-1506439015502-393282b81048?auto=format&fit=crop&w=800&q=80" },
+  { id: "lighting", label: "Lighting & Ambience", tagline: "Pendants, lamps & mood", image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=800&q=80" },
+  { id: "tables", label: "Dining Space", tagline: "Tables & gathering", image: "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=800&q=80" },
+];
+
+const PRODUCTS = [
+  { id: "p1", category_id: "lighting", name: "Unfold Pendant Lamp", collection: "Solé", priceValue: 18000, priceLabel: "₹18,000", mrpLabel: "₹24,000", style: "Minimalist",
+    image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1200&q=80",
+    description: "Crafted from soft silicone rubber, the Unfold Pendant offers a modern, tactile twist. Its warm, diffused glow redefines any space.",
+    benefits: ["Soft, glare-free lighting", "Durable silicone body", "Adjustable drop height"],
+    colors: ["#D47A5A", "#E3DCD2", "#2C2A28"], rating: 4.8, reviews: 124, urgency: "Only 3 left", delivery: "5-7 Days", viewers: 27 },
+  { id: "p2", category_id: "seating", name: "Atelier Lounge Chair", collection: "Épure", priceValue: 45000, priceLabel: "₹45,000", mrpLabel: "₹58,000", style: "Statement",
+    image: "https://images.unsplash.com/photo-1506439015502-393282b81048?auto=format&fit=crop&w=800&q=80",
+    description: "A study in organic minimalism. Solid ash wood frame meets softly textured linen, providing a low-slung, incredibly comfortable experience.",
+    benefits: ["Solid ash wood frame", "Stain-resistant linen", "Ergonomic recline angle"],
+    colors: ["#E3DCD2", "#94A690"], rating: 4.9, reviews: 89, urgency: "Selling fast", delivery: "3-5 Days", viewers: 41 },
+  { id: "p3", category_id: "seating", name: "Kanso Minimalist Sofa", collection: "Épure", priceValue: 85000, priceLabel: "₹85,000", mrpLabel: "₹110,000", style: "Minimalist",
+    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80",
+    description: "Stripped to its bare essentials, the Kanso focuses on the purity of form. A quiet, expansive statement for the modern living room.",
+    benefits: ["Seats 3-4 comfortably", "High-density memory foam", "Removable, washable covers"],
+    colors: ["#2C2A28", "#D47A5A"], rating: 4.7, reviews: 210, urgency: "High demand", delivery: "7-10 Days", viewers: 19 },
+];
+
+const TESTIMONIALS = [
+  { name: "Aarav K.", text: "Got 3 perfect sofa picks in 30 seconds. Designer answered on WhatsApp instantly.", city: "Bengaluru" },
+  { name: "Meera S.", text: "Skipped hours of browsing. Final price shared in chat — no haggling.", city: "Mumbai" },
+  { name: "Rohan T.", text: "Felt like a personal designer in my pocket. Bought the lounge chair same day.", city: "Delhi" },
+];
+
+const ease = [0.25, 1, 0.35, 1];
+const easeSharp = [0.65, 0, 0.35, 1];
+const pageVariants = {
+  initial: (dir) => ({ opacity: 0, x: dir > 0 ? 24 : -24 }),
+  in: { opacity: 1, x: 0, transition: { duration: 0.5, ease, staggerChildren: 0.06, delayChildren: 0.05 } },
+  out: (dir) => ({ opacity: 0, x: dir < 0 ? 24 : -24, transition: { duration: 0.25 } }),
+};
+const fadeUp = { initial: { opacity: 0, y: 16 }, in: { opacity: 1, y: 0, transition: { duration: 0.5, ease } } };
+
+// ---------- Splash ----------
+function SplashIntro({ name, onDone }) {
+  const [phase, setPhase] = useState("draw");
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("shift"), 1100);
+    const t2 = setTimeout(() => setPhase("exit"), 2600);
+    const t3 = setTimeout(() => onDone(), 3250);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+  const letters = name.split("");
+  return (
+    <AnimatePresence>
+      {phase !== "exit" && (
+        <motion.div key="splash" initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.04, filter: "blur(8px)", transition: { duration: 0.65, ease } }}
+          className="fixed inset-0 z-[100] bg-background flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 45%, hsl(var(--secondary)) 0%, hsl(var(--background)) 60%)" }} />
+          <motion.div initial={{ x: "-120%", opacity: 0 }} animate={{ x: "120%", opacity: [0, 0.6, 0] }}
+            transition={{ duration: 1.2, ease, delay: 0.9 }}
+            className="absolute top-1/2 -translate-y-1/2 w-[60%] h-40 rotate-12"
+            style={{ background: "linear-gradient(90deg, transparent, hsl(var(--accent) / 0.25), transparent)", filter: "blur(20px)" }} />
+          <div className="relative flex items-center">
+            <motion.div initial={{ scale: 0.5, opacity: 0, rotate: -10, y: 6 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0, y: 0, x: phase === "shift" ? -6 : 0 }}
+              transition={{ duration: 0.85, ease }}>
+              <div className="relative w-[68px] h-[68px] rounded-2xl bg-foreground flex items-center justify-center shadow-cta">
+                <motion.svg viewBox="0 0 32 32" className="w-10 h-10 text-background" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+                  <motion.path d="M5 24V10l6 8 5-8 5 8 6-8v14"
+                    initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 0.95, ease, delay: 0.2 }} />
+                </motion.svg>
+                <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, ease, delay: 1 }}
+                  className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent" />
+              </div>
+            </motion.div>
+            <div className="ml-3 overflow-hidden">
+              <motion.div initial={{ width: 0 }} animate={{ width: phase === "shift" ? "auto" : 0 }}
+                transition={{ duration: 0.7, ease: easeSharp }} className="overflow-hidden whitespace-nowrap">
+                <h1 className="font-serif text-[3.25rem] leading-none tracking-tight pr-1 flex">
+                  {letters.map((ch, i) => (
+                    <motion.span key={i} initial={{ y: "110%", opacity: 0 }}
+                      animate={{ y: phase === "shift" ? "0%" : "110%", opacity: phase === "shift" ? 1 : 0 }}
+                      transition={{ duration: 0.55, ease, delay: phase === "shift" ? 0.15 + i * 0.045 : 0 }}
+                      className="inline-block">{ch}</motion.span>
+                  ))}
+                </h1>
+              </motion.div>
+            </div>
+          </div>
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: phase === "shift" ? 1 : 0, y: phase === "shift" ? 0 : 10 }}
+            transition={{ duration: 0.55, ease, delay: 0.85 }}
+            className="absolute bottom-24 left-0 right-0 text-center text-[10px] font-bold tracking-[0.32em] uppercase text-muted-foreground">
+            Decide · Chat · Done
+          </motion.p>
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-border/60 rounded-full overflow-hidden">
+            <motion.div initial={{ x: "-100%" }} animate={{ x: "100%" }} transition={{ duration: 2.6, ease: "linear" }}
+              className="w-full h-full bg-foreground" />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ---------- App ----------
+function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [step, setStep] = useState("landing");
+  const [direction, setDirection] = useState(1);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [filters, setFilters] = useState({ budget: null, style: null });
+  const [activeProduct, setActiveProduct] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [tIdx, setTIdx] = useState(0);
+
+  useEffect(() => {
+    if (step !== "landing") return;
+    const id = setInterval(() => setTIdx(i => (i + 1) % TESTIMONIALS.length), 4200);
+    return () => clearInterval(id);
+  }, [step]);
+
+  useEffect(() => {
+    if (step === "analyzing") {
+      const t = setTimeout(() => navigate("recommendations", 1), 2200);
+      return () => clearTimeout(t);
+    }
+  }, [step]);
+
+  const navigate = (s, d = 1) => { setDirection(d); setStep(s); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
+  const handleProductSelect = (p) => { setActiveProduct(p); setSelectedColor(0); navigate("details", 1); };
+
+  const handleWhatsAppCTA = (intent, product = null) => {
+    let m = `Hi ${STORE.name} team,\n\n`;
+    if (intent === "explore_more_cta") {
+      m += `I'd like to explore more of your collections and get expert guidance on pricing and options.\n\n`;
+      if (activeCategory) m += `*Category I'm looking at:* ${activeCategory.label}\n`;
+    } else {
+      m += `I'm interested in:\n`;
+      if (activeCategory) m += `*Category:* ${activeCategory.label}\n`;
+      if (product) m += `*Product:* ${product.name} (${product.priceLabel})\n`;
+    }
+    if (filters.budget || filters.style) {
+      m += `\n*My Preferences:*\n`;
+      if (filters.budget) m += `- Budget: ${filters.budget}\n`;
+      if (filters.style) m += `- Style: ${filters.style}\n`;
+    }
+    if (intent !== "explore_more_cta") m += `\n*Please share:*\n- Final price\n- Available options\n- Delivery details`;
+    window.open(`https://wa.me/${STORE.whatsapp_number}?text=${encodeURIComponent(m)}`, "_blank");
+  };
+
+  const recommendedProducts = useMemo(() => {
+    if (!activeCategory) return PRODUCTS.slice(0, 3);
+    let f = PRODUCTS.filter(p => p.category_id === activeCategory.id);
+    if (f.length < 3) f = [...f, ...PRODUCTS.filter(p => !f.includes(p))].slice(0, 3);
+    const scored = f.map(p => {
+      let s = 0;
+      if (filters.budget === "Under ₹30k" && p.priceValue <= 30000) s += 2;
+      if (filters.budget === "₹30k - ₹60k" && p.priceValue > 30000 && p.priceValue <= 60000) s += 2;
+      if (filters.budget === "₹60k+" && p.priceValue > 60000) s += 2;
+      if (filters.style && p.style === filters.style) s += 2;
+      return { ...p, score: s };
+    });
+    return scored.sort((a, b) => b.score - a.score).slice(0, 3);
+  }, [activeCategory, filters]);
+
+  const handleBack = () => {
+    if (step === "details") navigate("recommendations", -1);
+    else if (step === "recommendations") navigate("quiz_prefs", -1);
+    else if (step === "quiz_prefs") navigate("quiz_room", -1);
+    else navigate("landing", -1);
+  };
+
+  const progressMap = { landing: 0, quiz_room: 25, quiz_prefs: 55, analyzing: 80, recommendations: 100, details: 100 };
+
+  return (
+    <>
+      {showSplash && <SplashIntro name={STORE.name} onDone={() => setShowSplash(false)} />}
+      <div className="min-h-screen bg-background text-foreground flex justify-center">
+        <div className="w-full max-w-[420px] bg-background relative shadow-elevated overflow-x-hidden sm:border-x border-border flex flex-col">
+
+          {/* HEADER */}
+          <header className="fixed top-0 max-w-[420px] w-full z-50 flex justify-between items-center px-6 pt-5 pb-4 gradient-fade-down pointer-events-none">
+            {!["landing","analyzing"].includes(step) ? (
+              <button onClick={handleBack} aria-label="Back"
+                className="w-10 h-10 bg-card/70 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:bg-card transition-all shadow-soft active:scale-95">
+                <ChevronLeft className="w-5 h-5 -ml-0.5" />
+              </button>
+            ) : (
+              <div className="w-10 h-10 flex items-center pointer-events-auto">
+                <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+                  <svg viewBox="0 0 32 32" className="w-5 h-5 text-background" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 24V10l6 8 5-8 5 8 6-8v14" />
+                  </svg>
+                </div>
+              </div>
+            )}
+            <h1 className="font-serif text-2xl tracking-tight pointer-events-auto">{STORE.name}</h1>
+            <div className="w-10 flex justify-end pointer-events-auto">
+              {step === "landing" && (
+                <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card/70 backdrop-blur-md border border-border shadow-soft">
+                  <span className="w-1.5 h-1.5 rounded-full bg-whatsapp animate-pulse-soft" />
+                  <span className="text-[9px] font-bold tracking-wider uppercase text-muted-foreground">Live</span>
+                </div>
+              )}
+            </div>
+            {step !== "landing" && (
+              <div className="absolute bottom-0 left-6 right-6 h-[2px] bg-muted/60 rounded-full overflow-hidden pointer-events-auto">
+                <motion.div className="h-full bg-foreground" initial={false}
+                  animate={{ width: `${progressMap[step]}%` }} transition={{ duration: 0.6, ease }} />
+              </div>
+            )}
+          </header>
+
+          <main className="flex-1 pt-24 pb-36">
+            <AnimatePresence mode="wait" custom={direction}>
+
+              {step === "landing" && (
+                <motion.section key="landing" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="px-6 flex flex-col min-h-[78vh]">
+                  <motion.div variants={fadeUp} className="pt-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-secondary text-muted-foreground text-[10px] font-bold tracking-[0.2em] uppercase rounded-full mb-8">
+                      <span className="w-1.5 h-1.5 rounded-full bg-whatsapp animate-pulse-soft" />
+                      312 designing now · 8 chats live
+                    </div>
+                  </motion.div>
+                  <motion.h2 variants={fadeUp} className="font-serif text-[3.5rem] leading-[0.95] tracking-[-0.03em] mb-6">
+                    Design your<br/><em className="italic text-accent">perfect space</em><br/>in 60 seconds.
+                  </motion.h2>
+                  <motion.p variants={fadeUp} className="text-muted-foreground font-light text-lg leading-relaxed max-w-[320px]">
+                    Skip the catalog. Get 3 hand-picked pieces matched to your taste, delivered to WhatsApp.
+                  </motion.p>
+                  <motion.div variants={fadeUp} className="flex items-center gap-4 mt-8">
+                    <div className="flex -space-x-2">
+                      {["https://i.pravatar.cc/40?img=12","https://i.pravatar.cc/40?img=32","https://i.pravatar.cc/40?img=47"].map(s => (
+                        <img key={s} src={s} alt="" className="w-8 h-8 rounded-full border-2 border-background object-cover" />
+                      ))}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 text-foreground font-medium">
+                        {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3" fill="hsl(var(--accent))" stroke="hsl(var(--accent))" />)}
+                        <span className="ml-1">4.9</span>
+                      </div>
+                      <span>from 2,400+ buyers</span>
+                    </div>
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="grid grid-cols-3 gap-2 mt-8">
+                    {[{i: Award, l: "Curated"},{i: Lock, l: "No spam"},{i: TrendingUp, l: "Best price"}].map(({i: I, l}) => (
+                      <div key={l} className="flex flex-col items-center gap-1.5 py-3 rounded-2xl bg-card border border-border">
+                        <I className="w-4 h-4 text-accent" />
+                        <span className="text-[10px] font-semibold tracking-wide text-muted-foreground">{l}</span>
+                      </div>
+                    ))}
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="mt-6 bg-secondary/60 border border-border rounded-2xl p-4 min-h-[88px] relative overflow-hidden">
+                    <AnimatePresence mode="wait">
+                      <motion.div key={tIdx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
+                        <div className="flex items-center gap-1 mb-1.5">
+                          {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5" fill="hsl(var(--accent))" stroke="hsl(var(--accent))" />)}
+                        </div>
+                        <p className="text-[13px] leading-snug text-foreground/85 italic font-light mb-1.5">"{TESTIMONIALS[tIdx].text}"</p>
+                        <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground">— {TESTIMONIALS[tIdx].name}, {TESTIMONIALS[tIdx].city}</p>
+                      </motion.div>
+                    </AnimatePresence>
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="mt-auto pt-10 space-y-3">
+                    <button onClick={() => navigate("quiz_room", 1)}
+                      className="w-full py-5 rounded-full bg-foreground text-background text-[16px] font-medium tracking-wide flex items-center justify-center gap-2 shadow-cta active:scale-[0.98] transition-transform">
+                      Start your style quiz <ArrowRight className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleWhatsAppCTA("early_intent")}
+                      className="w-full py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                      Or talk to a designer directly →
+                    </button>
+                  </motion.div>
+                </motion.section>
+              )}
+
+              {step === "quiz_room" && (
+                <motion.section key="quiz_room" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="px-6 flex flex-col">
+                  <motion.div variants={fadeUp} className="mb-8">
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3 block">Step 1 of 2</span>
+                    <h2 className="font-serif text-[2.75rem] leading-[1] tracking-[-0.02em]">What space are you<br/><em className="italic text-accent">designing?</em></h2>
+                  </motion.div>
+                  <div className="space-y-3">
+                    {CATEGORIES.map(cat => (
+                      <motion.button key={cat.id} variants={fadeUp}
+                        onClick={() => { setActiveCategory(cat); navigate("quiz_prefs", 1); }}
+                        className="group relative w-full h-[140px] rounded-3xl overflow-hidden shadow-soft active:scale-[0.98] transition-all text-left">
+                        <img src={cat.image} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                        <div className="absolute inset-0 p-6 flex items-end justify-between">
+                          <div>
+                            <h3 className="font-serif text-3xl text-white tracking-tight leading-none mb-1">{cat.label}</h3>
+                            <p className="text-white/70 text-xs font-light">{cat.tagline}</p>
+                          </div>
+                          <div className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center group-hover:bg-white transition-all">
+                            <ArrowRight className="w-4 h-4 text-white group-hover:text-foreground" />
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
+              {step === "quiz_prefs" && (
+                <motion.section key="quiz_prefs" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="px-6 flex flex-col">
+                  <motion.div variants={fadeUp} className="mb-10">
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3 block">Step 2 of 2</span>
+                    <h2 className="font-serif text-[2.75rem] leading-[1] tracking-[-0.02em]">Refine your<br/><em className="italic text-accent">matches.</em></h2>
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="mb-8">
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] mb-4">Target Budget</h3>
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {["Under ₹30k","₹30k - ₹60k","₹60k+"].map(b => (
+                        <button key={b} onClick={() => setFilters({ ...filters, budget: b })}
+                          className={`py-4 px-5 rounded-2xl border text-left font-medium transition-all active:scale-[0.98] ${filters.budget === b ? "border-foreground bg-foreground text-background shadow-soft" : "border-border bg-card/60 hover:border-foreground/40"}`}>
+                          {b}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="mb-12">
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] mb-4">Preferred Style</h3>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {["Minimalist","Statement","Classic","Cozy"].map(s => (
+                        <button key={s} onClick={() => setFilters({ ...filters, style: s })}
+                          className={`py-4 px-4 rounded-2xl border text-center font-medium transition-all active:scale-[0.98] ${filters.style === s ? "border-foreground bg-foreground text-background shadow-soft" : "border-border bg-card/60 hover:border-foreground/40"}`}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                  <motion.div variants={fadeUp} className="mt-auto">
+                    <button disabled={!filters.budget || !filters.style} onClick={() => navigate("analyzing", 1)}
+                      className="w-full py-5 rounded-full bg-foreground text-background text-[16px] font-medium tracking-wide flex items-center justify-center gap-2 shadow-cta disabled:opacity-30 disabled:shadow-none transition-all active:scale-[0.98]">
+                      Curate my matches <Sparkles className="w-4 h-4" />
+                    </button>
+                    <p className="text-center text-[11px] text-muted-foreground mt-3 flex items-center justify-center gap-1.5">
+                      <Lock className="w-3 h-3" /> No signup. No spam. Direct WhatsApp.
+                    </p>
+                  </motion.div>
+                </motion.section>
+              )}
+
+              {step === "analyzing" && (
+                <motion.section key="analyzing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+                  <div className="relative mb-8">
+                    <div className="w-20 h-20 rounded-full border border-border" />
+                    <Loader2 className="w-20 h-20 text-foreground absolute inset-0" style={{ animation: "spin 1s linear infinite" }} />
+                    <Sparkles className="w-6 h-6 text-accent absolute inset-0 m-auto" />
+                  </div>
+                  <style>{`@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }`}</style>
+                  <h2 className="font-serif text-3xl tracking-tight mb-3">Curating your portfolio</h2>
+                  <p className="text-muted-foreground font-light text-sm max-w-[260px]">
+                    Matching <span className="text-foreground font-medium">{filters.style}</span> pieces under <span className="text-foreground font-medium">{filters.budget}</span>
+                  </p>
+                  <div className="mt-8 space-y-2 text-xs text-muted-foreground">
+                    {["Analysing 200+ pieces","Filtering by style","Ranking top 3 matches"].map((t, i) => (
+                      <motion.div key={t} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.5 }} className="flex items-center gap-2 justify-center">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sage" /> {t}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+
+              {step === "recommendations" && (
+                <motion.section key="recommendations" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="px-5">
+                  <motion.div variants={fadeUp} className="mb-8 px-1">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-full mb-4">
+                      <Sparkles className="w-3 h-3 text-accent" />
+                      <span className="text-[10px] font-bold tracking-[0.15em] text-muted-foreground uppercase">
+                        For your {filters.style || "Modern"} {activeCategory?.label || "Space"}
+                      </span>
+                    </div>
+                    <h2 className="font-serif text-[2.5rem] leading-[1] tracking-[-0.02em] mb-2">
+                      Your top <em className="italic text-accent">{recommendedProducts.length}</em> picks
+                    </h2>
+                    <p className="text-sm text-muted-foreground">Hand-ranked. Tap any to chat instantly.</p>
+                  </motion.div>
+                  <div className="space-y-6">
+                    {recommendedProducts.map((product, i) => {
+                      const tier = i === 0 ? "Best Value" : i === 1 ? "Most Loved" : "Premium Pick";
+                      const tierColor = i === 0 ? "bg-sage" : i === 1 ? "bg-accent" : "bg-foreground";
+                      return (
+                        <motion.article key={product.id} variants={fadeUp}
+                          className="bg-card rounded-3xl shadow-soft border border-border overflow-hidden relative">
+                          <div className={`absolute top-4 left-4 ${tierColor} text-white text-[10px] uppercase tracking-[0.15em] font-bold px-2.5 py-1 rounded-full shadow-soft z-10 flex items-center gap-1`}>
+                            {i === 0 && <CheckCircle2 className="w-3 h-3" />}
+                            {i === 1 && <Star className="w-3 h-3" fill="currentColor" />}
+                            {i === 2 && <Sparkles className="w-3 h-3" />}
+                            {tier}
+                          </div>
+                          <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-md text-foreground text-[10px] font-medium px-2 py-1 rounded-full shadow-soft z-10 flex items-center gap-1">
+                            <Eye className="w-3 h-3" /> {product.viewers} viewing
+                          </div>
+                          <div className="w-full aspect-[5/4] bg-secondary overflow-hidden cursor-pointer group" onClick={() => handleProductSelect(product)}>
+                            <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                          </div>
+                          <div className="p-5">
+                            <div onClick={() => handleProductSelect(product)} className="cursor-pointer mb-4">
+                              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground mb-1">{product.collection}</p>
+                              <div className="flex justify-between items-start mb-2 gap-3">
+                                <h3 className="font-serif text-2xl tracking-tight leading-tight">{product.name}</h3>
+                                <div className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-md shrink-0">
+                                  <Star className="w-3 h-3" fill="hsl(var(--accent))" stroke="hsl(var(--accent))" />
+                                  <span className="text-[11px] font-bold">{product.rating}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-baseline gap-2 mb-3">
+                                <span className="text-xl font-medium tracking-tight">{product.priceLabel}</span>
+                                {product.mrpLabel && <span className="text-xs text-muted-foreground line-through">{product.mrpLabel}</span>}
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-sage">Best price on chat</span>
+                              </div>
+                              <ul className="space-y-1 mb-3">
+                                {product.benefits.slice(0, 2).map(b => (
+                                  <li key={b} className="flex items-start gap-2 text-[13px] text-muted-foreground">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-sage mt-0.5 shrink-0" />
+                                    <span>{b}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-accent">
+                                <Zap className="w-3 h-3" fill="currentColor" /> {product.urgency}
+                              </div>
+                            </div>
+                            <button onClick={() => handleWhatsAppCTA("product_card_quick_cta", product)}
+                              className="w-full py-3.5 rounded-2xl bg-whatsapp text-white text-[14px] font-semibold flex items-center justify-center gap-2 shadow-whatsapp hover:bg-whatsapp-dark transition-all active:scale-[0.98]">
+                              <MessageCircle className="w-4 h-4" /> Get Best Price on WhatsApp
+                            </button>
+                          </div>
+                        </motion.article>
+                      );
+                    })}
+                  </div>
+                  <motion.div variants={fadeUp} className="mt-10 mb-4 bg-secondary/60 p-6 rounded-3xl border border-border text-center">
+                    <Heart className="w-5 h-5 text-accent mx-auto mb-2" fill="hsl(var(--accent))" />
+                    <h3 className="font-serif text-2xl tracking-tight mb-2">Want to see more?</h3>
+                    <p className="text-muted-foreground font-light text-sm mb-5 leading-relaxed">
+                      Chat with our design experts to explore the full collection and unlock exclusive prices.
+                    </p>
+                    <button onClick={() => handleWhatsAppCTA("explore_more_cta")}
+                      className="w-full py-3.5 rounded-2xl bg-foreground text-background text-[14px] font-semibold flex items-center justify-center gap-2 shadow-cta transition-all active:scale-[0.98]">
+                      <MessageCircle className="w-4 h-4" /> Chat to explore more
+                    </button>
+                  </motion.div>
+                </motion.section>
+              )}
+
+              {step === "details" && activeProduct && (
+                <motion.section key="details" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="flex flex-col">
+                  <div className="w-full aspect-square bg-secondary relative overflow-hidden -mt-24">
+                    <img src={activeProduct.image} alt={activeProduct.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
+                    <div className="absolute bottom-5 right-5 bg-card/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-soft flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-accent" />
+                      <span className="text-[10px] font-bold tracking-widest uppercase">{activeProduct.urgency}</span>
+                    </div>
+                    <div className="absolute bottom-5 left-5 bg-card/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-soft flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5" />
+                      <span className="text-[10px] font-bold tracking-widest uppercase">{activeProduct.viewers} viewing</span>
+                    </div>
+                  </div>
+                  <motion.div variants={fadeUp} initial="initial" animate="in" className="px-6 pt-8 pb-10">
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground mb-2">{activeProduct.collection}</p>
+                    <h1 className="font-serif text-[2.75rem] leading-[1] tracking-[-0.02em] mb-3">{activeProduct.name}</h1>
+                    <div className="flex items-center gap-2 mb-6">
+                      <div className="flex items-center gap-0.5">
+                        {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5" fill="hsl(var(--accent))" stroke="hsl(var(--accent))" />)}
+                      </div>
+                      <span className="text-xs text-muted-foreground">{activeProduct.rating} · {activeProduct.reviews} reviews</span>
+                    </div>
+                    <div className="flex items-baseline gap-2 mb-8">
+                      <p className="text-3xl font-medium tracking-tight">{activeProduct.priceLabel}</p>
+                      {activeProduct.mrpLabel && <span className="text-sm text-muted-foreground line-through">{activeProduct.mrpLabel}</span>}
+                      <span className="text-xs text-muted-foreground">starting</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
+                      <div className="bg-card p-4 rounded-2xl border border-border">
+                        <Truck className="w-5 h-5 text-sage mb-2" />
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Delivery</p>
+                        <strong className="text-sm">{activeProduct.delivery}</strong>
+                      </div>
+                      <div className="bg-card p-4 rounded-2xl border border-border">
+                        <ShieldCheck className="w-5 h-5 text-sage mb-2" />
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Warranty</p>
+                        <strong className="text-sm">2 Years included</strong>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground font-light leading-relaxed mb-8">{activeProduct.description}</p>
+                    <div className="space-y-2 mb-8">
+                      {activeProduct.benefits.map(b => (
+                        <div key={b} className="flex items-start gap-2.5 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-sage mt-0.5 shrink-0" />
+                          <span>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold tracking-[0.18em] uppercase mb-4 block">Available finishes</span>
+                      <div className="flex gap-3">
+                        {activeProduct.colors.map((color, idx) => (
+                          <button key={idx} onClick={() => setSelectedColor(idx)} aria-label={`Color ${idx + 1}`}
+                            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${selectedColor === idx ? "ring-1 ring-foreground ring-offset-2 ring-offset-background" : "hover:scale-110"}`}>
+                            <span className="w-9 h-9 rounded-full border border-foreground/10" style={{ backgroundColor: color }} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.section>
+              )}
+
+            </AnimatePresence>
+          </main>
+
+          {/* STICKY BOTTOM CTA */}
+          <div className="fixed bottom-0 max-w-[420px] w-full gradient-fade-up pt-16 pb-5 px-5 z-40 pointer-events-none">
+            <div className="pointer-events-auto">
+              {step === "details" && activeProduct ? (
+                <motion.button initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  onClick={() => handleWhatsAppCTA("product_detail_hero_cta", activeProduct)}
+                  className="w-full py-5 rounded-full bg-whatsapp text-white text-[16px] font-semibold flex items-center justify-center gap-2 shadow-whatsapp hover:bg-whatsapp-dark transition-all active:scale-[0.98]">
+                  <MessageCircle className="w-5 h-5" /> Check availability & price
+                </motion.button>
+              ) : !["quiz_room","quiz_prefs","analyzing","landing"].includes(step) ? (
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  onClick={() => handleWhatsAppCTA("persistent_bottom_help_cta")}
+                  className="bg-card p-3 pl-5 rounded-full border border-border shadow-elevated flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sage mb-0.5">Free Consultation</p>
+                    <p className="text-[13px] font-medium">Talk to an interior designer</p>
+                  </div>
+                  <div className="w-11 h-11 rounded-full bg-whatsapp flex items-center justify-center shadow-whatsapp shrink-0">
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </div>
+                </motion.div>
+              ) : null}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

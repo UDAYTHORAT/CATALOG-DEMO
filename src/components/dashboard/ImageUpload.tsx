@@ -18,11 +18,29 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMountedRef = useRef(false);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const completionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
     setPreview(defaultImage || null);
   }, [defaultImage]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      if (completionTimeoutRef.current) {
+        clearTimeout(completionTimeoutRef.current);
+        completionTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const processFile = async (file: File) => {
     setError(null);
@@ -43,9 +61,25 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
     setUploadProgress(0);
 
     // Simulate progress (Supabase doesn't provide upload progress natively)
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 85) { clearInterval(progressInterval); return 85; }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+    progressIntervalRef.current = setInterval(() => {
+      if (!isMountedRef.current) {
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+        }
+        return;
+      }
+      setUploadProgress((prev) => {
+        if (prev >= 85) {
+          if (progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
+          }
+          return 85;
+        }
         return prev + Math.random() * 15;
       });
     }, 200);
@@ -58,7 +92,10 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
         .from('product-images')
         .upload(fileName, file);
 
-      clearInterval(progressInterval);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
 
       if (uploadError) throw uploadError;
 
@@ -66,20 +103,31 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
         .from('product-images')
         .getPublicUrl(fileName);
 
-      setUploadProgress(100);
-      
-      setTimeout(() => {
+      if (isMountedRef.current) {
+        setUploadProgress(100);
+      }
+
+      if (completionTimeoutRef.current) {
+        clearTimeout(completionTimeoutRef.current);
+      }
+      completionTimeoutRef.current = setTimeout(() => {
+        if (!isMountedRef.current) return;
         setPreview(publicUrl);
         onUploadComplete(publicUrl);
         setIsUploading(false);
         setUploadProgress(0);
       }, 300);
     } catch (err) {
-      clearInterval(progressInterval);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
       console.error('Error uploading image:', err);
-      setError('Upload failed. Please try again.');
-      setIsUploading(false);
-      setUploadProgress(0);
+      if (isMountedRef.current) {
+        setError('Upload failed. Please try again.');
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
     }
   };
 

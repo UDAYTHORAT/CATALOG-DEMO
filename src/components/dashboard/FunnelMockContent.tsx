@@ -1,7 +1,36 @@
 'use client';
 import { MessageCircle, Star, ChevronDown, Check, HelpCircle, Shield, ArrowRight } from 'lucide-react';
+import FunnelClient from '@/app/s/[slug]/FunnelClient';
 
 export function FunnelMockContent({ template, isMobile }: { template: any; isMobile: boolean }) {
+  if (template?.funnelad || template?.id === 'funnelad-elite-furniture') {
+    const mockFunnel = {
+      id: 'mock-funnel',
+      theme: 'minimal',
+      welcome_title: template.funnelad?.landing?.title || 'Urban Living',
+      welcome_description: template.funnelad?.landing?.subtitle || 'Find the right furniture in seconds',
+      story_mode_data: [{ landing: template.funnelad?.landing }]
+    };
+    const mockStore = {
+      id: 'store-mock',
+      name: 'Urban Living',
+      bio: null,
+      logo_url: null,
+      whatsapp_number: '1234567890'
+    };
+    const mockProducts = [
+      { id: '1', name: 'Cloud Sofa', description: 'Perfect for modern homes\nHigh comfort for daily use', price: 45000, image_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80', image_url_2: null, category: 'sofas', dimensions: null },
+      { id: '2', name: 'Oak Bed', description: 'Ideal for families\nEasy maintenance', price: 32000, image_url: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?auto=format&fit=crop&w=800&q=80', image_url_2: null, category: 'beds', dimensions: null },
+      { id: '3', name: 'Marble Dining', description: 'High-end finish\nPremium look', price: 65000, image_url: 'https://images.unsplash.com/photo-1617806118233-18e1c4845b4c?auto=format&fit=crop&w=800&q=80', image_url_2: null, category: 'dining', dimensions: null }
+    ];
+
+    return (
+      <div className="w-full h-full relative isolate" style={{ transform: 'scale(1)' }}>
+        <FunnelClient funnel={mockFunnel} store={mockStore} products={mockProducts as any} isPreview={true} />
+      </div>
+    );
+  }
+
   const isDark = template.theme === 'onyx' || template.theme === 'dark';
   const accent = template.accentColor || '#4f46e5';
   const px = isMobile ? 'px-5' : 'px-14';
@@ -83,7 +112,7 @@ export function FunnelMockContent({ template, isMobile }: { template: any; isMob
               className={`flex items-center gap-1.5 ${isMobile ? 'p-1.5' : 'p-2.5'} rounded-lg border ${cardBg}`}
             >
               <div
-               className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0"
+               className="w-3.5 h-3.5 rounded flex items-center justify-center shrink-0"
                 style={{ backgroundColor: accent + '18' }}
               >
                 <Check size={8} strokeWidth={3} style={{ color: accent }} />
@@ -123,7 +152,7 @@ export function FunnelMockContent({ template, isMobile }: { template: any; isMob
                 }`}
               >
                 <span
-                  className="w-4 h-4 rounded-full text-[8px] font-bold text-white flex items-center justify-center flex-shrink-0"
+                  className="w-4 h-4 rounded-full text-[8px] font-bold text-white flex items-center justify-center shrink-0"
                   style={{ backgroundColor: accent }}
                 >
                   {qi + 1}
@@ -151,7 +180,7 @@ export function FunnelMockContent({ template, isMobile }: { template: any; isMob
                     >
                       <div className="flex items-center gap-2">
                         <div
-                          className="w-2.5 h-2.5 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0"
+                          className="w-2.5 h-2.5 rounded-full border-[1.5px] flex items-center justify-center shrink-0"
                           style={
                             oi === 0
                               ? { borderColor: accent }
@@ -253,7 +282,7 @@ export function FunnelMockContent({ template, isMobile }: { template: any; isMob
                 <div className="flex items-start gap-2">
                   <HelpCircle
                     size={10}
-                    className="mt-0.5 flex-shrink-0"
+                    className="mt-0.5 shrink-0"
                     style={{ color: accent }}
                   />
                   <div>

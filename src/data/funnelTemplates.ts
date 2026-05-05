@@ -11,6 +11,40 @@ export interface ResultRule {
   badge?: string;
 }
 
+export type FunnelAdLanding = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  ratingLine: string;
+  categories: { key: string; label: string; icon: string; matchers: string[] }[];
+  trustBullets: string[];
+  ctaHelper: string;
+  ctaLabel: string;
+  mapEmbedUrl?: string;
+  mapAddress?: string;
+};
+
+export type FunnelAdProducts = {
+  headerKicker: string;
+  slots: { badge: string; ctaLabel: string; highlight: boolean; benefitsFallback: string[] }[];
+  extraTitle: string;
+  extraSubtitle: string;
+};
+
+export type FunnelAdWhatsApp = {
+  messageWithProduct: string;
+  messageNoProduct: string;
+};
+
+export type FunnelAdTheme = {
+  background: string;
+  text: string;
+  card: string;
+  accent: string;
+  accentText: string;
+  whatsapp: string;
+};
+
 export interface FunnelTemplate {
   id: string;
   name: string;
@@ -74,6 +108,14 @@ export interface FunnelTemplate {
   stats: { convRate: string; avgLeads: string };
   badge?: string;
 
+  // FunnelAd (Link-in-bio style) config
+  funnelad?: {
+    landing: FunnelAdLanding;
+    products: FunnelAdProducts;
+    whatsapp: FunnelAdWhatsApp;
+    theme: FunnelAdTheme;
+  };
+
   // FAQ
   faq: { q: string; a: string }[];
 }
@@ -107,221 +149,124 @@ export const INDUSTRY_PRESETS: IndustryPreset[] = [
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const MASTER_TEMPLATES: FunnelTemplate[] = [
-  // ━━━ 1. DOCTOR & CLINIC ━━━
+  // ━━━ 0. FUNNELAD ELITE (FURNITURE) ━━━
   {
-    id: 'doctor-clinic',
-    name: 'Doctor & Clinic',
-    category: 'Healthcare',
-    industry: 'doctor',
-    theme: 'ethereal',
-    icon: '🩺',
-    accentColor: '#0891b2',
-    bgGradient: 'from-cyan-50 to-teal-50',
-    badge: '🔥 #1 Healthcare',
-
-    hero: {
-      headline: 'Get the right care — without the wait.',
-      subheadline: 'Answer 3 quick questions. We\'ll match you with the right doctor today.',
-      ctaLabel: 'Start Assessment',
-      ctaColor: '#0891b2',
-    },
-    goal: 'booking',
-
-    trust: {
-      title: 'Why patients choose us',
-      items: ['15+ Years Experience', 'Same-Day Appointments', 'Board Certified', '4.9★ Patient Rating'],
-      stats: '2,500+ patients helped',
-    },
-    testimonial: {
-      text: 'Got an appointment within hours. Thorough, kind, explained everything clearly.',
-      author: 'Priya M.',
-      role: 'Verified Patient',
-    },
-
-    questions: [
-      {
-        id: 'q1',
-        question: 'What brings you in today?',
-        type: 'choice',
-        options: ['General Checkup', 'Dental', 'Skin / Derma', 'Eye Care', 'Other'],
-        icon: '🔍',
-      },
-      {
-        id: 'q2',
-        question: 'How soon do you need to be seen?',
-        type: 'choice',
-        options: ['Today / Urgent', 'This Week', 'Routine — Anytime'],
-        icon: '⏰',
-      },
-      {
-        id: 'q3',
-        question: 'How would you like to meet?',
-        type: 'choice',
-        options: ['Visit Clinic', 'Video / Telehealth', 'No Preference'],
-        icon: '📍',
-      },
-    ],
-
-    resultDefault: {
-      title: '✅ Your Perfect Match Found',
-      description: 'Based on your answers, we recommend a consultation with our specialist. Book now for priority scheduling.',
-      ctaLabel: 'Book on WhatsApp',
-      ctaType: 'whatsapp',
-    },
-    resultRules: [
-      {
-        condition: { questionIndex: 1, optionIndex: 0 }, // "Today / Urgent"
-        title: '🚨 Priority Slot Available',
-        description: 'We have an urgent care slot available today. Book immediately to secure your appointment.',
-        ctaLabel: 'Book Urgent Slot',
-        ctaType: 'whatsapp',
-        badge: 'URGENT',
-      },
-      {
-        condition: { questionIndex: 2, optionIndex: 1 }, // "Video / Telehealth"
-        title: '💻 Virtual Consultation Ready',
-        description: 'Our telemedicine service lets you consult from home. Average wait time: 15 minutes.',
-        ctaLabel: 'Start Video Call',
-        ctaType: 'whatsapp',
-        badge: 'VIRTUAL',
-      },
-    ],
-
-    urgency: {
-      headline: 'Only 3 slots remaining today',
-      subtext: 'Appointments fill up fast. Secure yours now.',
-      type: 'slots',
-    },
-
-    enquiryFields: [
-      { id: 'name', label: 'Your Name', placeholder: 'e.g. Rahul Sharma', type: 'text', required: true },
-      { id: 'phone', label: 'WhatsApp Number', placeholder: '+91 98765 43210', type: 'tel', required: true },
-      { id: 'note', label: 'Describe your symptoms (optional)', placeholder: 'Brief description...', type: 'text', required: false },
-    ],
-    enquiryHeadline: 'Quick details for faster booking',
-    enquirySub: 'So the doctor can prepare for your visit.',
-
-    description: 'Calm, credible, zero-friction booking funnel. Patients answer 3 questions and get matched with the right doctor instantly.',
-    features: ['Symptom Qualifier Quiz', 'Dynamic Doctor Matching', 'WhatsApp Instant Booking', 'Trust & Social Proof', 'Urgency Slots'],
-    stats: { convRate: '28%', avgLeads: '85/mo' },
-
-    faq: [
-      { q: 'Do you accept insurance?', a: 'Yes — all major plans accepted.' },
-      { q: 'Can I book for someone else?', a: 'Absolutely. Mention their details in the chat.' },
-      { q: 'What if I need to cancel?', a: 'Free cancellation up to 2 hours before your slot.' },
-    ],
-  },
-
-  // ━━━ 2. E-COMMERCE STORE ━━━
-  {
-    id: 'ecommerce-store',
-    name: 'E-Commerce Store',
-    category: 'E-Commerce',
+    id: 'funnelad-elite-furniture',
+    name: 'FunnelAd Elite (Furniture)',
+    category: 'Furniture',
     industry: 'ecommerce',
-    theme: 'bubbly',
-    icon: '🛍️',
-    accentColor: '#e11d48',
-    bgGradient: 'from-rose-50 to-pink-50',
-    badge: '⚡ Best Seller',
+    theme: 'minimal',
+    icon: '🛋',
+    accentColor: '#111111',
+    bgGradient: 'from-amber-50 via-orange-50 to-stone-100',
+    badge: '🚀 ELITE',
 
     hero: {
-      headline: 'Find your perfect product — in 20 seconds.',
-      subheadline: 'Tell us what you like. We\'ll show the one thing you actually need.',
-      ctaLabel: 'Start Shopping',
-      ctaColor: '#e11d48',
+      headline: 'Tap → See → Chat → Buy',
+      subheadline: 'The fastest product link that converts clicks into WhatsApp buyers.',
+      ctaLabel: 'Launch FunnelAd',
+      ctaColor: '#111111',
     },
     goal: 'sell',
 
     trust: {
-      title: 'Why 50K+ customers love us',
-      items: ['Free Shipping ₹999+', '7-Day Easy Returns', '100% Authentic', 'Express Delivery'],
-      stats: '50,000+ happy customers',
+      title: 'Built for instant decisions',
+      items: ['3 products only', 'Direct WhatsApp', 'No forms or filters', 'Fast delivery ready'],
+      stats: '500+ orders closed on chat',
     },
     testimonial: {
-      text: 'The style quiz nailed my preference first try. Best online shopping experience I\'ve had.',
-      author: 'Ananya R.',
-      role: 'Verified Buyer',
+      text: 'We stopped losing leads on our website. This link now closes deals daily.',
+      author: 'Aditya K.',
+      role: 'Furniture Retailer',
     },
 
-    questions: [
-      {
-        id: 'q1',
-        question: 'What are you shopping for?',
-        type: 'choice',
-        options: ['Clothing', 'Electronics', 'Home & Living', 'Accessories', 'Gifts'],
-        icon: '🎁',
-      },
-      {
-        id: 'q2',
-        question: 'What\'s your budget?',
-        type: 'budget',
-        options: ['Under ₹1,000', '₹1K – ₹5K', '₹5K – ₹15K', '₹15K+'],
-        icon: '💰',
-      },
-      {
-        id: 'q3',
-        question: 'What vibe are you going for?',
-        type: 'choice',
-        options: ['Minimal & Clean', 'Bold & Trendy', 'Classic & Elegant', 'Casual & Comfy'],
-        icon: '✨',
-      },
-    ],
+    questions: [],
 
     resultDefault: {
-      title: '🎯 Your Perfect Match',
-      description: 'Based on your style, we\'ve found the ideal product for you. Check it out!',
-      ctaLabel: 'View My Match',
+      title: 'Ready to chat',
+      description: 'Your customer is one tap away from WhatsApp.',
+      ctaLabel: 'Open WhatsApp',
       ctaType: 'whatsapp',
     },
-    resultRules: [
-      {
-        condition: { questionIndex: 1, optionIndex: 0 }, // "Under ₹1,000" (budget low)
-        title: '💡 Smart Pick Under ₹1,000',
-        description: 'Great taste doesn\'t need a big budget! Here\'s our best-selling pick under ₹1,000 — loved by 3,000+ customers.',
-        ctaLabel: 'Grab This Deal',
-        ctaType: 'whatsapp',
-        badge: 'BUDGET PICK',
-      },
-      {
-        condition: { questionIndex: 1, optionIndex: 3 }, // "₹15K+" (premium)
-        title: '👑 Premium Collection Match',
-        description: 'You have premium taste. Here\'s our exclusive luxury pick, handcrafted and limited edition.',
-        ctaLabel: 'View Premium Pick',
-        ctaType: 'whatsapp',
-        badge: 'PREMIUM',
-      },
-      {
-        condition: { questionIndex: 2, optionIndex: 1 }, // "Bold & Trendy"
-        title: '🔥 Trending Now',
-        description: 'This is our hottest seller right now — 500+ units sold this week. Grab it before it\'s gone!',
-        ctaLabel: 'Get Trending Pick',
-        ctaType: 'whatsapp',
-        badge: 'TRENDING',
-      },
-    ],
+    resultRules: [],
 
     urgency: {
-      headline: 'Offer ends today — 20% OFF',
-      subtext: 'Use code FIRST20 at checkout. Limited to first 50 customers.',
+      headline: 'Close the deal in minutes',
+      subtext: 'Most buyers respond within 10 minutes on WhatsApp.',
       type: 'offer',
     },
 
-    enquiryFields: [
-      { id: 'name', label: 'Your Name', placeholder: 'e.g. Sneha Patel', type: 'text', required: true },
-      { id: 'phone', label: 'WhatsApp Number', placeholder: '+91 98765 43210', type: 'tel', required: true },
-    ],
-    enquiryHeadline: 'Where should we send your recommendation?',
-    enquirySub: 'Get exclusive deals & faster support on WhatsApp.',
+    enquiryFields: [],
+    enquiryHeadline: 'WhatsApp first, always',
+    enquirySub: 'No forms. No friction.',
 
-    description: 'Guided product finder funnel. Visitors choose in seconds, not minutes. Dynamic results based on budget and style preferences.',
-    features: ['Style & Budget Quiz', 'AI Product Match', 'Dynamic Result Logic', 'WhatsApp Instant Order', 'Urgency Countdown'],
-    stats: { convRate: '24%', avgLeads: '120/mo' },
+    description: 'Elite FunnelAd link that turns taps into WhatsApp conversations. Built for furniture stores and high-ticket catalogs.',
+    features: ['Landing + Category Tap', '3-Product Stack', 'Prefilled WhatsApp', 'Theme Builder Ready'],
+    stats: { convRate: '38%', avgLeads: '240/mo' },
 
     faq: [
-      { q: 'What\'s your return policy?', a: '7-day no-questions-asked returns.' },
-      { q: 'How fast is delivery?', a: '2-3 business days, express available.' },
-      { q: 'Is COD available?', a: 'Yes, Cash on Delivery available for orders above ₹500.' },
+      { q: 'Can I change the categories?', a: 'Yes, edit labels and keywords in the builder.' },
+      { q: 'How many products should I show?', a: 'Exactly 3. That keeps decision speed high.' },
+      { q: 'Does it work for other industries?', a: 'Yes, swap the copy and categories.' },
     ],
+
+    funnelad: {
+      landing: {
+        kicker: 'Urban Living.',
+        title: 'Urban Living Furniture.',
+        subtitle: 'Find the right furniture in seconds\nGet best price directly on WhatsApp',
+        ratingLine: '4.8 rating • 1000+ happy homes',
+        categories: [
+          { key: 'sofas', label: 'Luxury Sofas', icon: '🛋', matchers: ['sofa', 'sofas', 'seating', 'lounge'] },
+          { key: 'beds', label: 'Solid Wood Beds', icon: '🛏', matchers: ['bed', 'beds', 'bedroom'] },
+          { key: 'dining', label: 'Dining & Decor', icon: '🍽', matchers: ['dining', 'table', 'dining set', 'chair'] },
+        ],
+        trustBullets: ['Factory Direct Prices', 'Handcrafted in Jodhpur', 'Premium Sheesham Wood'],
+        ctaHelper: '⚡ No browsing. Just pick & chat',
+        ctaLabel: 'Visit Our Studio',
+        mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3506.119140935912!2d77.08581027549615!3d28.5060447757342!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d1945c5896ec1%3A0xc6a82708dd2b75a4!2sCyber%20City%2C%20Gurugram%2C%20Haryana!5e0!3m2!1sen!2sin!4v1709212000000!5m2!1sen!2sin',
+        mapAddress: 'Plot 42, Sector 43, Golf Course Road, Gurgaon'
+      },
+      products: {
+        headerKicker: 'Tap → See → Chat → Buy',
+        slots: [
+          {
+            badge: '🔥 Best Value for Your Home',
+            ctaLabel: 'Get Factory Price',
+            highlight: true,
+            benefitsFallback: ['Perfect for modern homes', 'High-end Sheesham finish'],
+          },
+          {
+            badge: '⭐ Most Popular Choice',
+            ctaLabel: 'Get Best Price',
+            highlight: false,
+            benefitsFallback: ['Ideal for family living', 'Premium comfort foam'],
+          },
+          {
+            badge: '💎 Premium Edition',
+            ctaLabel: 'Get Price',
+            highlight: false,
+            benefitsFallback: ['Exclusive luxury design', 'Heritage Jodhpur craft'],
+          },
+        ],
+        extraTitle: 'Not sure which one is right?',
+        extraSubtitle: 'Chat with our experts for best deal & options',
+      },
+      whatsapp: {
+        messageWithProduct:
+          "Hi Urban Living,\n\nI’m interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city",
+        messageNoProduct:
+          "Hi Urban Living,\n\nI’m interested in a {category}.\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my city",
+      },
+      theme: {
+        background: '#f7f3ec',
+        text: '#161616',
+        card: '#ffffff',
+        accent: '#111111',
+        accentText: '#ffffff',
+        whatsapp: '#25d366',
+      },
+    },
   },
 ];
 

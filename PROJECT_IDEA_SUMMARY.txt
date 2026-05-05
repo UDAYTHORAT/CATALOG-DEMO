@@ -1,101 +1,62 @@
-# FunnelLink: The Cinematic Discovery Engine for High-Ticket Artifacts
+# FunnelLink: The Elite Decision Engine for High-Ticket Commerce
 
-## 1. The Vision
-FunnelLink is a high-end SaaS platform designed to transform static product catalogs into immersive, story-driven discovery journeys. We bridge the gap between "browsing" and "buying" for high-ticket items (Luxury Furniture, Estates, Jewelry, and Boutique Services) by replacing boring grids with cinematic sales funnels.
+## 1. The Vision: From "Browsing" to "Matching"
+FunnelLink is a high-end SaaS "Decision Engine" that transforms static product catalogs into high-converting, tag-aware matching journeys. We replace the primitive "Add to Cart" grid with an elite, story-driven experience designed to capture high-intent leads for high-ticket industries (Luxury Furniture, Healthcare, Jewelry, Estates).
 
-**The Goal:** Build a million-dollar SaaS that empowers business owners to capture high-intent leads via WhatsApp through an elite-level UI/UX experience.
-
----
-
-## 2. The Core Problem
-Traditional e-commerce grids fail high-ticket items. A $5,000 sofa or a luxury estate cannot be "sold" with a generic "Add to Cart" button. They require **context, narrative, and guided discovery**. Most business owners lack the technical skills to build these complex, animated flows.
+**The Ultimate Goal:** A "Million-Dollar" SaaS that delivers a 10x ROI for business owners by providing a zero-configuration platform that turns intent into WhatsApp enquiries in 60 seconds.
 
 ---
 
-## 3. The FunnelLink Solution
-FunnelLink provides a "Studio" environment where business owners can:
-1. **Archive Artifacts:** Create a master registry of high-resolution products.
-2. **Deploy Discovery Engines:** Use "Studio Blueprints" (templates) to bundle products into 2-second cinematic funnels.
-3. **Qualify Intent:** Guide visitors through a narrative journey and a qualifying quiz (budget, preference, timing).
-4. **Direct Intelligence:** Route qualified prospects directly to the owner's WhatsApp, enriched with visitor data.
+## 2. The Core Innovation: The "Logic-First" Engine
+Traditional funnels are complex "if/then" trees that take hours to build. FunnelLink introduces **Tag-Based Matching Intelligence**:
+- **Automatic Matching:** Business owners tag products (e.g., `LUXURY`, `MINIMAL`). They tag question options with the same IDs.
+- **Dynamic Scoring:** The engine doesn't just filter; it calculates a "Match Score" (0-100%) for every product based on user intent.
+- **Zero-Friction Builder:** No complex branching logic. If tags match, products appear.
 
 ---
 
-## 4. Key Pillars & Features
+## 3. What We Are Actually Creating (The 3 Pillars)
 
-### A. Immersive Story Mode
-- **Cinematic Transitions:** Using Framer Motion to create a liquid, high-end feel.
-- **Narrative Flow:** Guiding the user from "The Arrival" (Hero) to "The Decision" (Quiz) to "The Artifacts" (Results).
-- **Interactive Hotspots:** Visual anchors on lifestyle imagery that reveal technical specs.
+### I. The "Studio" Builder (Owner Experience)
+- **60-Second Fast-Track:** A "Pick & Publish" workflow where owners select a blueprint, bulk-paste their product names/prices, and go live instantly.
+- **Visual Logic Command:** A single-pane editor with a live mobile preview. Edit branding on the left, see the result on the phone mockup on the right.
+- **Artifact Registry:** A central database for high-ticket items, allowing owners to manage inventory once and deploy across multiple funnels.
 
-### B. Studio Blueprints (Templates)
-- **Niche-Specific Architectures:** Pre-built funnels for Luxury Real Estate, Minimalist Tech, and Organic Skincare.
-- **2-Second Launch:** Deploy a professional sales funnel in seconds by selecting a blueprint and linking artifacts.
+### II. The "Discovery Journey" (Customer Experience)
+- **Cinematic Flow:** A fluid, app-like interface built with Framer Motion, featuring smooth transitions between Hero, Quiz, and Results.
+- **Premium Aesthetics:** A "Million-Dollar UI" standard—dark-first modes, glassmorphism, high-impact typography (Outfit/Inter), and vibrant accent palettes.
+- **Match-Score Cards:** Recommendations aren't just shown; they are "Justified" with Match Scores, creating psychological trust.
 
-### C. Lead Intelligence (CRM)
-- **High-Density Registry:** Track every visitor's journey.
-- **Intent Capture:** Capture names, budget ranges, and specific product interests.
-- **WhatsApp Integration:** Instant "Connect on WhatsApp" buttons that pre-fill messages with lead details.
-
-### D. Professional Dashboard
-- **Admin Command Center:** Manage products, leads, and engines with a premium, glassmorphic interface.
-- **Performance Matrix:** Real-time lead velocity charts and conversion analytics.
+### III. The "Lead Intelligence" (Conversion Engine)
+- **WhatsApp Handshake:** Frictionless lead capture that bridges the gap between a digital discovery and a human sale.
+- **Rich Data Handoff:** WhatsApp messages are pre-filled with the customer’s name, contact, and their high-scoring product matches.
+- **Analytics Matrix:** A dashboard tracking conversion rates, lead velocity, and "Matching Accuracy" to help owners refine their logic.
 
 ---
 
-## 5. Technical Architecture
-- **Framework:** Next.js 15 (App Router) using React 19 features.
-- **Design System:** Tailwind CSS v4 + Vanilla CSS for premium micro-animations.
-- **Backend:** Supabase (Auth, Storage, PostgreSQL) with strict Row Level Security (RLS).
-- **Animations:** Framer Motion for high-fidelity motion design.
-- **Deployment:** Vercel-optimized for sub-second page loads and global edge distribution.
+## 4. Technical Architecture (The Conversion OS)
+- **Engine Core:** Next.js 15 (App Router) + React 19 for sub-second performance.
+- **The Brain:** A weighted scoring algorithm implemented in Client Runtime for zero-latency recommendations.
+- **Data Layer:** Supabase (Auth, RLS, Storage) for military-grade multi-tenant data isolation.
+- **Design System:** Tailwind CSS v4 + Vanilla CSS for bespoke, premium micro-interactions.
 
 ---
 
-## 6. Detailed Operational Workflow
+## 5. Operational Workflow
 
-### Phase I: Onboarding & Setup (The Owner)
-1. **Studio Initialization**: Owner signs up via Supabase Auth. A unique `store_id` and `store` record are automatically generated via the `getOrCreateStore` server action.
-2. **Artifact Ingestion**: Owner uploads product assets (High-res images, pricing, dimensions) into the **Artifact Archive**. Images are stored in the `product-images` Supabase bucket.
-3. **Identity Configuration**: Owner sets their WhatsApp number and brand bio in Settings to route future leads.
-
-### Phase II: Engine Deployment (The Architect)
-1. **Blueprint Selection**: Owner chooses a niche-specific template (e.g., "Luxury Estate").
-2. **Bundle & Logic**: Owner selects which artifacts to include and configures the "Decision Engine" quiz (e.g., Budget: <50k, 50k-1L).
-3. **Launch**: The engine is deployed to a public-facing slug (e.g., `funnellink.co/s/summer-collection`).
-
-### Phase III: The Discovery Journey (The Visitor)
-1. **The Arrival**: Visitor lands on a cinematic hero page with auto-playing narratives.
-2. **The Engagement**: Visitor interacts with hotspots and scrolls through "Story Acts" (additional chapters about the craft or lifestyle).
-3. **The Qualification**: Visitor completes a 2-3 question quiz to help the engine understand their intent.
-4. **The Artifacts**: The engine reveals a curated selection of products based on the quiz answers.
-
-### Phase IV: Conversion & Intelligence (The Handover)
-1. **Intent Capture**: Visitor clicks "Enquire via WhatsApp". A modal captures their name and phone number.
-2. **Data Enrichment**: The system creates a `lead` record in Supabase, linking the visitor to the specific `product` and `funnel`.
-3. **The Handshake**: The visitor is redirected to WhatsApp with a pre-filled message: *"Hi [Owner], I'm interested in the [Product] I found on your [Funnel] page. My budget is [Range]."*
-4. **Intelligence Logging**: The lead appears instantly in the Owner's **Lead Intelligence** registry for follow-up.
+1. **Ingest (30s):** Owner pastes a list of products (Name - Price) into the Studio.
+2. **Tag (15s):** Owner assigns a few tags (e.g., `WOOD`, `METAL`) to products and quiz options.
+3. **Deploy (5s):** One-click publish to a unique `/s/slug` URL.
+4. **Discover:** Customer takes the quiz; the engine calculates the "Top 3 Matches."
+5. **Connect:** Customer hits WhatsApp; the owner receives a qualified lead with intent data.
 
 ---
 
-## 7. System Logic & Data Flow
-
-### A. Multi-Tenant Isolation
-Every table (`stores`, `products`, `funnels`, `leads`) has a `store_id` or `user_id` column. **Supabase Row Level Security (RLS)** policies ensure that:
-- Owners only see their own data.
-- Visitors can read public funnels but cannot write to the registry.
-
-### B. Dynamic Rendering
-- **Server Components**: Used for high-speed data fetching (Registry listings, Settings).
-- **Client Components**: Used for high-interactivity layers (Modals, Charts, Funnel Animations).
-- **Edge Caching**: `revalidatePath` is triggered on every CRUD operation to ensure the dashboard and public funnels are always in sync with the database.
+## 6. The Roadmap to a Million Dollar SaaS
+- **Phase 1 (Active):** Tag-based scoring engine & Premium "Pick-and-Plug" builder.
+- **Phase 2:** AI-driven tagging (Computer Vision auto-tags product images).
+- **Phase 3:** Visual Analytics (Heatmaps of where users drop off in the story).
+- **Phase 4:** Direct "Artifact Booking" with payment integration for boutique services.
 
 ---
-
-## 8. Scaling Roadmap
-- **Analytics v2**: Heatmaps of visitor interactions within the story acts.
-- **AI Narrative**: Automated generation of "Story Acts" using GPT-4 based on product descriptions.
-- **Direct Checkout**: Integration with payment gateways for low-friction artifact purchasing.
-
----
-*This document defines the complete DNA of FunnelLink. It is the master reference for architecture, logic, and user flow.*
+*This document defines the DNA of FunnelLink. Every line of code written must serve the "Very Very Simple" yet "Elite Premium" philosophy.*

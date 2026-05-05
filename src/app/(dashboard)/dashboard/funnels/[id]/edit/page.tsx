@@ -1,7 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { getProducts } from '@/app/actions/products';
-import FunnelEditor from './FunnelEditor';
+import FunnelAdFurnitureEditor from '@/components/dashboard/templates/FunnelAdFurnitureEditor';
+
+type FunnelProductLink = {
+  product_id: string | null;
+};
 
 export default async function EditFunnelPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,15 +31,15 @@ export default async function EditFunnelPage({ params }: { params: Promise<{ id:
   const products = await getProducts();
 
   // Extract linked product IDs
-  const linkedProductIds = funnel.funnel_products?.map((fp: any) => fp.product_id) || [];
+  const linkedProductIds = (funnel.funnel_products as FunnelProductLink[] | null | undefined)?.flatMap((link) =>
+    link.product_id ? [link.product_id] : []
+  ) || [];
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
-      <FunnelEditor 
-        funnel={funnel} 
-        allProducts={products} 
-        initialLinkedProductIds={linkedProductIds} 
-      />
-    </div>
+    <FunnelAdFurnitureEditor
+      funnel={funnel}
+      allProducts={products}
+      initialLinkedProductIds={linkedProductIds}
+    />
   );
 }
