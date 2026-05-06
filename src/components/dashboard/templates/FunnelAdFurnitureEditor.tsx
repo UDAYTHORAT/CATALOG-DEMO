@@ -100,16 +100,33 @@ export default function FunnelAdFurnitureEditor({
   const isPendingSaveRef = useRef(false);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ FIX #3: Simplified updateContent - centralized state mutation through history
+  const [liveContent, setLiveContent] = useState<Content>(initialContent);
+  const pushHistoryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync liveContent when history changes (undo/redo)
+  useEffect(() => {
+    setLiveContent(draftContent);
+  }, [draftContent]);
+
   const updateContent = useCallback(
     (recipe: (draft: Content) => void) => {
-      const next = produce(draftContent, recipe);
-      pushHistory(next);
+      setLiveContent((prev) => {
+        const next = produce(prev, recipe);
+        
+        // Debounce the push to history
+        if (pushHistoryTimeoutRef.current) clearTimeout(pushHistoryTimeoutRef.current);
+        pushHistoryTimeoutRef.current = setTimeout(() => {
+          pushHistory(next);
+        }, 500);
+
+        return next;
+      });
+      
       setSaveSuccess(false);
       setSaveError(null);
       setChangeTick((prev) => prev + 1);
     },
-    [draftContent, pushHistory]
+    [pushHistory]
   );
 
   const handleSectionUpdate = useCallback(
@@ -139,32 +156,32 @@ export default function FunnelAdFurnitureEditor({
   );
 
   const heroData = getSectionData<HeroData>(
-    draftContent,
+    liveContent,
     'content',
     defaultSectionsRef.current.find((section) => section.id === 'content')?.data as HeroData
   );
   const categoriesData = getSectionData<CategoriesData>(
-    draftContent,
+    liveContent,
     'categories',
     defaultSectionsRef.current.find((section) => section.id === 'categories')?.data as CategoriesData
   );
   const productsData = getSectionData<ProductsData>(
-    draftContent,
+    liveContent,
     'products',
     defaultSectionsRef.current.find((section) => section.id === 'products')?.data as ProductsData
   );
   const testimonialsData = getSectionData<TestimonialsData>(
-    draftContent,
+    liveContent,
     'testimonials',
     defaultSectionsRef.current.find((section) => section.id === 'testimonials')?.data as TestimonialsData
   );
   const locationData = getSectionData<LocationData>(
-    draftContent,
+    liveContent,
     'location',
     defaultSectionsRef.current.find((section) => section.id === 'location')?.data as LocationData
   );
   const whatsappData = getSectionData<WhatsAppData>(
-    draftContent,
+    liveContent,
     'whatsapp',
     defaultSectionsRef.current.find((section) => section.id === 'whatsapp')?.data as WhatsAppData
   );
@@ -224,6 +241,7 @@ export default function FunnelAdFurnitureEditor({
           name: product.name ?? 'Product',
           priceLabel: formatProductPrice(product.price ?? 0),
           image: product.image_url || FALLBACK_PRODUCT_IMAGE,
+          image2: product.image_url_2 || undefined,
           urgency: 'Limited stock',
           delivery: '7-10 Days',
         };
@@ -337,7 +355,7 @@ export default function FunnelAdFurnitureEditor({
     async (silent = false) => {
       if (!funnel?.id || isPendingSaveRef.current) return;
 
-      const contentChanged = JSON.stringify(draftContent) !== JSON.stringify(lastSavedContentRef.current);
+      const contentChanged = JSON.stringify(liveContent) !== JSON.stringify(lastSavedContentRef.current);
       if (!contentChanged && !silent) {
         // Even if content hasn't changed, if user manually clicked save, show success briefly
         setSaveSuccess(true);
@@ -357,9 +375,9 @@ export default function FunnelAdFurnitureEditor({
 
       try {
         await updateFunnel(funnel.id, {
-          story_mode_data: [{ content: draftContent }],
+          story_mode_data: [{ content: liveContent }],
         });
-        lastSavedContentRef.current = structuredClone(draftContent);
+        lastSavedContentRef.current = structuredClone(liveContent);
         setSaveSuccess(true);
         setSaveError(null);
         if (saveSuccessTimer.current) clearTimeout(saveSuccessTimer.current);
@@ -373,7 +391,7 @@ export default function FunnelAdFurnitureEditor({
         setIsSaving(false);
       }
     },
-    [draftContent, funnel?.id]
+    [liveContent, funnel?.id]
   );
 
   const handlePublish = useCallback(async () => {
@@ -573,8 +591,8 @@ export default function FunnelAdFurnitureEditor({
       return (
         <WhatsAppPanel
           data={whatsappData}
-          storeName={draftContent.storeName}
-          whatsappNumber={draftContent.whatsappNumber}
+          storeName={liveContent.storeName}
+          whatsappNumber={liveContent.whatsappNumber}
           onChange={(updates) => {
             handleSectionUpdate('whatsapp', (data) => {
               Object.assign(data as WhatsAppData, updates);
@@ -752,7 +770,7 @@ export default function FunnelAdFurnitureEditor({
 
         <PreviewPane
           funnel={funnel}
-          content={draftContent}
+          content={liveContent}
           products={productsData.products}
           previewMode={previewMode}
           onEditSection={handleEditSection}

@@ -39,7 +39,6 @@ export default async function EditFunnelPage({ params }: { params: Promise<{ id:
     <FunnelAdFurnitureEditor
       funnel={funnel}
       allProducts={products}
-      initialLinkedProductIds={linkedProductIds}
     />
   );
 }

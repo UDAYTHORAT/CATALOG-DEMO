@@ -32,7 +32,7 @@ export default React.memo(function PreviewPane({
           className="h-full overflow-y-auto rounded-[28px] bg-white shadow-[0_35px_90px_-60px_rgba(15,23,42,0.6)]"
         >
           <EliteFurnitureTemplate
-            funnel={{ ...funnel, story_mode_data: [{ content }] }}
+            funnel={{ ...funnel, story_mode_data: [{ content: content as any }] }}
             store={{
               name: content.storeName,
               whatsapp_number: content.whatsappNumber,

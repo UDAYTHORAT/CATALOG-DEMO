@@ -9,7 +9,7 @@ const satoshi = localFont({
       style: "normal",
     },
     {
-      path: "../../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-VariableItalic.woff2",
+      path: "../../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-VariableItalic.ttf",
       style: "italic",
     },
   ],

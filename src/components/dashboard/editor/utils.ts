@@ -11,18 +11,30 @@ import type {
   WhatsAppData,
 } from './types';
 
-export const HERO_IMAGE = 'https://images.unsplash.com/photo-1618220179428-22790b46a0eb?auto=format&fit=crop&w=300&q=80';
+export const HERO_IMAGE = 'https://images.unsplash.com/photo-1583847268964-b28dc2f51ac9?auto=format&fit=crop&w=1200&q=80';
 export const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80';
 
 const sanitizeLegacyText = (value: unknown): unknown => {
   if (typeof value === 'string') {
-    return value
+    let sanitized = value
       .replaceAll('\u00e2\u201a\u00b9', 'Rs ')
       .replaceAll('\u00e2\u20ac\u201d', '-')
       .replaceAll('\u00e2\u0161\u00a1', '')
       .replaceAll('\u00f0\u0178\u201d\u00a5', 'Best Value')
       .replaceAll('\u00e2\u00ad\u0090', 'Most Popular')
       .replaceAll('\u00f0\u0178\u2019\u017d', 'Premium');
+    
+    // IMAGE MIGRATION: Update broken/old Unsplash IDs to "Best of the Best" ones
+    if (sanitized.includes('unsplash.com')) {
+      sanitized = sanitized
+        // Dining & Decor Category Fix
+        .replace('photo-1588854337236-6889d631faa8', 'photo-1595515106969-1ce29566ff1c')
+        .replace('photo-1616486338812-3dadae4b4ace', 'photo-1595515106969-1ce29566ff1c')
+        // Old logo or hero fixes
+        .replace('photo-1618220179428-22790b46a0eb', 'photo-1583847268964-b28dc2f51ac9');
+    }
+
+    return sanitized;
   }
 
   if (Array.isArray(value)) {
@@ -42,7 +54,7 @@ const defaultHeroData: HeroData = {
   tagline: 'Urban Living Furniture.',
   subTagline: 'Solid Wood Furniture at Factory Prices. Handcrafted in Jodhpur, delivered directly to your home.',
   heroCtaText: 'Find Your Perfect Furniture',
-  heroCtaSubtext: '⚡ No browsing. Just pick & chat',
+  heroCtaSubtext: 'No browsing. Just pick & chat',
 };
 
 const defaultCategories: CategoryItem[] = [
@@ -50,19 +62,19 @@ const defaultCategories: CategoryItem[] = [
     id: 'sofas',
     label: 'Luxury Sofas',
     tagline: 'Lounges & Recliners',
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'beds',
     label: 'Solid Wood Beds',
     tagline: 'Master Bedroom Collections',
-    image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'dining',
     label: 'Dining & Decor',
     tagline: 'Factory-Direct Sets',
-    image: 'https://images.unsplash.com/photo-1617806118233-18e1db208fa0?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
   },
 ];
 
@@ -76,7 +88,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 45,000',
       retailLabel: 'Rs 65,000',
       savingsLabel: 'Save 31%',
-      image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Only 2 frames ready',
       delivery: 'Delivery: 7-10 Days',
       rating: 4.8,
@@ -88,7 +100,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 58,500',
       retailLabel: 'Rs 82,000',
       savingsLabel: 'Save 28%',
-      image: 'https://images.unsplash.com/photo-1506439015502-393282b81048?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1519961655809-34fa156820ff?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Selling fast',
       delivery: 'Delivery: 5-7 Days',
       rating: 4.9,
@@ -100,7 +112,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 24,000',
       retailLabel: 'Rs 35,000',
       savingsLabel: 'Save 31%',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Limited Stock',
       delivery: 'Delivery: 5-7 Days',
       rating: 4.7,
@@ -125,7 +137,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 32,500',
       retailLabel: 'Rs 48,000',
       savingsLabel: 'Save 32%',
-      image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1531835551805-16d864c8d311?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Most Popular',
       delivery: 'Delivery: 7-10 Days',
       rating: 4.9,
@@ -137,7 +149,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 28,000',
       retailLabel: 'Rs 42,000',
       savingsLabel: 'Save 33%',
-      image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1616594111718-3617300c1448?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Jodhpur Special',
       delivery: 'Delivery: 12-15 Days',
       rating: 4.7,
@@ -150,7 +162,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 65,000',
       retailLabel: 'Rs 95,000',
       savingsLabel: 'Save 31%',
-      image: 'https://images.unsplash.com/photo-1617806118233-18e1db208fa0?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Premium Finish',
       delivery: 'Delivery: 10-12 Days',
       rating: 4.9,
@@ -162,7 +174,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 22,500',
       retailLabel: 'Rs 32,000',
       savingsLabel: 'Save 29%',
-      image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b41?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Space Saver',
       delivery: 'Delivery: 5-7 Days',
       rating: 4.8,
@@ -174,7 +186,7 @@ const defaultProducts: ProductsData = {
       priceLabel: 'Rs 85,000',
       retailLabel: 'Rs 1,20,000',
       savingsLabel: 'Save 29%',
-      image: 'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1617806118233-18e1db208fa0?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Exclusive Design',
       delivery: 'Delivery: 15-20 Days',
       rating: 5.0,

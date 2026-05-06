@@ -9,6 +9,11 @@ export interface CategoryItem {
   image: string;
 }
 
+export interface ProductBenefit {
+  title: string;
+  desc: string;
+}
+
 export interface ProductItem {
   id: string;
   category_id: string;
@@ -17,9 +22,12 @@ export interface ProductItem {
   retailLabel?: string;
   savingsLabel?: string;
   image: string;
+  image2?: string;
   urgency: string;
   delivery: string;
   rating?: number;
+  description?: string;
+  benefits?: ProductBenefit[];
 }
 
 export interface TestimonialItem {
