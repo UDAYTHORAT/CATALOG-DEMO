@@ -6,10 +6,9 @@ import {
   MoreVertical, 
   CheckCheck, 
   Zap, 
-  Sparkles,
-  Layout,
+  ArrowDown,
   MessageSquare,
-  ArrowDown
+  Layout
 } from 'lucide-react';
 import { Field, PanelTitle, subtleInputClass } from '../ui';
 import type { WhatsAppData } from '../types';
@@ -25,6 +24,23 @@ export default React.memo(function WhatsAppPanel({
   whatsappNumber: string;
   onChange: (updates: Partial<WhatsAppData>) => void;
 }) {
+  // AUTO-MIGRATION: Detect legacy "Urban Living" and swap for dynamic "{store_name}"
+  React.useEffect(() => {
+    const updates: Partial<WhatsAppData> = {};
+    
+    if (data.welcomeMessage?.includes('Urban Living')) {
+      updates.welcomeMessage = data.welcomeMessage.replaceAll('Urban Living', '{store_name}');
+    }
+    
+    if (data.productInquiryText?.includes('Urban Living')) {
+      updates.productInquiryText = data.productInquiryText.replaceAll('Urban Living', '{store_name}');
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      onChange(updates);
+    }
+  }, [data.welcomeMessage, data.productInquiryText, onChange]);
+
   return (
     <div className="space-y-12 pb-20">
       <PanelTitle icon={MessageCircle} label="WhatsApp Strategy" meta="Sales Automation" />
@@ -108,7 +124,9 @@ export default React.memo(function WhatsAppPanel({
               <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400">3.1 General Inquiry (Elite Structure)</p>
               <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-4 shadow-sm relative">
                 <p className="text-[11px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
-                  {data.welcomeMessage || 'Hi, I’m planning to buy furniture...'}
+                  {(data.welcomeMessage || 'Hi {store_name}, I’m planning to buy furniture...')
+                    .replace('{store_name}', storeName || 'Store Identity')
+                    .replace('Urban Living', storeName || 'Store Identity')}
                 </p>
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-40">
                   <CheckCheck size={12} className="text-blue-600" />
@@ -120,7 +138,10 @@ export default React.memo(function WhatsAppPanel({
               <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400">3.2 Product Intent (Elite Structure)</p>
               <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-4 shadow-sm relative">
                 <p className="text-[11px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
-                  {(data.productInquiryText || '').replace('{product_name}', 'Royal Oak Sofa')}
+                  {(data.productInquiryText || '')
+                    .replace('{product_name}', 'Royal Oak Sofa')
+                    .replace('{store_name}', storeName || 'Store Identity')
+                    .replace('Urban Living', storeName || 'Store Identity')}
                 </p>
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-40">
                   <CheckCheck size={12} className="text-blue-600" />
@@ -146,7 +167,7 @@ export default React.memo(function WhatsAppPanel({
       <section className="space-y-6">
         <div className="flex items-center gap-3 px-1">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-lg shadow-emerald-600/20">
-            <Sparkles size={14} />
+            <MessageSquare size={14} />
           </div>
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">3. Lead Automation</h3>
         </div>
@@ -176,8 +197,12 @@ export default React.memo(function WhatsAppPanel({
             />
             <div className="flex items-center gap-2 text-[10px] text-slate-400 italic">
               <span>Use</span>
+              <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{store_name}"}</code>
+              <span>,</span>
               <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{product_name}"}</code>
-              <span>for automatic naming.</span>
+              <span>or</span>
+              <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{category}"}</code>
+              <span>for dynamic text.</span>
             </div>
           </div>
         </div>
@@ -186,7 +211,7 @@ export default React.memo(function WhatsAppPanel({
       {/* STRATEGIC CONVERSION TIP */}
       <div className="rounded-[2rem] border border-emerald-900/5 bg-emerald-50/30 p-6 flex items-start gap-4">
         <div className="h-10 w-10 shrink-0 rounded-2xl bg-white flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100">
-          <Sparkles size={18} />
+          <MessageCircle size={18} />
         </div>
         <div>
           <p className="text-[11px] font-black uppercase tracking-wider text-emerald-900 mb-1">Elite Sales Engine</p>

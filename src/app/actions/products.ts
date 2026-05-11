@@ -53,6 +53,15 @@ export async function createProduct(formData: FormData) {
     return { error: 'Name and valid price are required' };
   }
 
+  let story_mode_data = {};
+  if (formData.has('story_mode_data')) {
+    try {
+      story_mode_data = JSON.parse(formData.get('story_mode_data') as string);
+    } catch (e) {
+      console.error('Error parsing story_mode_data:', e);
+    }
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('products')
@@ -66,7 +75,7 @@ export async function createProduct(formData: FormData) {
         image_url_2,
         dimensions,
         category: category || 'Uncategorized',
-        story_mode_data: {}
+        story_mode_data
       }
     ])
     .select()

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Type } from 'lucide-react';
 import { Field, PanelTitle, inputClass } from '../ui';
 import type { HeroData } from '../types';
 
@@ -12,7 +12,7 @@ export default React.memo(function HeroPanel({
 }) {
   return (
     <div className="space-y-8">
-      <PanelTitle icon={Sparkles} label="Hero Messaging" meta="Landing screen" />
+      <PanelTitle icon={Type} label="Hero Messaging" meta="Landing screen" />
 
       <div className="space-y-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

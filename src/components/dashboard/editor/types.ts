@@ -28,6 +28,10 @@ export interface ProductItem {
   rating?: number;
   description?: string;
   benefits?: ProductBenefit[];
+  tier?: 'best_value' | 'most_popular' | 'premium';
+  dimensions?: string;
+  material?: string;
+  finish?: string;
 }
 
 export interface TestimonialItem {

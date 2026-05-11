@@ -234,8 +234,8 @@ const defaultWhatsAppData: WhatsAppData = {
   title: 'Get Best Price Instantly',
   subTitle: 'Chat directly with factory & save more',
   ctaText: 'Chat Directly with Factory',
-  welcomeMessage: 'Hi Urban Living,\n\nI’m planning to buy furniture.\n\nHere’s what I’m looking for:\n• Requirement: {category}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode',
-  productInquiryText: 'Hi Urban Living,\n\nI’m interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city',
+  welcomeMessage: 'Hi {store_name},\n\nI’m planning to buy furniture.\n\nHere’s what I’m looking for:\n• Requirement: {category}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode',
+  productInquiryText: 'Hi {store_name},\n\nI’m interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city',
 };
 
 export const createDefaultSections = (): Section[] => [

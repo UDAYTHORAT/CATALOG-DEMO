@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { X, Loader2, Plus, ArrowRight, Edit3 } from 'lucide-react';
+import { X, Loader2, Plus, ArrowRight, Edit3, ChevronDown, Zap, LayoutList } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { createProduct, updateProduct, Product } from '@/app/actions/products';
 
@@ -16,18 +16,16 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [imageUrl2, setImageUrl2] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const [description, setDescription] = useState('');
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
     if (product) {
       setImageUrl(product.image_url || '');
       setImageUrl2(product.image_url_2 || '');
-      setDescription(product.description || '');
+      setImageUrl2(product.image_url_2 || '');
     } else {
       setImageUrl('');
       setImageUrl2('');
-      setDescription('');
     }
   }, [product, isOpen]);
 
@@ -74,6 +72,16 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     formData.append('image_url', imageUrl);
     formData.append('image_url_2', imageUrl2);
 
+    // Package story_mode_data
+    const storyModeData = {
+      ...(product?.story_mode_data || {}),
+      urgency: formData.get('urgency'),
+      delivery: formData.get('delivery'),
+      material: formData.get('material'),
+      finish: formData.get('finish'),
+    };
+    formData.append('story_mode_data', JSON.stringify(storyModeData));
+
     let result;
     if (product) {
       result = await updateProduct(product.id, formData);
@@ -90,7 +98,6 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     }
   };
 
-  const MAX_DESC = 500;
 
   return (
     <>
@@ -129,36 +136,36 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-8 space-y-6 no-scrollbar max-h-[60vh]">
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar max-h-[75vh]">
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-medium flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <div className="p-4 bg-red-50 text-red-600 border border-red-100 rounded-2xl text-sm font-medium flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
                 {error}
               </div>
             )}
 
             {/* Image uploads */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <div className="w-1 h-1 rounded-full bg-indigo-500" />
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                   Primary Image
                 </label>
                 <ImageUpload onUploadComplete={setImageUrl} defaultImage={imageUrl} />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <div className="w-1 h-1 rounded-full bg-indigo-500" />
-                  Detail Image
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/50" />
+                  Detail View
                 </label>
                 <ImageUpload onUploadComplete={setImageUrl2} defaultImage={imageUrl2} />
               </div>
             </div>
 
             {/* Name */}
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-xs font-semibold text-slate-500">
-                Product Name <span className="text-red-400">*</span>
+            <div className="space-y-3">
+              <label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+                Product Title <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -167,85 +174,154 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                 defaultValue={product?.name}
                 required
                 placeholder="e.g. Minimalist Oak Workbench"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all text-sm"
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all text-sm placeholder:text-slate-300"
               />
             </div>
 
             {/* Price + Category */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="price" className="text-xs font-semibold text-slate-500">
+              <div className="space-y-3">
+                <label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
                   Price (INR) <span className="text-red-400">*</span>
                 </label>
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  defaultValue={product?.price}
-                  step="0.01"
-                  min="0"
-                  required
-                  placeholder="0.00"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all text-sm"
-                />
+                <div className="relative">
+                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-300">₹</span>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    defaultValue={product?.price}
+                    step="0.01"
+                    min="0"
+                    required
+                    placeholder="0.00"
+                    className="w-full pl-9 pr-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all text-sm placeholder:text-slate-300"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label htmlFor="category" className="text-xs font-semibold text-slate-500">
-                  Category
+              <div className="space-y-3">
+                <label htmlFor="category" className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
+                  Collection
                 </label>
-                <select
-                  id="category"
-                  name="category"
-                  defaultValue={product?.category || 'Furniture'}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all appearance-none cursor-pointer text-sm"
-                >
-                  <option value="Furniture">Furniture</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Apparel">Apparel</option>
-                  <option value="Real Estate">Real Estate</option>
-                  <option value="Services">Services</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div className="relative">
+                  <select
+                    id="category"
+                    name="category"
+                    defaultValue={product?.category || 'Furniture'}
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all appearance-none cursor-pointer text-sm"
+                  >
+                    <option value="Furniture">Furniture</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Apparel">Apparel</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Services">Services</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            {/* Dimensions */}
-            <div className="space-y-2">
-              <label htmlFor="dimensions" className="text-xs font-semibold text-slate-500">
-                Dimensions
+            {/* Description */}
+            <div className="space-y-3">
+              <label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center justify-between">
+                <span>Elite Narrative</span>
+                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Storytelling</span>
               </label>
-              <input
-                type="text"
-                id="dimensions"
-                name="dimensions"
-                defaultValue={product?.dimensions || ''}
-                placeholder="e.g. 180cm x 85cm x 75cm"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all text-sm"
-              />
-            </div>
-
-            {/* Description with character count */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="description" className="text-xs font-semibold text-slate-500">
-                  Description
-                </label>
-                <span className={`text-[10px] font-medium ${
-                  description.length > MAX_DESC * 0.9 ? 'text-amber-500' : 'text-slate-300'
-                }`}>
-                  {description.length}/{MAX_DESC}
-                </span>
-              </div>
               <textarea
                 id="description"
                 name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value.slice(0, MAX_DESC))}
-                rows={3}
-                maxLength={MAX_DESC}
-                placeholder="Describe this product..."
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all resize-none text-sm"
+                defaultValue={product?.description || ''}
+                rows={4}
+                placeholder="Describe the handcrafted quality, material story, and factory-direct value proposition..."
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all text-sm resize-none leading-relaxed placeholder:text-slate-300 shadow-inner"
               />
+            </div>
+
+            {/* Conversion Boosters */}
+            <div className="p-8 rounded-[2rem] bg-amber-50/50 border border-amber-100 space-y-6 shadow-sm">
+              <div className="flex items-center gap-2">
+                <Zap size={16} className="text-amber-500 fill-amber-500/20" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/60">Conversion Boosters</p>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="urgency" className="text-[10px] font-bold text-amber-900/40 uppercase tracking-wider">Urgency Hook</label>
+                  <input
+                    type="text"
+                    id="urgency"
+                    name="urgency"
+                    defaultValue={product?.story_mode_data?.urgency || 'Limited Stock'}
+                    placeholder="e.g. Selling fast"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-amber-200 text-amber-900 font-black focus:outline-none focus:ring-4 focus:ring-amber-500/10 text-xs shadow-sm transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="delivery" className="text-[10px] font-bold text-amber-900/40 uppercase tracking-wider">Delivery Promise</label>
+                  <input
+                    type="text"
+                    id="delivery"
+                    name="delivery"
+                    defaultValue={product?.story_mode_data?.delivery || '7-11 Days'}
+                    placeholder="e.g. 7-10 Days"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-amber-200 text-amber-900 font-black focus:outline-none focus:ring-4 focus:ring-amber-500/10 text-xs shadow-sm transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Technical Specs */}
+            <div className="p-8 rounded-[2.5rem] bg-[#1a1c24] text-white space-y-6 shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] rounded-full -mr-16 -mt-16 blur-3xl" />
+               <div className="flex items-center gap-2 relative z-10">
+                <LayoutList size={16} className="text-slate-500" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Technical Specs</p>
+              </div>
+              <div className="space-y-3 relative z-10">
+                <label htmlFor="dimensions" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
+                  <div className="w-1 h-1 rounded-full bg-slate-500" />
+                  Dimensions (WxDxH)
+                </label>
+                <input
+                  type="text"
+                  id="dimensions"
+                  name="dimensions"
+                  defaultValue={product?.dimensions || ''}
+                  placeholder="e.g. 180 x 90 x 75 cm"
+                  className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 relative z-10">
+                <div className="space-y-3">
+                  <label htmlFor="material" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
+                    <div className="w-1 h-1 rounded-full bg-slate-500" />
+                    Primary Material
+                  </label>
+                  <input
+                    type="text"
+                    id="material"
+                    name="material"
+                    defaultValue={product?.story_mode_data?.material || ''}
+                    placeholder="e.g. Sheesham Wood"
+                    className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label htmlFor="finish" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
+                    <div className="w-1 h-1 rounded-full bg-slate-500" />
+                    Finish Type
+                  </label>
+                  <input
+                    type="text"
+                    id="finish"
+                    name="finish"
+                    defaultValue={product?.story_mode_data?.finish || ''}
+                    placeholder="e.g. Walnut Finish"
+                    className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Check, Eye, Sparkles, TrendingUp, Users, Zap, Flame } from 'lucide-react';
+import { ArrowRight, Check, Eye, TrendingUp, Users, Zap, Flame } from 'lucide-react';
 import { useState } from 'react';
 import { TemplatePreviewModal } from './TemplatePreviewModal';
 import { MASTER_TEMPLATES, TEMPLATE_CATEGORIES, type FunnelTemplate } from '@/data/funnelTemplates';
@@ -19,7 +19,7 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
       <div>
         <div className="flex items-center gap-2 mb-2">
           <div className="w-7 h-7 rounded-lg bg-linear-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-md">
-            <Sparkles size={14} className="text-white" />
+            <Zap size={14} className="text-white" />
           </div>
           <span className="text-xs font-bold text-amber-600 uppercase tracking-[0.15em]">
             Proven · Psychological · High-Converting

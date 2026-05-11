@@ -27,15 +27,33 @@ export default React.memo(function CategoriesPanel({
         action={
           <button
             onClick={onAdd}
-            className="flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] text-white transition-all hover:bg-slate-800 active:scale-95 shadow-lg shadow-slate-900/20"
+            disabled={categories.length >= 3}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all active:scale-95 shadow-lg ${
+              categories.length >= 3 
+              ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+              : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/20'
+            }`}
           >
             <Plus size={14} />
-            Add New
+            {categories.length >= 3 ? 'Limit Reached' : 'Add New'}
           </button>
         }
       />
 
       {/* Step Settings Card */}
+      {categories.length >= 3 && (
+        <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 flex gap-3 items-start mb-6">
+          <div className="p-1 rounded-full bg-amber-100 text-amber-600">
+            <LayoutGrid size={16} />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-amber-900">Conversion Limit Reached</p>
+            <p className="text-[10px] text-amber-700 leading-relaxed mt-0.5">
+              High-conversion templates work best with exactly 3 collections. Excess categories will be hidden.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Step Global Settings</p>
         <div className="space-y-5">

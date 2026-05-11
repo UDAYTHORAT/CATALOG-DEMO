@@ -1,0 +1,100 @@
+================================================================================
+ELITE FUNNEL AD SYSTEM: COMPLETE TECHNICAL ARCHITECTURE & WORKFLOW
+================================================================================
+
+PROJECT VISION:
+The "Elite Furniture" system is a high-conversion, mobile-first sales engine
+designed to transform browsing intent into direct WhatsApp sales. It leverages
+psychological triggers (urgency, limited stock, factory-direct pricing) and a 
+premium "Concierge" aesthetic to qualification leads and maximize conversion speed.
+
+--------------------------------------------------------------------------------
+1. CORE ARCHITECTURE (THE EDITOR ORCHESTRA)
+--------------------------------------------------------------------------------
+
+[A] FunnelAdFurnitureEditor.tsx
+- LOCATION: src/components/dashboard/templates/
+- ROLE: The Central Command Center (Parent Orchestrator).
+- HOW IT WORKS: 
+  * Manages the "Live Draft" state of the funnel using Immer (immutable updates).
+  * Orchestrates history tracking (Undo/Redo) via useEditorHistory.
+  * Synchronizes state between the Sidebar (inputs) and the PreviewPane (visuals).
+  * Handles the final "Publish" logic to save data back to Supabase.
+
+[B] EditorSidebar.tsx
+- LOCATION: src/components/dashboard/editor/
+- ROLE: Navigation & Mode Selection.
+- HOW IT WORKS: 
+  * Provides a two-column layout: A narrow navigation bar (Tabs) and a wide editing area.
+  * Allows users to jump between "Branding", "Showcase", "Automation", and "Analytics".
+  * Surfaces specific "Panels" based on the selected TabId.
+
+[C] PreviewPane.tsx
+- LOCATION: src/components/dashboard/editor/
+- ROLE: Real-Time Visual Feedback.
+- HOW IT WORKS: 
+  * A sandbox environment that renders the actual public-facing template.
+  * Supports "Responsive Simulation" (Mobile, Tablet, Desktop) modes.
+  * Injects the "Live Draft" state from the editor directly into the template.
+  * Allows "Direct Selection": Clicking a section in the preview opens its editing panel.
+
+--------------------------------------------------------------------------------
+2. THE PUBLIC-FACING ENGINE
+--------------------------------------------------------------------------------
+
+[D] EliteFurnitureTemplate.tsx
+- LOCATION: src/components/templates/
+- ROLE: The Conversion Surface (Public Funnel).
+- HOW IT WORKS: 
+  * A mobile-first, story-driven layout built with Framer Motion.
+  * USES: Psychological Hook -> Category Selection -> Product Recommendation -> WhatsApp CTA.
+  * SPECIAL FEATURES:
+    - Urgency Indicators (Pulsing "Limited Stock" badges).
+    - Technical Spec Panels (High-end "Blueprint" styling).
+    - Personal Concierge (Custom request portal for non-catalog items).
+
+--------------------------------------------------------------------------------
+3. GRANULAR EDITING PANELS (src/components/dashboard/editor/sections/)
+--------------------------------------------------------------------------------
+
+- StorePanel.tsx: 
+  * Manages Brand Identity (Logo, Store Name, Support Number).
+  * Configures the overall "Shopify-killer" trust layers.
+
+- HeroPanel.tsx: 
+  * Edits the "Hook" (Headline, Sub-tagline, and Primary CTA).
+  * Essential for establishing the "Decision Speed" of the funnel.
+
+- ProductsPanel.tsx: 
+  * THE MOST POWERFUL PANEL. 
+  * Manages the Product Showcase, Technical Specs (Material, Finish), and Conversion Boosters.
+  * Allows Quick-Add from catalog or creating high-intent custom entries.
+
+- WhatsAppPanel.tsx: 
+  * Sales Automation Center.
+  * Configures dynamic message templates using tags like {store_name} and {product_name}.
+  * Features a "Live Chat Preview" to visualize exactly what the customer will send.
+
+- TestimonialsPanel.tsx: 
+  * Manages Social Proof. Allows adding customer trust-marks to lower friction.
+
+- CategoriesPanel.tsx: 
+  * Sets up the "Discovery" logic (e.g., Sofa vs Bed vs Dining).
+
+- LocationPanel.tsx: 
+  * Adds physical trust for brick-and-mortar stores (Map, Studio Address).
+
+--------------------------------------------------------------------------------
+4. DATA FLOW & SYNCHRONIZATION
+--------------------------------------------------------------------------------
+
+1. USER INPUT: User changes text in (e.g.) HeroPanel.
+2. STATE UPDATE: handleSectionUpdate in FunnelAdFurnitureEditor triggers.
+3. LIVE SYNC: The updated 'liveContent' object is passed to PreviewPane.
+4. RE-RENDER: EliteFurnitureTemplate re-renders instantly with the new data.
+5. PERSISTENCE: Clicking "Save Changes" calls 'updateFunnel' (Server Action)
+   which stores the entire configuration as JSON in the 'story_mode_data' column.
+
+================================================================================
+SYSTEM GOAL: Decision speed. Purchase intent. Zero friction.
+================================================================================

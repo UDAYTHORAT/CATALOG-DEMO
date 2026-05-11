@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Loader2, ArrowRight, Zap } from 'lucide-react';
 import { Product } from '@/app/actions/products';
 import { createFunnel } from '@/app/actions/funnels';
 import { useRouter } from 'next/navigation';
@@ -128,7 +128,7 @@ export function CreateFunnelModal({ isOpen, onClose, selectedTemplate }: CreateF
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <Sparkles size={16} />
+              <Zap size={16} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-900 leading-none">
@@ -192,7 +192,7 @@ export function CreateFunnelModal({ isOpen, onClose, selectedTemplate }: CreateF
               className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-xl shadow-indigo-200 disabled:opacity-50"
             >
               {isSubmitting ? (
-                <><Loader2 size={16} className="animate-spin" /> Deploying Engine...</>
+                <><Zap size={14} className="animate-spin" /> Deploying Engine...</>
               ) : (
                 <>Deploy {activeTemplate ? activeTemplate.name : 'Funnel'} <ArrowRight size={16} /></>
               )}

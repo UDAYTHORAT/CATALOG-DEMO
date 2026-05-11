@@ -10,12 +10,14 @@ import {
   Copy,
   Loader2,
   Monitor,
+  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   Redo2,
   Rocket,
   Save,
   Smartphone,
+  Sun,
   Tablet,
   Undo2,
   ExternalLink,
@@ -93,6 +95,7 @@ export default function FunnelAdFurnitureEditor({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [changeTick, setChangeTick] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const saveSuccessTimer = useRef<NodeJS.Timeout | null>(null);
   const copyTimer = useRef<NodeJS.Timeout | null>(null);
@@ -235,15 +238,25 @@ export default function FunnelAdFurnitureEditor({
     (product: Product) => {
       handleSectionUpdate('products', (data) => {
         const productsList = (data as ProductsData).products;
+        const defaultCatId = categoriesData.categories[0]?.id ?? 'seating';
+        const countInCat = productsList.filter(p => p.category_id === defaultCatId).length;
+        
+        if (countInCat >= 3) {
+          alert(`The category "${categoriesData.categories[0]?.label}" is full (max 3). Remove an item or change category after adding.`);
+          return;
+        }
+
         const nextProduct: ProductItem = {
           id: product.id ?? `prod-${Date.now()}`,
-          category_id: categoriesData.categories[0]?.id ?? 'seating',
+          category_id: defaultCatId,
           name: product.name ?? 'Product',
           priceLabel: formatProductPrice(product.price ?? 0),
           image: product.image_url || FALLBACK_PRODUCT_IMAGE,
           image2: product.image_url_2 || undefined,
           urgency: 'Limited stock',
           delivery: '7-10 Days',
+          description: product.description || undefined,
+          dimensions: product.dimensions || undefined,
         };
         productsList.unshift(nextProduct);
       });
@@ -254,9 +267,17 @@ export default function FunnelAdFurnitureEditor({
   const handleAddCustomProduct = useCallback(() => {
     handleSectionUpdate('products', (data) => {
       const productsList = (data as ProductsData).products;
+      const defaultCatId = categoriesData.categories[0]?.id ?? 'seating';
+      const countInCat = productsList.filter(p => p.category_id === defaultCatId).length;
+
+      if (countInCat >= 3) {
+        alert(`The category "${categoriesData.categories[0]?.label}" is full (max 3).`);
+        return;
+      }
+
       productsList.unshift({
         id: `custom-${Date.now()}`,
-        category_id: categoriesData.categories[0]?.id ?? 'seating',
+        category_id: defaultCatId,
         name: 'Custom Product',
         priceLabel: 'Rs 1,200',
         image: FALLBACK_PRODUCT_IMAGE,
@@ -274,6 +295,21 @@ export default function FunnelAdFurnitureEditor({
         } else {
           const productsList = (data as ProductsData).products;
           if (!productsList[index]) return;
+
+          // Enforce 3 product limit per category
+          if (updates.hasOwnProperty('category_id')) {
+            const nextCatId = (updates as Partial<ProductItem>).category_id;
+            const currentCatId = productsList[index].category_id;
+            
+            if (nextCatId && nextCatId !== currentCatId) {
+              const countInNewCat = productsList.filter(p => p.category_id === nextCatId).length;
+              if (countInNewCat >= 3) {
+                alert("This category already has 3 products. Please remove one before moving this product here.");
+                return;
+              }
+            }
+          }
+
           productsList[index] = { ...productsList[index], ...(updates as Partial<ProductItem>) };
         }
       });
@@ -606,33 +642,33 @@ export default function FunnelAdFurnitureEditor({
   };
 
   return (
-    <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+    <div className={`flex h-full flex-col transition-colors duration-300 ${isDarkMode ? 'bg-[#0f1117]' : 'bg-white'}`}>
+      <div className={`flex items-center justify-between border-b px-6 py-4 transition-colors duration-300 ${isDarkMode ? 'border-white/[0.06] bg-[#13151b]' : 'border-slate-200 bg-white'}`}>
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/funnels"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900"
+            className={`inline-flex items-center gap-2 text-sm font-semibold transition-colors ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-700 hover:text-slate-900'}`}
           >
             <ChevronLeft className="h-4 w-4" />
             Back to funnels
           </Link>
-          <div className="h-5 w-px bg-slate-200" />
+          <div className={`h-5 w-px ${isDarkMode ? 'bg-white/10' : 'bg-slate-200'}`} />
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Editor</p>
-            <p className="text-base font-semibold text-slate-900">{funnel?.welcome_title ?? 'Furniture Funnel'}</p>
+            <p className={`text-xs uppercase tracking-[0.3em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Editor</p>
+            <p className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{funnel?.welcome_title ?? 'Furniture Funnel'}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-1">
+          <div className={`flex items-center gap-1 rounded-full border px-2 py-1 transition-colors ${isDarkMode ? 'border-white/10 bg-white/[0.04]' : 'border-slate-200 bg-white'}`}>
             {previewModes.map((mode) => (
               <button
                 key={mode.id}
                 onClick={() => setPreviewMode(mode.id)}
                 className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold transition ${
                   previewMode === mode.id
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? isDarkMode ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
+                    : isDarkMode ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 {mode.icon}
@@ -641,9 +677,18 @@ export default function FunnelAdFurnitureEditor({
             ))}
           </div>
 
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setIsDarkMode(prev => !prev)}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-all ${isDarkMode ? 'border-white/10 text-amber-400 hover:bg-white/10' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
+          >
+            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {isDarkMode ? 'Light' : 'Dark'}
+          </button>
+
           <button
             onClick={handleCopyLink}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
           >
             <Copy className="h-3.5 w-3.5" />
             {copied ? 'Copied' : 'Copy link'}
@@ -651,7 +696,7 @@ export default function FunnelAdFurnitureEditor({
 
           <button
             onClick={() => setIsSidebarVisible((prev) => !prev)}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
           >
             {isSidebarVisible ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
             {isSidebarVisible ? 'Hide panels' : 'Show panels'}
@@ -659,9 +704,9 @@ export default function FunnelAdFurnitureEditor({
 
           <button
             onClick={() => void handleSave()}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition-all"
+            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold active:scale-95 transition-all ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
           >
-            {isSaving ? <Loader2 className="h-4 w-4 animate-spin text-slate-500" /> : <Save className="h-4 w-4 text-slate-500" />}
+            {isSaving ? <Loader2 className={`h-4 w-4 animate-spin ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} /> : <Save className={`h-4 w-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} />}
             {isSaving ? 'Saving' : 'Save'}
           </button>
 
@@ -684,7 +729,7 @@ export default function FunnelAdFurnitureEditor({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -240, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full w-[600px] shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl"
+              className="flex h-full w-[660px] shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl"
             >
               {/* ✅ FIX #10: Professional Two-Column Sidebar Layout */}
               <div className="flex flex-1 overflow-hidden">

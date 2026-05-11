@@ -28,8 +28,7 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
 
   const filteredProducts = useMemo(() => 
     initialProducts.filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || (p.category || 'Other') === selectedCategory;
       return matchesSearch && matchesCategory;
     }),
@@ -179,15 +178,10 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
                     <h3 className="font-semibold text-slate-900 text-sm mb-1 line-clamp-1 group-hover:text-indigo-600 transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-xs text-slate-400 line-clamp-2 flex-1 mb-3">
-                      {product.description || 'No description added'}
-                    </p>
+
                     
                     <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                       <span className="text-sm font-bold text-indigo-600">{formatPrice(product.price)}</span>
-                      <span className="text-[10px] text-slate-300 font-medium">
-                        {product.dimensions || '—'}
-                      </span>
                     </div>
                   </div>
                 </motion.div>
