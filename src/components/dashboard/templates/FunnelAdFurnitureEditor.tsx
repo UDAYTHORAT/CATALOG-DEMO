@@ -22,6 +22,20 @@ import {
   Undo2,
   ExternalLink,
   X,
+  HelpCircle,
+  Sparkles,
+  Info,
+  ChevronRight,
+  Target,
+  MousePointer2,
+  Trophy,
+  PartyPopper,
+  ShieldCheck,
+  Zap,
+  Wand2,
+  Settings2,
+  Clock,
+  ArrowRight,
 } from 'lucide-react';
 import { useEditorHistory } from '@/components/dashboard/editor/hooks/useEditorHistory';
 import type { Funnel } from '@/app/actions/funnels';
@@ -29,6 +43,7 @@ import { updateFunnel } from '@/app/actions/funnels';
 import type { Product } from '@/app/actions/products';
 import EditorSidebar from '@/components/dashboard/editor/EditorSidebar';
 import PreviewPane from '@/components/dashboard/editor/PreviewPane';
+import WizardMode from '@/components/dashboard/editor/WizardMode';
 import CategoriesPanel from '@/components/dashboard/editor/sections/CategoriesPanel';
 import HeroPanel from '@/components/dashboard/editor/sections/HeroPanel';
 import LocationPanel from '@/components/dashboard/editor/sections/LocationPanel';
@@ -96,6 +111,17 @@ export default function FunnelAdFurnitureEditor({
   const [copied, setCopied] = useState(false);
   const [changeTick, setChangeTick] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(1);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [editorMode, setEditorMode] = useState<'choosing' | 'wizard' | 'advanced'>('choosing');
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`editor_mode_${funnel.id}`);
+    if (saved === 'advanced' || saved === 'wizard') {
+      setEditorMode(saved as 'advanced' | 'wizard');
+    }
+  }, [funnel.id]);
 
   const saveSuccessTimer = useRef<NodeJS.Timeout | null>(null);
   const copyTimer = useRef<NodeJS.Timeout | null>(null);
@@ -110,6 +136,21 @@ export default function FunnelAdFurnitureEditor({
   useEffect(() => {
     setLiveContent(draftContent);
   }, [draftContent]);
+
+  // ✅ Auto-show onboarding whenever entering Advanced mode
+  useEffect(() => {
+    if (editorMode === 'advanced') {
+      const timer = setTimeout(() => setShowOnboarding(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [funnel.id, editorMode]);
+
+  const handleChooseMode = useCallback((mode: 'wizard' | 'advanced') => {
+    setEditorMode(mode);
+    localStorage.setItem(`editor_mode_${funnel.id}`, mode);
+  }, [funnel.id]);
+
+
 
   const updateContent = useCallback(
     (recipe: (draft: Content) => void) => {
@@ -455,6 +496,12 @@ export default function FunnelAdFurnitureEditor({
     }
   }, [draftContent, funnel?.id]);
 
+  const handleWizardFinish = useCallback(async () => {
+    await handlePublish();
+    setEditorMode('advanced');
+    localStorage.setItem(`editor_mode_${funnel.id}`, 'advanced');
+  }, [handlePublish, funnel.id]);
+
   // ✅ FIX #6: Robust auto-save debouncing logic
   useEffect(() => {
     if (autoSaveTimeoutRef.current) {
@@ -540,8 +587,9 @@ export default function FunnelAdFurnitureEditor({
   ]);
 
   // ✅ FIX #9: Clean panel rendering without redundant memoization
-  const getPanelContent = () => {
-    if (activeTab === 'store') {
+  const getPanelContent = (tab?: TabId) => {
+    const currentTab = tab ?? activeTab;
+    if (currentTab === 'store') {
       return (
         <StorePanel
           storeName={draftContent.storeName}
@@ -561,10 +609,11 @@ export default function FunnelAdFurnitureEditor({
       );
     }
 
-    if (activeTab === 'content') {
+    if (currentTab === 'content') {
       return (
         <HeroPanel
           data={heroData}
+          hideCtaSection={editorMode === 'wizard'}
           onChange={(updates) => {
             handleSectionUpdate('content', (data) => {
               Object.assign(data as HeroData, updates);
@@ -574,7 +623,7 @@ export default function FunnelAdFurnitureEditor({
       );
     }
 
-    if (activeTab === 'categories') {
+    if (currentTab === 'categories') {
       return (
         <CategoriesPanel
           data={categoriesData}
@@ -585,7 +634,7 @@ export default function FunnelAdFurnitureEditor({
       );
     }
 
-    if (activeTab === 'products') {
+    if (currentTab === 'products') {
       return (
         <ProductsPanel
           data={productsData}
@@ -595,11 +644,12 @@ export default function FunnelAdFurnitureEditor({
           onAddCustomProduct={handleAddCustomProduct}
           onRemove={handleRemoveProduct}
           onUpdate={handleUpdateProduct}
+          isWizard={editorMode === 'wizard'}
         />
       );
     }
 
-    if (activeTab === 'testimonials') {
+    if (currentTab === 'testimonials') {
       return (
         <TestimonialsPanel
           data={testimonialsData}
@@ -610,7 +660,7 @@ export default function FunnelAdFurnitureEditor({
       );
     }
 
-    if (activeTab === 'location') {
+    if (currentTab === 'location') {
       return (
         <LocationPanel
           data={locationData}
@@ -623,7 +673,7 @@ export default function FunnelAdFurnitureEditor({
       );
     }
 
-    if (activeTab === 'whatsapp') {
+    if (currentTab === 'whatsapp') {
       return (
         <WhatsAppPanel
           data={whatsappData}
@@ -641,8 +691,349 @@ export default function FunnelAdFurnitureEditor({
     return null;
   };
 
+  // ✅ ADVANCED: Outcome-Driven Spotlight Tour
+  const tourSteps = [
+    {
+      id: 'sidebar',
+      title: "Your Editing Panel",
+      label: "Step 1 — Setup",
+      description: "This is where you edit everything — your store name, logo, hero section, products, and more. Each tab on the left controls a different part of your funnel.",
+      proTip: "Start with the Store tab to set your brand name and logo. A professional identity builds instant trust with customers.",
+      icon: ShieldCheck,
+      color: "indigo",
+      position: "left-12 top-[140px]",
+      arrow: "left-[-12px] top-1/2 -translate-y-1/2 border-r-white",
+      highlightClass: "left-6 top-[100px] w-[660px] h-[calc(100vh-140px)]"
+    },
+    {
+      id: 'tabs',
+      title: "Navigation Tabs",
+      label: "Step 2 — Navigate",
+      description: "Use these tabs to switch between sections: Store, Hero, Products, Categories, Testimonials, Location, and WhatsApp. Each one controls a specific part of your page.",
+      proTip: "Focus on the Products tab first — add great images and prices. That's what your customers care about most.",
+      icon: Zap,
+      color: "amber",
+      position: "left-[100px] top-[200px]",
+      arrow: "left-1/2 -translate-x-1/2 top-[-12px] border-b-white",
+      highlightClass: "left-[20px] top-[180px] w-12 h-64"
+    },
+    {
+      id: 'preview',
+      title: "Live Preview",
+      label: "Step 3 — Preview",
+      description: "This is how your funnel looks to customers on their phone. Every change you make on the left updates here instantly — what you see is what they get.",
+      proTip: "Check if buttons are easy to tap and text is readable. Most of your visitors will be on mobile devices.",
+      icon: Smartphone,
+      color: "emerald",
+      position: "right-[15%] top-[250px]",
+      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
+      highlightClass: "right-[4%] top-[100px] w-[calc(100%-720px)] h-[calc(100vh-140px)]"
+    },
+    {
+      id: 'launch',
+      title: "Save & Launch",
+      label: "Step 4 — Go Live",
+      description: "When you're happy with your funnel, hit Save. You can also copy the shareable link and send it to customers via WhatsApp, Instagram, or anywhere.",
+      proTip: "Don't wait for perfection — publish early, share the link, and improve as you go. You can always come back and edit.",
+      icon: Rocket,
+      color: "rose",
+      position: "right-12 top-[40px]",
+      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
+      highlightClass: "right-6 top-[20px] w-48 h-12"
+    }
+  ];
+
+  const handleNextTour = () => {
+    if (onboardingStep < tourSteps.length) {
+      setOnboardingStep(prev => prev + 1);
+    } else {
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowOnboarding(false);
+        setOnboardingStep(1);
+        setShowConfetti(false);
+      }, 3000);
+    }
+  };
+
+  // ===================== MODE SELECTOR =====================
+  if (editorMode === 'choosing') {
+    return (
+      <div className="flex h-full items-center justify-center bg-white">
+        <div className="w-full max-w-3xl px-8">
+          <div className="text-center mb-14">
+            <h1 
+              className="text-5xl text-slate-900 tracking-tight mb-4"
+              style={{ fontFamily: "'Tanker', serif" }}
+            >
+              How would you like to start?
+            </h1>
+            <p className="text-lg text-slate-400 font-medium">Choose a setup style that fits your experience level.</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            {/* Wizard Mode */}
+            <button
+              onClick={() => handleChooseMode('wizard')}
+              className="group relative p-10 rounded-[3rem] border-2 border-slate-100 bg-white hover:border-indigo-400 hover:shadow-[0_20px_60px_rgba(99,102,241,0.15)] transition-all text-left overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-50 text-indigo-600 flex items-center justify-center mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-lg shadow-indigo-50">
+                <Wand2 size={32} />
+              </div>
+              <h3 
+                className="text-2xl text-slate-900 mb-3 tracking-tight"
+                style={{ fontFamily: "'Tanker', serif" }}
+              >
+                Quick Setup
+              </h3>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Step-by-step guided wizard. Enter your store info, add products, and go live in under 30 seconds.</p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600">
+                  <Clock size={14} />
+                  <span className="text-[11px] font-black uppercase tracking-widest">30 Seconds</span>
+                </div>
+                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">Recommended</span>
+              </div>
+            </button>
+
+            {/* Advanced Mode */}
+            <button
+              onClick={() => handleChooseMode('advanced')}
+              className="group relative p-10 rounded-[3rem] border-2 border-slate-100 bg-white hover:border-slate-900 hover:shadow-[0_20px_60px_rgba(15,23,42,0.1)] transition-all text-left overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 rounded-[1.5rem] bg-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-slate-900 group-hover:text-white transition-all shadow-lg shadow-slate-100">
+                <Settings2 size={32} />
+              </div>
+              <h3 
+                className="text-2xl text-slate-900 mb-3 tracking-tight"
+                style={{ fontFamily: "'Tanker', serif" }}
+              >
+                Advanced Editor
+              </h3>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Full sidebar + live preview. Fine-tune every detail — hero copy, WhatsApp templates, product specs, and more.</p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-600">
+                  <Settings2 size={14} />
+                  <span className="text-[11px] font-black uppercase tracking-widest">Full Control</span>
+                </div>
+                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">Power users</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ===================== WIZARD MODE =====================
+  if (editorMode === 'wizard') {
+    return (
+      <WizardMode
+        content={liveContent}
+        funnel={funnel}
+        products={productsData.products}
+        panelRenderer={getPanelContent}
+        onFinish={() => void handleWizardFinish()}
+        onSwitchToAdvanced={() => handleChooseMode('advanced')}
+        onReorderSections={handleReorderSections}
+      />
+    );
+  }
+
+  // ===================== ADVANCED MODE =====================
   return (
     <div className={`flex h-full flex-col transition-colors duration-300 ${isDarkMode ? 'bg-[#0f1117]' : 'bg-white'}`}>
+      {/* ✅ ADVANCED GUIDE — Moves & Highlights Each Area */}
+      <AnimatePresence>
+        {showOnboarding && (() => {
+          const step = tourSteps[onboardingStep - 1];
+          const colorMap: Record<string, { bg: string; bgLight: string; text: string; border: string; btn: string; btnHover: string; shadow: string; ring: string }> = {
+            indigo: { bg: 'bg-indigo-500', bgLight: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-400', btn: 'bg-indigo-600', btnHover: 'hover:bg-indigo-700', shadow: 'shadow-indigo-200', ring: 'ring-indigo-400/30' },
+            amber: { bg: 'bg-amber-500', bgLight: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-400', btn: 'bg-amber-500', btnHover: 'hover:bg-amber-600', shadow: 'shadow-amber-200', ring: 'ring-amber-400/30' },
+            emerald: { bg: 'bg-emerald-500', bgLight: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-400', btn: 'bg-emerald-600', btnHover: 'hover:bg-emerald-700', shadow: 'shadow-emerald-200', ring: 'ring-emerald-400/30' },
+            rose: { bg: 'bg-rose-500', bgLight: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-400', btn: 'bg-rose-600', btnHover: 'hover:bg-rose-700', shadow: 'shadow-rose-200', ring: 'ring-rose-400/30' },
+          };
+          const c = colorMap[step.color] || colorMap.indigo;
+
+          // Spotlight highlight rects for each step
+          const highlightStyles: Record<string, React.CSSProperties> = {
+            sidebar: { top: 68, left: 0, width: 200, bottom: 0 },
+            tabs: { top: 68, left: 200, width: 460, bottom: 0 },
+            preview: { top: 68, left: 660, right: 0, bottom: 0 },
+            launch: { top: 0, left: 0, right: 0, height: 68 },
+          };
+
+          // Card positions for each step  
+          const cardPositions: Record<string, string> = {
+            sidebar: 'left-[220px] top-[50%] -translate-y-1/2',
+            tabs: 'left-[680px] top-[50%] -translate-y-1/2',
+            preview: 'right-[40px] top-[50%] -translate-y-1/2',
+            launch: 'right-[20px] top-[80px]',
+          };
+
+          // Arrow directions
+          const arrowPositions: Record<string, { side: string; style: React.CSSProperties }> = {
+            sidebar: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
+            tabs: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
+            preview: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
+            launch: { side: 'top', style: { position: 'absolute', top: -8, right: 40, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '10px solid white' } },
+          };
+
+          const hl = highlightStyles[step.id] || {};
+          const arrow = arrowPositions[step.id];
+
+          return (
+            <div className="fixed inset-0 z-[200]">
+              {/* Dim overlay with cutout for highlighted area */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0"
+                onClick={() => setShowOnboarding(false)}
+              >
+                {/* Top dimmer */}
+                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hl.top ?? 0 }} />
+                {/* Bottom dimmer */}
+                {hl.height ? (
+                  <div className="absolute left-0 right-0 bottom-0 bg-black/40" style={{ top: (hl.top as number ?? 0) + (hl.height as number ?? 0) }} />
+                ) : null}
+                {/* Left dimmer */}
+                <div className="absolute bg-black/40" style={{ top: hl.top ?? 0, left: 0, width: hl.left ?? 0, bottom: hl.height ? undefined : 0, height: hl.height }} />
+                {/* Right dimmer */}
+                {hl.right !== undefined ? null : (
+                  <div className="absolute bg-black/40" style={{ top: hl.top ?? 0, left: (hl.left as number ?? 0) + (hl.width as number ?? 0), right: 0, bottom: hl.height ? undefined : 0, height: hl.height }} />
+                )}
+              </motion.div>
+
+              {/* Highlight border ring around the focused area */}
+              <motion.div
+                layoutId="guide-highlight"
+                className={`absolute z-[201] pointer-events-none border-2 ${c.border} ring-4 ${c.ring}`}
+                style={hl}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              />
+
+              {/* Tooltip Card — positioned near the highlighted area */}
+              <motion.div
+                key={step.id}
+                initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 280, delay: 0.1 }}
+                className={`fixed z-[210] w-[360px] ${cardPositions[step.id]}`}
+              >
+                {/* Arrow */}
+                <div style={arrow.style as React.CSSProperties} />
+
+                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden">
+                  {/* Accent bar */}
+                  <div className={`h-1 ${c.bg}`} />
+
+                  <div className="p-6">
+                    {/* Step badge + count */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${c.bgLight} ${c.text}`}>
+                        {React.createElement(step.icon, { size: 10 })}
+                        {step.label}
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-300">{onboardingStep}/{tourSteps.length}</span>
+                    </div>
+
+                    {/* Title — Tanker */}
+                    <h3
+                      className="text-[28px] leading-[1.1] text-slate-900 mb-3"
+                      style={{ fontFamily: "'Tanker', serif" }}
+                    >
+                      {step.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-[13px] text-slate-500 leading-relaxed mb-4">
+                      {step.description}
+                    </p>
+
+                    {/* Pro tip */}
+                    <div className={`p-3.5 rounded-xl ${c.bgLight} mb-5`}>
+                      <div className="flex items-start gap-2.5">
+                        <Sparkles size={11} className={`${c.text} mt-0.5 shrink-0`} />
+                        <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between">
+                      {/* Progress */}
+                      <div className="flex gap-1.5">
+                        {tourSteps.map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-1.5 rounded-full transition-all duration-400 ${
+                              i < onboardingStep - 1 ? `w-1.5 ${c.bg} opacity-40` :
+                              i === onboardingStep - 1 ? `w-6 ${c.bg}` :
+                              'w-1.5 bg-slate-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Buttons */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setShowOnboarding(false)}
+                          className="px-3 py-2 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest transition-colors"
+                        >
+                          Skip
+                        </button>
+                        <button
+                          onClick={handleNextTour}
+                          className={`px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-white transition-all active:scale-95 flex items-center gap-1.5 ${c.btn} ${c.btnHover} shadow-md ${c.shadow}`}
+                        >
+                          {onboardingStep === tourSteps.length ? "Done" : "Next"}
+                          <ChevronRight size={12} strokeWidth={3} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Celebration Overlay */}
+              {showConfetti && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 z-[220] flex items-center justify-center bg-white/90"
+                >
+                  <div className="text-center">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -30 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", bounce: 0.5 }}
+                      className="w-20 h-20 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-emerald-200"
+                    >
+                      <Trophy size={40} />
+                    </motion.div>
+                    <h2
+                      className="text-4xl text-slate-900 mb-2"
+                      style={{ fontFamily: "'Tanker', serif" }}
+                    >
+                      You're All Set!
+                    </h2>
+                    <p className="text-slate-400 font-medium text-sm">Start building your elite funnel now.</p>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          );
+        })()}
+      </AnimatePresence>
+
+
+
+
       <div className={`flex items-center justify-between border-b px-6 py-4 transition-colors duration-300 ${isDarkMode ? 'border-white/[0.06] bg-[#13151b]' : 'border-slate-200 bg-white'}`}>
         <div className="flex items-center gap-3">
           <Link
@@ -660,31 +1051,32 @@ export default function FunnelAdFurnitureEditor({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className={`flex items-center gap-1 rounded-full border px-2 py-1 transition-colors ${isDarkMode ? 'border-white/10 bg-white/[0.04]' : 'border-slate-200 bg-white'}`}>
-            {previewModes.map((mode) => (
-              <button
-                key={mode.id}
-                onClick={() => setPreviewMode(mode.id)}
-                className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold transition ${
-                  previewMode === mode.id
-                    ? isDarkMode ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
-                    : isDarkMode ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                {mode.icon}
-                {mode.label}
-              </button>
-            ))}
-          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleChooseMode('wizard')}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all ${
+                isDarkMode 
+                  ? 'bg-indigo-900/30 text-indigo-400 hover:bg-indigo-800/40 hover:text-indigo-300 border border-indigo-500/20' 
+                  : 'bg-indigo-50 text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-100'
+              }`}
+            >
+              <Wand2 size={14} strokeWidth={2.5} />
+              Wizard
+            </button>
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={() => setIsDarkMode(prev => !prev)}
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-all ${isDarkMode ? 'border-white/10 text-amber-400 hover:bg-white/10' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
-          >
-            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            {isDarkMode ? 'Light' : 'Dark'}
-          </button>
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all ${
+                isDarkMode 
+                  ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white border border-white/5' 
+                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
+              }`}
+            >
+              <HelpCircle size={14} strokeWidth={2.5} />
+              Guide
+            </button>
+
+          </div>
 
           <button
             onClick={handleCopyLink}

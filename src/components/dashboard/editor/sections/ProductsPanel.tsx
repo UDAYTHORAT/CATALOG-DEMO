@@ -10,6 +10,7 @@ import { Field, IconButton, PanelTitle, subtleInputClass, CustomSelect, type Sel
 import type { CategoryItem, ProductItem, ProductsData } from '../types';
 import type { Product } from '@/app/actions/products';
 import { FALLBACK_PRODUCT_IMAGE, formatProductPrice } from '../utils';
+import { ImageUpload } from '@/components/dashboard/ImageUpload';
 
 export default React.memo(function ProductsPanel({
   data,
@@ -19,6 +20,7 @@ export default React.memo(function ProductsPanel({
   onAddCustomProduct,
   onUpdate,
   onRemove,
+  isWizard,
 }: {
   data: ProductsData;
   categories: CategoryItem[];
@@ -27,6 +29,7 @@ export default React.memo(function ProductsPanel({
   onAddCustomProduct: () => void;
   onUpdate: (index: number, updates: Partial<ProductItem>) => void;
   onRemove: (id: string) => void;
+  isWizard?: boolean;
 }) {
   const products = data.products;
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
@@ -204,8 +207,7 @@ export default React.memo(function ProductsPanel({
                   <div className="p-6 pt-0 space-y-8 animate-in fade-in zoom-in-95 duration-300">
                     <div className="h-px bg-slate-50 w-full" />
                     
-                    {/* Section 1: Storefront Essentials */}
-                    <div className="space-y-4">
+                    {/* Section 1: Storefront Essentials */}                    <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
@@ -213,6 +215,24 @@ export default React.memo(function ProductsPanel({
                         </div>
                         <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Step 1</span>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Primary Image</label>
+                          <ImageUpload
+                            defaultImage={product.image}
+                            onUploadComplete={(url) => onUpdate(index, { image: url })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Secondary Image</label>
+                          <ImageUpload
+                            defaultImage={product.image2}
+                            onUploadComplete={(url) => onUpdate(index, { image2: url })}
+                          />
+                        </div>
+                      </div>
+
                       <div className="grid grid-cols-2 gap-4">
                         <Field label="Price Label">
                           <div className="relative">
@@ -233,6 +253,7 @@ export default React.memo(function ProductsPanel({
                           />
                         </Field>
                       </div>
+
                       <Field label="Marketing Tier (Badge Strategy)">
                         <CustomSelect
                           value={product.tier || ''}

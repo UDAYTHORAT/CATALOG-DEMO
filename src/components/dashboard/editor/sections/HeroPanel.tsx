@@ -6,9 +6,11 @@ import type { HeroData } from '../types';
 export default React.memo(function HeroPanel({
   data,
   onChange,
+  hideCtaSection,
 }: {
   data: HeroData;
   onChange: (updates: Partial<HeroData>) => void;
+  hideCtaSection?: boolean;
 }) {
   return (
     <div className="space-y-8">
@@ -52,6 +54,7 @@ export default React.memo(function HeroPanel({
           </div>
         </div>
 
+        {!hideCtaSection && (
         <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Call to Action</p>
           <div className="grid grid-cols-1 gap-5">
@@ -72,6 +75,7 @@ export default React.memo(function HeroPanel({
             </Field>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

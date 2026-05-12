@@ -17,15 +17,27 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
   const [imageUrl2, setImageUrl2] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Furniture');
+  const [customCategory, setCustomCategory] = useState<string>('');
 
   useEffect(() => {
     if (product) {
       setImageUrl(product.image_url || '');
       setImageUrl2(product.image_url_2 || '');
-      setImageUrl2(product.image_url_2 || '');
+      const cat = product.category || 'Furniture';
+      const isPredefined = ['Furniture', 'Electronics', 'Apparel', 'Real Estate', 'Services'].includes(cat);
+      if (isPredefined) {
+        setSelectedCategory(cat);
+        setCustomCategory('');
+      } else {
+        setSelectedCategory('Other');
+        setCustomCategory(cat);
+      }
     } else {
       setImageUrl('');
       setImageUrl2('');
+      setSelectedCategory('Furniture');
+      setCustomCategory('');
     }
   }, [product, isOpen]);
 
@@ -71,6 +83,9 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
 
     formData.append('image_url', imageUrl);
     formData.append('image_url_2', imageUrl2);
+
+    const category = selectedCategory === 'Other' ? customCategory : selectedCategory;
+    formData.set('category', category);
 
     // Package story_mode_data
     const storyModeData = {
@@ -205,9 +220,9 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                 </label>
                 <div className="relative">
                   <select
-                    id="category"
-                    name="category"
-                    defaultValue={product?.category || 'Furniture'}
+                    id="category_select"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all appearance-none cursor-pointer text-sm"
                   >
                     <option value="Furniture">Furniture</option>
@@ -219,110 +234,23 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                   </select>
                   <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
+
+                {selectedCategory === 'Other' && (
+                  <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <input
+                      type="text"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      placeholder="Type your collection name..."
+                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all text-sm placeholder:text-slate-300"
+                      required
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-3">
-              <label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center justify-between">
-                <span>Elite Narrative</span>
-                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Storytelling</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                defaultValue={product?.description || ''}
-                rows={4}
-                placeholder="Describe the handcrafted quality, material story, and factory-direct value proposition..."
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 focus:outline-none transition-all text-sm resize-none leading-relaxed placeholder:text-slate-300 shadow-inner"
-              />
-            </div>
 
-            {/* Conversion Boosters */}
-            <div className="p-8 rounded-[2rem] bg-amber-50/50 border border-amber-100 space-y-6 shadow-sm">
-              <div className="flex items-center gap-2">
-                <Zap size={16} className="text-amber-500 fill-amber-500/20" />
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/60">Conversion Boosters</p>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="urgency" className="text-[10px] font-bold text-amber-900/40 uppercase tracking-wider">Urgency Hook</label>
-                  <input
-                    type="text"
-                    id="urgency"
-                    name="urgency"
-                    defaultValue={product?.story_mode_data?.urgency || 'Limited Stock'}
-                    placeholder="e.g. Selling fast"
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-amber-200 text-amber-900 font-black focus:outline-none focus:ring-4 focus:ring-amber-500/10 text-xs shadow-sm transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="delivery" className="text-[10px] font-bold text-amber-900/40 uppercase tracking-wider">Delivery Promise</label>
-                  <input
-                    type="text"
-                    id="delivery"
-                    name="delivery"
-                    defaultValue={product?.story_mode_data?.delivery || '7-11 Days'}
-                    placeholder="e.g. 7-10 Days"
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-amber-200 text-amber-900 font-black focus:outline-none focus:ring-4 focus:ring-amber-500/10 text-xs shadow-sm transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Technical Specs */}
-            <div className="p-8 rounded-[2.5rem] bg-[#1a1c24] text-white space-y-6 shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] rounded-full -mr-16 -mt-16 blur-3xl" />
-               <div className="flex items-center gap-2 relative z-10">
-                <LayoutList size={16} className="text-slate-500" />
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Technical Specs</p>
-              </div>
-              <div className="space-y-3 relative z-10">
-                <label htmlFor="dimensions" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
-                  <div className="w-1 h-1 rounded-full bg-slate-500" />
-                  Dimensions (WxDxH)
-                </label>
-                <input
-                  type="text"
-                  id="dimensions"
-                  name="dimensions"
-                  defaultValue={product?.dimensions || ''}
-                  placeholder="e.g. 180 x 90 x 75 cm"
-                  className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 relative z-10">
-                <div className="space-y-3">
-                  <label htmlFor="material" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
-                    <div className="w-1 h-1 rounded-full bg-slate-500" />
-                    Primary Material
-                  </label>
-                  <input
-                    type="text"
-                    id="material"
-                    name="material"
-                    defaultValue={product?.story_mode_data?.material || ''}
-                    placeholder="e.g. Sheesham Wood"
-                    className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label htmlFor="finish" className="text-[9px] font-black uppercase tracking-[0.1em] text-slate-500/80 flex items-center gap-2 whitespace-nowrap">
-                    <div className="w-1 h-1 rounded-full bg-slate-500" />
-                    Finish Type
-                  </label>
-                  <input
-                    type="text"
-                    id="finish"
-                    name="finish"
-                    defaultValue={product?.story_mode_data?.finish || ''}
-                    placeholder="e.g. Walnut Finish"
-                    className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-bold focus:outline-none focus:bg-white/[0.06] focus:border-indigo-500/50 text-sm transition-all placeholder:text-white/10"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Footer */}
