@@ -201,6 +201,24 @@ export default function WizardMode({
   const [fieldHighlight, setFieldHighlight] = useState<any>(null);
   const [completedTours, setCompletedTours] = useState<Set<string>>(new Set());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        setIsKeyboardOpen(true);
+      }
+    };
+    const handleFocusOut = () => setIsKeyboardOpen(false);
+
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
 
   const currentTourSteps = TAB_TOURS[activeTab.id] || [
     { title: "Fill Details", description: "Follow the fields to complete this step.", proTip: "Keep it simple." }
@@ -490,7 +508,7 @@ export default function WizardMode({
         <div className="flex h-full w-full lg:w-[660px] shrink-0 snap-center flex-col border-r border-slate-200 bg-white shadow-xl relative z-40 lg:z-auto">
           <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
             {/* Nav Column */}
-            <div className="flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
+            <div className={`flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50 ${isKeyboardOpen ? 'hidden md:flex' : ''}`}>
               <div className="flex-1 overflow-y-auto p-4 scrollbar-none">
                 {/* Progress bar */}
                 <div className="mb-5">
@@ -534,7 +552,7 @@ export default function WizardMode({
             </div>
 
             {/* Editing Column */}
-            <div className="flex-1 overflow-y-auto bg-white p-4 md:p-6 pb-32 md:pb-6">
+            <div className={`flex-1 overflow-y-auto bg-slate-50/30 p-4 md:p-6 pb-24 ${isKeyboardOpen ? 'pb-[50vh]' : ''}`}>
               {/* Wizard guidance banner */}
               <div className="relative flex flex-col gap-3 p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 mb-6 pr-14">
                 <button 
@@ -579,7 +597,7 @@ export default function WizardMode({
           </div>
 
           {/* Footer — Previous / Next */}
-          <div className="border-t border-slate-200 bg-slate-50/80 p-4 backdrop-blur-sm flex items-center justify-between">
+          <div className={`border-t border-slate-200 bg-slate-50/80 p-4 backdrop-blur-sm flex items-center justify-between ${isKeyboardOpen ? 'hidden md:flex' : ''}`}>
             <button
               onClick={() => stepIdx > 0 && setStepIdx(s => s - 1)}
               disabled={stepIdx === 0}
@@ -598,7 +616,7 @@ export default function WizardMode({
           </div>
           
           {/* Floating Mobile Action (Editor -> Preview) */}
-          <div className="lg:hidden absolute bottom-24 right-6 z-50">
+          <div className={`lg:hidden absolute bottom-24 right-6 z-50 ${isKeyboardOpen ? 'hidden' : ''}`}>
             <button 
               onClick={() => {
                 document.getElementById('wizard-mobile-scroll-layout')?.scrollTo({ left: window.innerWidth, behavior: 'smooth' });

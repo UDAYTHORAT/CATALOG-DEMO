@@ -195,7 +195,7 @@ export default React.memo(function WhatsAppPanel({
               className={`${subtleInputClass} resize-none text-[12px] leading-relaxed py-4 border-emerald-100 bg-emerald-50/10`}
               placeholder="Write a conversion-focused product inquiry..."
             />
-            <div className="flex items-center gap-2 text-[10px] text-slate-400 italic">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400 italic leading-loose">
               <span>Use</span>
               <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{store_name}"}</code>
               <span>,</span>

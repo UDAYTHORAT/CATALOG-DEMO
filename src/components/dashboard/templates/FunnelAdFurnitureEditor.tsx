@@ -119,6 +119,24 @@ export default function FunnelAdFurnitureEditor({
   const [editorMode, setEditorMode] = useState<'choosing' | 'wizard' | 'advanced'>('choosing');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [guideHighlights, setGuideHighlights] = useState<any>({});
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        setIsKeyboardOpen(true);
+      }
+    };
+    const handleFocusOut = () => setIsKeyboardOpen(false);
+
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem(`editor_mode_${funnel.id}`);
@@ -1279,7 +1297,7 @@ export default function FunnelAdFurnitureEditor({
                 </div>
                 
                 {/* Editing Column */}
-                <div id="tour-tabs" className="flex-1 overflow-y-auto bg-white p-4 md:p-6 pb-20">
+                <div id="tour-tabs" className={`flex-1 overflow-y-auto bg-white p-4 md:p-6 pb-20 ${isKeyboardOpen ? 'pb-[50vh]' : ''}`}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeTab}
@@ -1295,7 +1313,7 @@ export default function FunnelAdFurnitureEditor({
               </div>
 
               {/* ✅ FIX #11: Footer with unified autosave status and undo/redo */}
-              <div className="border-t border-slate-200 bg-slate-50/80 p-4 backdrop-blur-sm">
+              <div className={`border-t border-slate-200 bg-slate-50/80 p-4 backdrop-blur-sm ${isKeyboardOpen ? 'hidden md:block' : ''}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs">
                     {isAutoSaving ? (
