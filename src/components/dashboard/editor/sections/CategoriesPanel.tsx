@@ -26,6 +26,7 @@ export default React.memo(function CategoriesPanel({
         meta={`${categories.length} segments`}
         action={
           <button
+            id="tour-categories-add-btn"
             onClick={onAdd}
             disabled={categories.length >= 3}
             className={`flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all active:scale-95 shadow-lg ${
@@ -57,14 +58,16 @@ export default React.memo(function CategoriesPanel({
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Step Global Settings</p>
         <div className="space-y-5">
-          <Field label="Main Selection Title">
-            <input
-              value={data.title || ''}
-              onChange={(e) => onUpdate(-1, { title: e.target.value } as any)}
-              placeholder="What Piece Are You Looking For?"
-              className={subtleInputClass}
-            />
-          </Field>
+          <div id="tour-categories-global-title">
+            <Field label="Main Selection Title">
+              <input
+                value={data.title || ''}
+                onChange={(e) => onUpdate(-1, { title: e.target.value } as any)}
+                placeholder="What Piece Are You Looking For?"
+                className={subtleInputClass}
+              />
+            </Field>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Help Label">
               <input
@@ -92,7 +95,7 @@ export default React.memo(function CategoriesPanel({
         </div>
 
         {categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 py-12 px-6 text-center">
+          <div id="tour-categories-empty" className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 py-12 px-6 text-center">
             <LayoutGrid className="mb-3 text-slate-300" size={32} />
             <p className="text-sm font-bold text-slate-400">No collections added yet</p>
             <p className="mt-1 text-[11px] text-slate-400">Start by adding your first product category.</p>
@@ -126,22 +129,26 @@ export default React.memo(function CategoriesPanel({
               </div>
 
               <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
-                <Field label="Display Name">
-                  <input
-                    value={category.label}
-                    onChange={(event) => onUpdate(index, { label: event.target.value })}
-                    className={subtleInputClass}
-                    placeholder="e.g. Luxury Sofas"
-                  />
-                </Field>
-                <Field label="Catchy Tagline">
-                  <input
-                    value={category.tagline}
-                    onChange={(event) => onUpdate(index, { tagline: event.target.value })}
-                    className={subtleInputClass}
-                    placeholder="e.g. Curated Pieces"
-                  />
-                </Field>
+                <div id={index === 0 ? "tour-categories-name" : undefined}>
+                  <Field label="Display Name">
+                    <input
+                      value={category.label}
+                      onChange={(event) => onUpdate(index, { label: event.target.value })}
+                      className={subtleInputClass}
+                      placeholder="e.g. Luxury Sofas"
+                    />
+                  </Field>
+                </div>
+                <div id={index === 0 ? "tour-categories-tagline" : undefined}>
+                  <Field label="Catchy Tagline">
+                    <input
+                      value={category.tagline}
+                      onChange={(event) => onUpdate(index, { tagline: event.target.value })}
+                      className={subtleInputClass}
+                      placeholder="e.g. Curated Pieces"
+                    />
+                  </Field>
+                </div>
               </div>
             </div>
           ))

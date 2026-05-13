@@ -16,9 +16,11 @@ export function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block space-y-2.5">
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">{label}</span>
-      {children}
+    <label className="flex flex-col h-full">
+      <span className="mb-2.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 leading-snug">{label}</span>
+      <div className="mt-auto">
+        {children}
+      </div>
     </label>
   );
 }

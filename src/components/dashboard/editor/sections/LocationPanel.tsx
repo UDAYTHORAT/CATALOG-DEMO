@@ -17,7 +17,7 @@ export default React.memo(function LocationPanel({
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Location Details</p>
-        <div className="space-y-5">
+        <div id="tour-location-fields" className="space-y-5">
           <Field label="Studio/Center Name">
             <input
               value={data.experienceCenterName}

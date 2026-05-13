@@ -20,37 +20,41 @@ export default React.memo(function HeroPanel({
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Content Strategy</p>
           <div className="space-y-5">
-            <Field label="Main Headline">
-              <div className="relative">
-                <textarea
-                  value={data.tagline}
-                  onChange={(event) => onChange({ tagline: event.target.value })}
-                  rows={2}
-                  maxLength={60}
-                  className={`${inputClass} resize-none leading-tight pb-8`}
-                  placeholder="e.g. Premium Furniture for Modern Living"
-                />
-                <div className="absolute bottom-2.5 right-3 text-[10px] font-bold text-slate-400">
-                  {data.tagline.length}/60
+            <div id="tour-content-headline">
+              <Field label="Main Headline">
+                <div className="relative">
+                  <textarea
+                    value={data.tagline}
+                    onChange={(event) => onChange({ tagline: event.target.value })}
+                    rows={2}
+                    maxLength={60}
+                    className={`${inputClass} resize-none leading-tight pb-8`}
+                    placeholder="e.g. Premium Furniture for Modern Living"
+                  />
+                  <div className="absolute bottom-2.5 right-3 text-[10px] font-bold text-slate-400">
+                    {data.tagline.length}/60
+                  </div>
                 </div>
-              </div>
-            </Field>
+              </Field>
+            </div>
             
-            <Field label="Supporting Subline">
-              <div className="relative">
-                <textarea
-                  value={data.subTagline}
-                  onChange={(event) => onChange({ subTagline: event.target.value })}
-                  rows={3}
-                  maxLength={150}
-                  className={`${inputClass} resize-none leading-relaxed pb-8`}
-                  placeholder="Describe your value proposition..."
-                />
-                <div className="absolute bottom-2.5 right-3 text-[10px] font-bold text-slate-400">
-                  {data.subTagline.length}/150
+            <div id="tour-content-subheadline">
+              <Field label="Supporting Subline">
+                <div className="relative">
+                  <textarea
+                    value={data.subTagline}
+                    onChange={(event) => onChange({ subTagline: event.target.value })}
+                    rows={3}
+                    maxLength={150}
+                    className={`${inputClass} resize-none leading-relaxed pb-8`}
+                    placeholder="Describe your value proposition..."
+                  />
+                  <div className="absolute bottom-2.5 right-3 text-[10px] font-bold text-slate-400">
+                    {data.subTagline.length}/150
+                  </div>
                 </div>
-              </div>
-            </Field>
+              </Field>
+            </div>
           </div>
         </div>
 

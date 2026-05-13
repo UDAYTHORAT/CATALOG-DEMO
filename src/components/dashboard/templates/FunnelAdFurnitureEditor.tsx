@@ -9,6 +9,9 @@ import {
   ChevronLeft,
   Copy,
   Loader2,
+  Menu,
+  Eye,
+  Edit2,
   Monitor,
   Moon,
   PanelLeftClose,
@@ -23,7 +26,6 @@ import {
   ExternalLink,
   X,
   HelpCircle,
-  Sparkles,
   Info,
   ChevronRight,
   Target,
@@ -115,6 +117,8 @@ export default function FunnelAdFurnitureEditor({
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
   const [editorMode, setEditorMode] = useState<'choosing' | 'wizard' | 'advanced'>('choosing');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [guideHighlights, setGuideHighlights] = useState<any>({});
 
   useEffect(() => {
     const saved = localStorage.getItem(`editor_mode_${funnel.id}`);
@@ -564,6 +568,54 @@ export default function FunnelAdFurnitureEditor({
     copyTimer.current = setTimeout(() => setCopied(false), 1200);
   }, [funnel?.slug]);
 
+  // Dynamic Guide Tracking
+  useEffect(() => {
+    if (!showOnboarding || editorMode !== 'advanced') return;
+    
+    // Auto scroll based on step
+    const step = tourSteps[onboardingStep - 1];
+    if (step) {
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        setTimeout(() => {
+          if (step.id === 'preview') {
+             document.getElementById('mobile-scroll-layout')?.scrollTo({ left: window.innerWidth, behavior: 'smooth' });
+          } else {
+             document.getElementById('mobile-scroll-layout')?.scrollTo({ left: 0, behavior: 'smooth' });
+          }
+        }, 50);
+      }
+    }
+
+    const interval = setInterval(() => {
+      const highlights: any = {};
+      
+      const sidebarEl = document.getElementById('tour-sidebar');
+      if (sidebarEl) highlights.sidebar = sidebarEl.getBoundingClientRect();
+      
+      const tabsEl = document.getElementById('tour-tabs');
+      if (tabsEl) highlights.tabs = tabsEl.getBoundingClientRect();
+      
+      const previewEl = document.getElementById('tour-preview');
+      if (previewEl) highlights.preview = previewEl.getBoundingClientRect();
+      
+      const launchEl = document.getElementById(window.innerWidth < 1024 ? 'tour-launch-mobile' : 'tour-launch-desktop');
+      if (launchEl) highlights.launch = launchEl.getBoundingClientRect();
+      
+      setGuideHighlights((prev: any) => {
+        let changed = false;
+        for (const k of ['sidebar', 'tabs', 'preview', 'launch']) {
+          if (!prev[k] && highlights[k]) changed = true;
+          else if (prev[k] && highlights[k]) {
+            if (Math.abs(prev[k].top - highlights[k].top) > 1 || Math.abs(prev[k].left - highlights[k].left) > 1) changed = true;
+          }
+        }
+        return changed ? highlights : prev;
+      });
+    }, 16);
+    return () => clearInterval(interval);
+  }, [showOnboarding, editorMode, onboardingStep]);
+
   const readiness = useMemo(() => {
     const items = [
       { id: 'store', label: 'Store Name', met: draftContent.storeName.trim().length > 0 },
@@ -601,6 +653,7 @@ export default function FunnelAdFurnitureEditor({
             products: productsData.products.length,
             reviews: testimonialsData.testimonials.length,
           }}
+          isWizard={editorMode === 'wizard'}
           onChangeStoreName={(value) => handleStoreUpdate('storeName', value)}
           onChangeWhatsApp={(value) => handleStoreUpdate('whatsappNumber', value)}
           onChangeLogo={(value) => handleStoreUpdate('logoUrl', value)}
@@ -857,32 +910,41 @@ export default function FunnelAdFurnitureEditor({
           };
           const c = colorMap[step.color] || colorMap.indigo;
 
-          // Spotlight highlight rects for each step
-          const highlightStyles: Record<string, React.CSSProperties> = {
-            sidebar: { top: 68, left: 0, width: 200, bottom: 0 },
-            tabs: { top: 68, left: 200, width: 460, bottom: 0 },
-            preview: { top: 68, left: 660, right: 0, bottom: 0 },
-            launch: { top: 0, left: 0, right: 0, height: 68 },
-          };
+          const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+          const isMobile = windowWidth < 1024;
 
-          // Card positions for each step  
-          const cardPositions: Record<string, string> = {
-            sidebar: 'left-[220px] top-[50%] -translate-y-1/2',
-            tabs: 'left-[680px] top-[50%] -translate-y-1/2',
-            preview: 'right-[40px] top-[50%] -translate-y-1/2',
-            launch: 'right-[20px] top-[80px]',
-          };
+          const hlData = guideHighlights[step.id] || {};
+          const hl: React.CSSProperties = hlData.top !== undefined ? {
+            top: hlData.top,
+            left: hlData.left,
+            width: hlData.width,
+            height: hlData.height
+          } : {};
 
-          // Arrow directions
-          const arrowPositions: Record<string, { side: string; style: React.CSSProperties }> = {
-            sidebar: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
-            tabs: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
-            preview: { side: 'left', style: { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' } },
-            launch: { side: 'top', style: { position: 'absolute', top: -8, right: 40, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '10px solid white' } },
-          };
-
-          const hl = highlightStyles[step.id] || {};
-          const arrow = arrowPositions[step.id];
+          let cardStyle: React.CSSProperties = {};
+          let arrowStyle: React.CSSProperties = { display: 'none' };
+          
+          if (isMobile) {
+            // Smart docking logic
+            const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+            if (hlData.top !== undefined && hlData.top > windowHeight / 2) {
+              cardStyle = { left: 16, right: 16, top: 80, bottom: 'auto', transform: 'none' };
+            } else {
+              cardStyle = { left: 16, right: 16, bottom: 24, top: 'auto', transform: 'none' };
+            }
+          } else {
+            // Desktop logic
+            if (step.id === 'sidebar') cardStyle = { left: 220, top: '50%', transform: 'translateY(-50%)' };
+            if (step.id === 'tabs') cardStyle = { left: 680, top: '50%', transform: 'translateY(-50%)' };
+            if (step.id === 'preview') cardStyle = { right: 40, top: '50%', transform: 'translateY(-50%)' };
+            if (step.id === 'launch') cardStyle = { right: 20, top: 80 };
+            
+            if (step.id === 'sidebar' || step.id === 'tabs' || step.id === 'preview') {
+              arrowStyle = { position: 'absolute', left: -8, top: '50%', transform: 'translateY(-50%)', width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' };
+            } else if (step.id === 'launch') {
+              arrowStyle = { position: 'absolute', top: -8, right: 40, width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '10px solid white' };
+            }
+          }
 
           return (
             <div className="fixed inset-0 z-[200]">
@@ -895,17 +957,15 @@ export default function FunnelAdFurnitureEditor({
                 onClick={() => setShowOnboarding(false)}
               >
                 {/* Top dimmer */}
-                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hl.top ?? 0 }} />
+                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hlData.top ?? 0 }} />
                 {/* Bottom dimmer */}
-                {hl.height ? (
-                  <div className="absolute left-0 right-0 bottom-0 bg-black/40" style={{ top: (hl.top as number ?? 0) + (hl.height as number ?? 0) }} />
+                {hlData.height ? (
+                  <div className="absolute left-0 right-0 bottom-0 bg-black/40" style={{ top: hlData.top + hlData.height }} />
                 ) : null}
                 {/* Left dimmer */}
-                <div className="absolute bg-black/40" style={{ top: hl.top ?? 0, left: 0, width: hl.left ?? 0, bottom: hl.height ? undefined : 0, height: hl.height }} />
+                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: 0, width: hlData.left ?? 0, height: hlData.height }} />
                 {/* Right dimmer */}
-                {hl.right !== undefined ? null : (
-                  <div className="absolute bg-black/40" style={{ top: hl.top ?? 0, left: (hl.left as number ?? 0) + (hl.width as number ?? 0), right: 0, bottom: hl.height ? undefined : 0, height: hl.height }} />
-                )}
+                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: (hlData.left ?? 0) + (hlData.width ?? 0), right: 0, height: hlData.height }} />
               </motion.div>
 
               {/* Highlight border ring around the focused area */}
@@ -923,10 +983,11 @@ export default function FunnelAdFurnitureEditor({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 280, delay: 0.1 }}
-                className={`fixed z-[210] w-[360px] ${cardPositions[step.id]}`}
+                className={`fixed z-[210] w-[calc(100%-32px)] lg:w-[360px]`}
+                style={cardStyle}
               >
                 {/* Arrow */}
-                <div style={arrow.style as React.CSSProperties} />
+                <div style={arrowStyle} />
 
                 <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden">
                   {/* Accent bar */}
@@ -958,7 +1019,6 @@ export default function FunnelAdFurnitureEditor({
                     {/* Pro tip */}
                     <div className={`p-3.5 rounded-xl ${c.bgLight} mb-5`}>
                       <div className="flex items-start gap-2.5">
-                        <Sparkles size={11} className={`${c.text} mt-0.5 shrink-0`} />
                         <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
                       </div>
                     </div>
@@ -1050,7 +1110,8 @@ export default function FunnelAdFurnitureEditor({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop Actions */}
+        <div className="hidden lg:flex items-center gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleChooseMode('wizard')}
@@ -1080,7 +1141,7 @@ export default function FunnelAdFurnitureEditor({
 
           <button
             onClick={handleCopyLink}
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
+            className={`hidden md:inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
           >
             <Copy className="h-3.5 w-3.5" />
             {copied ? 'Copied' : 'Copy link'}
@@ -1091,18 +1152,20 @@ export default function FunnelAdFurnitureEditor({
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-100'}`}
           >
             {isSidebarVisible ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-            {isSidebarVisible ? 'Hide panels' : 'Show panels'}
+            <span className="hidden md:inline">{isSidebarVisible ? 'Hide panels' : 'Show panels'}</span>
+            <span className="md:hidden">{isSidebarVisible ? 'Hide' : 'Edit'}</span>
           </button>
 
           <button
             onClick={() => void handleSave()}
-            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold active:scale-95 transition-all ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 md:px-4 py-2 text-xs font-semibold active:scale-95 transition-all ${isDarkMode ? 'border-white/10 text-slate-400 hover:bg-white/10 hover:text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
           >
             {isSaving ? <Loader2 className={`h-4 w-4 animate-spin ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} /> : <Save className={`h-4 w-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} />}
-            {isSaving ? 'Saving' : 'Save'}
+            <span className="hidden md:inline">{isSaving ? 'Saving' : 'Save'}</span>
           </button>
 
           <button
+            id="tour-launch-desktop"
             onClick={() => void handlePublish()}
             disabled={isPublishing}
             className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white shadow-lg hover:bg-black active:scale-95 transition-all disabled:opacity-50"
@@ -1111,9 +1174,88 @@ export default function FunnelAdFurnitureEditor({
             {isPublishing ? 'Publishing...' : 'Publish'}
           </button>
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          id="tour-launch-mobile"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden flex items-center justify-center p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      {/* Mobile Menu Dropdown */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="lg:hidden absolute top-[73px] left-0 right-0 z-[100] bg-white border-b border-slate-200 shadow-2xl p-4 flex flex-col gap-3"
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  handleChooseMode('wizard');
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl bg-indigo-50 text-indigo-600 p-3 text-xs font-black uppercase tracking-widest border border-indigo-100"
+              >
+                <Wand2 size={16} strokeWidth={2.5} />
+                Wizard
+              </button>
+              <button
+                onClick={() => {
+                  setShowOnboarding(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl bg-slate-100 text-slate-700 p-3 text-xs font-black uppercase tracking-widest border border-slate-200"
+              >
+                <HelpCircle size={16} strokeWidth={2.5} />
+                Guide
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  handleCopyLink();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 p-3 text-xs font-bold text-slate-700"
+              >
+                <Copy className="h-4 w-4" />
+                {copied ? 'Copied' : 'Copy link'}
+              </button>
+              <button
+                onClick={() => {
+                  void handleSave();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 p-3 text-xs font-bold text-slate-700"
+              >
+                {isSaving ? <Loader2 className="h-4 w-4 animate-spin text-slate-500" /> : <Save className="h-4 w-4 text-slate-500" />}
+                {isSaving ? 'Saving' : 'Save'}
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                void handlePublish();
+                setIsMobileMenuOpen(false);
+              }}
+              disabled={isPublishing}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 p-3 text-xs font-bold text-white shadow-lg"
+            >
+              {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-orange-400" />}
+              {isPublishing ? 'Publishing...' : 'Publish'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div id="mobile-scroll-layout" className="flex flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory lg:overflow-hidden lg:flex-row w-full scrollbar-none scroll-smooth">
         <AnimatePresence initial={false}>
           {isSidebarVisible && (
             <motion.aside
@@ -1121,12 +1263,12 @@ export default function FunnelAdFurnitureEditor({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -240, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full w-[660px] shrink-0 flex-col border-r border-slate-200 bg-white shadow-xl"
+              className="flex h-full w-full lg:w-[660px] shrink-0 snap-center flex-col relative z-40 border-r border-slate-200 bg-white shadow-xl"
             >
               {/* ✅ FIX #10: Professional Two-Column Sidebar Layout */}
-              <div className="flex flex-1 overflow-hidden">
+              <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                 {/* Navigation Column */}
-                <div className="flex w-[200px] shrink-0 flex-col border-r border-slate-100 bg-slate-50/50">
+                <div id="tour-sidebar" className="flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
                   <EditorSidebar
                     sections={draftContent.sections}
                     activeTab={activeTab}
@@ -1137,7 +1279,7 @@ export default function FunnelAdFurnitureEditor({
                 </div>
                 
                 {/* Editing Column */}
-                <div className="flex-1 overflow-y-auto bg-white p-6">
+                <div id="tour-tabs" className="flex-1 overflow-y-auto bg-white p-4 md:p-6 pb-20">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeTab}
@@ -1201,17 +1343,47 @@ export default function FunnelAdFurnitureEditor({
                   </div>
                 </div>
               </div>
+
+              {/* Floating Mobile Action (Editor -> Preview) */}
+              <div className="lg:hidden absolute bottom-24 right-6 z-50">
+                <button 
+                  onClick={() => {
+                    document.getElementById('mobile-scroll-layout')?.scrollTo({ left: window.innerWidth, behavior: 'smooth' });
+                  }}
+                  className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-full shadow-2xl shadow-slate-900/30 font-bold text-xs active:scale-95 transition-transform"
+                >
+                  <Eye size={16} />
+                  Preview
+                  <ArrowRight size={14} className="ml-1 opacity-50" />
+                </button>
+              </div>
             </motion.aside>
           )}
         </AnimatePresence>
 
-        <PreviewPane
-          funnel={funnel}
-          content={liveContent}
-          products={productsData.products}
-          previewMode={previewMode}
-          onEditSection={handleEditSection}
-        />
+        <div id="tour-preview" className="w-full h-full shrink-0 snap-center lg:w-auto lg:flex-1 relative">
+          <PreviewPane
+            funnel={funnel}
+            content={liveContent}
+            products={productsData.products}
+            previewMode={previewMode}
+            onEditSection={handleEditSection}
+          />
+          
+          {/* Floating Mobile Action (Preview -> Editor) */}
+          <div className="lg:hidden absolute bottom-6 left-6 z-50">
+            <button 
+              onClick={() => {
+                document.getElementById('mobile-scroll-layout')?.scrollTo({ left: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2 bg-white text-slate-900 border border-slate-200 px-5 py-3 rounded-full shadow-2xl font-bold text-xs active:scale-95 transition-transform"
+            >
+              <ChevronLeft size={14} className="mr-1 opacity-50" />
+              <Edit2 size={16} />
+              Editor
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ✅ FIX #12: Premium Publish Success Modal */}

@@ -60,21 +60,9 @@ const defaultHeroData: HeroData = {
 const defaultCategories: CategoryItem[] = [
   {
     id: 'sofas',
-    label: 'Luxury Sofas',
-    tagline: 'Lounges & Recliners',
+    label: 'SOFA',
+    tagline: 'Short collection tagline.',
     image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    id: 'beds',
-    label: 'Solid Wood Beds',
-    tagline: 'Master Bedroom Collections',
-    image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    id: 'dining',
-    label: 'Dining & Decor',
-    tagline: 'Factory-Direct Sets',
-    image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
   },
 ];
 
@@ -117,85 +105,11 @@ const defaultProducts: ProductsData = {
       delivery: 'Delivery: 5-7 Days',
       rating: 4.7,
     },
-    // BEDS
-    {
-      id: 'p4',
-      category_id: 'beds',
-      name: 'Grand King Upholstered',
-      priceLabel: 'Rs 38,000',
-      retailLabel: 'Rs 55,000',
-      savingsLabel: 'Save 30%',
-      image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
-      urgency: 'Direct from Factory',
-      delivery: 'Delivery: 10-12 Days',
-      rating: 4.8,
-    },
-    {
-      id: 'p5',
-      category_id: 'beds',
-      name: 'Storage Queen Bed',
-      priceLabel: 'Rs 32,500',
-      retailLabel: 'Rs 48,000',
-      savingsLabel: 'Save 32%',
-      image: 'https://images.unsplash.com/photo-1531835551805-16d864c8d311?auto=format&fit=crop&w=1200&q=80',
-      urgency: 'Most Popular',
-      delivery: 'Delivery: 7-10 Days',
-      rating: 4.9,
-    },
-    {
-      id: 'p6',
-      category_id: 'beds',
-      name: 'Rustic Sheesham Original',
-      priceLabel: 'Rs 28,000',
-      retailLabel: 'Rs 42,000',
-      savingsLabel: 'Save 33%',
-      image: 'https://images.unsplash.com/photo-1616594111718-3617300c1448?auto=format&fit=crop&w=1200&q=80',
-      urgency: 'Jodhpur Special',
-      delivery: 'Delivery: 12-15 Days',
-      rating: 4.7,
-    },
-    // DINING
-    {
-      id: 'p7',
-      category_id: 'dining',
-      name: 'Marble Top 6-Seater',
-      priceLabel: 'Rs 65,000',
-      retailLabel: 'Rs 95,000',
-      savingsLabel: 'Save 31%',
-      image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
-      urgency: 'Premium Finish',
-      delivery: 'Delivery: 10-12 Days',
-      rating: 4.9,
-    },
-    {
-      id: 'p8',
-      category_id: 'dining',
-      name: 'Compact Walnut 4-Seater',
-      priceLabel: 'Rs 22,500',
-      retailLabel: 'Rs 32,000',
-      savingsLabel: 'Save 29%',
-      image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80',
-      urgency: 'Space Saver',
-      delivery: 'Delivery: 5-7 Days',
-      rating: 4.8,
-    },
-    {
-      id: 'p9',
-      category_id: 'dining',
-      name: 'Grand 8-Seater Banquet',
-      priceLabel: 'Rs 85,000',
-      retailLabel: 'Rs 1,20,000',
-      savingsLabel: 'Save 29%',
-      image: 'https://images.unsplash.com/photo-1617806118233-18e1db208fa0?auto=format&fit=crop&w=1200&q=80',
-      urgency: 'Exclusive Design',
-      delivery: 'Delivery: 15-20 Days',
-      rating: 5.0,
-    },
   ],
   preTitle: 'Select Your Style',
   title: '', // Dynamic by default
   subTitle: 'Tap any product to get factory-direct pricing on WhatsApp.',
-};
+};;
 
 const defaultTestimonials: TestimonialsData = {
   testimonials: [

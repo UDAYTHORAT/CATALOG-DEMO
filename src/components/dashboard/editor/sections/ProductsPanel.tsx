@@ -32,7 +32,12 @@ export default React.memo(function ProductsPanel({
   isWizard?: boolean;
 }) {
   const products = data.products;
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(() => {
+    if (products.length > 0) {
+      return { [products[0].id]: true };
+    }
+    return {};
+  });
 
   const toggleExpand = (id: string) => {
     setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
@@ -159,7 +164,7 @@ export default React.memo(function ProductsPanel({
         </div>
         
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-16 px-6 text-center">
+          <div id="tour-products-empty" className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-16 px-6 text-center">
             <Package className="mb-4 text-slate-300" size={40} />
             <p className="text-sm font-black text-slate-500">No pieces selected</p>
             <p className="mt-1 text-[11px] text-slate-400 max-w-[200px]">Select items from your catalog above to populate your funnel.</p>
@@ -170,7 +175,7 @@ export default React.memo(function ProductsPanel({
             return (
               <div key={product.id} className={`group relative rounded-[2rem] border transition-all ${isExpanded ? 'border-slate-300 bg-white shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'}`}>
                 {/* Product Header Row */}
-                <div className="flex items-center gap-4 p-4">
+                <div id={index === 0 ? "tour-products-details" : undefined} className="flex items-center gap-4 p-4">
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-inner">
                     <img src={product.image || FALLBACK_PRODUCT_IMAGE} alt="" className="h-full w-full object-cover" />
                   </div>
@@ -207,7 +212,8 @@ export default React.memo(function ProductsPanel({
                   <div className="p-6 pt-0 space-y-8 animate-in fade-in zoom-in-95 duration-300">
                     <div className="h-px bg-slate-50 w-full" />
                     
-                    {/* Section 1: Storefront Essentials */}                    <div className="space-y-4">
+                    {/* Section 1: Storefront Essentials */}
+                    <div id={index === 0 ? "tour-products-storefront" : undefined} className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
@@ -264,7 +270,7 @@ export default React.memo(function ProductsPanel({
                     </div>
 
                     {/* Section 2: Conversion Boosters */}
-                    <div className="space-y-4 rounded-[2rem] bg-amber-50/30 p-6 border border-amber-100/50">
+                    <div id={index === 0 ? "tour-products-boosters" : undefined} className="space-y-4 rounded-[2rem] bg-amber-50/30 p-6 border border-amber-100/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Zap size={14} className="text-amber-500 fill-amber-500/20" />
@@ -298,7 +304,7 @@ export default React.memo(function ProductsPanel({
                     </div>
 
                     {/* Section 3: Storytelling */}
-                    <div className="space-y-4">
+                    <div id={index === 0 ? "tour-products-narrative" : undefined} className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
@@ -315,7 +321,7 @@ export default React.memo(function ProductsPanel({
                     </div>
 
                     {/* Section 4: Premium Specifications */}
-                    <div className="space-y-5 rounded-[2.5rem] bg-[#1a1c24] p-7 text-white shadow-2xl relative overflow-hidden">
+                    <div id={index === 0 ? "tour-products-specs" : undefined} className="space-y-5 rounded-[2.5rem] bg-[#1a1c24] p-7 text-white shadow-2xl relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] rounded-full -mr-16 -mt-16 blur-3xl" />
                       <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-2">
@@ -354,7 +360,7 @@ export default React.memo(function ProductsPanel({
                     </div>
 
                     {/* Section 5: Benefits */}
-                    <div className="space-y-4 rounded-[2.5rem] bg-[#f2fcf5] p-7 border border-emerald-100/50 shadow-inner">
+                    <div id={index === 0 ? "tour-products-benefits" : undefined} className="space-y-4 rounded-[2.5rem] bg-[#f2fcf5] p-7 border border-emerald-100/50 shadow-inner">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <BadgeCheck size={16} className="text-emerald-500" />

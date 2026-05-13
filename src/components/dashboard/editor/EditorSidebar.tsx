@@ -25,13 +25,13 @@ export default React.memo(function EditorSidebar({
 }) {
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex-1 space-y-8 overflow-y-auto p-4 scrollbar-none">
+      <div className="flex-1 flex md:block flex-row md:flex-col gap-4 md:gap-0 md:space-y-8 overflow-x-auto md:overflow-y-auto p-4 scrollbar-none snap-x">
         {/* Core Settings Section */}
-        <div>
-          <p className="mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Core Configuration</p>
+        <div className="shrink-0 md:shrink">
+          <p className="hidden md:block mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Core Configuration</p>
           <button
             onClick={onStoreClick}
-            className={`group flex w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all ${
+            className={`group shrink-0 flex md:w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all snap-start ${
               activeTab === 'store'
                 ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/10'
                 : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
@@ -43,15 +43,15 @@ export default React.memo(function EditorSidebar({
               }`}>
                 <Settings size={16} />
               </div>
-              <span className="text-sm font-bold">Store Identity</span>
+              <span className="text-sm font-bold whitespace-nowrap">Store Identity</span>
             </div>
-            <ChevronRight size={14} className={activeTab === 'store' ? 'text-white/40' : 'text-slate-300'} />
+            <ChevronRight size={14} className={`ml-2 ${activeTab === 'store' ? 'text-white/40' : 'text-slate-300'}`} />
           </button>
         </div>
 
         {/* Sales Automation - NEW Dedicated Section */}
-        <div>
-          <p className="mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sales Automation</p>
+        <div className="shrink-0 md:shrink">
+          <p className="hidden md:block mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sales Automation</p>
           <button
             onClick={() => onChangeTab('whatsapp')}
             className={`group flex w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all ${
@@ -66,7 +66,7 @@ export default React.memo(function EditorSidebar({
               }`}>
                 <Zap size={16} className={activeTab === 'whatsapp' ? 'text-white' : 'text-emerald-600'} />
               </div>
-              <span className="text-sm font-bold">WhatsApp Support</span>
+              <span className="text-sm font-bold whitespace-nowrap">WhatsApp Support</span>
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded border ${
@@ -74,15 +74,15 @@ export default React.memo(function EditorSidebar({
               }`}>
                 Hot
               </span>
-              <ChevronRight size={14} className={activeTab === 'whatsapp' ? 'text-white/40' : 'text-slate-300'} />
+              <ChevronRight size={14} className={`ml-2 ${activeTab === 'whatsapp' ? 'text-white/40' : 'text-slate-300'}`} />
             </div>
           </button>
         </div>
 
         {/* Page Structure Section */}
-        <div>
-          <p className="mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Page Structure</p>
-          <div className="space-y-3">
+        <div className="shrink-0 md:shrink flex md:block gap-4 md:gap-0">
+          <p className="hidden md:block mb-4 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Page Structure</p>
+          <div className="flex md:block gap-4 md:gap-0 md:space-y-3 shrink-0 md:shrink">
             {sections
               .filter(s => s.id !== 'whatsapp') // Show others here
               .map((section) => {
@@ -95,7 +95,7 @@ export default React.memo(function EditorSidebar({
                   <button
                     key={section.id}
                     onClick={() => onChangeTab(section.id)}
-                    className={`group flex w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all ${
+                    className={`group shrink-0 flex md:w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all snap-start ${
                       isActive
                         ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/10'
                         : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
@@ -107,9 +107,9 @@ export default React.memo(function EditorSidebar({
                       }`}>
                         <Icon size={16} />
                       </div>
-                      <span className="text-sm font-bold">{meta.label}</span>
+                      <span className="text-sm font-bold whitespace-nowrap">{meta.label}</span>
                     </div>
-                    <ChevronRight size={14} className={isActive ? 'text-white/40' : 'text-slate-300'} />
+                    <ChevronRight size={14} className={`ml-2 ${isActive ? 'text-white/40' : 'text-slate-300'}`} />
                   </button>
                 );
               })}
@@ -118,7 +118,7 @@ export default React.memo(function EditorSidebar({
       </div>
 
       {/* Simplified Status Footer */}
-      <div className="border-t border-slate-50 bg-slate-50/30 p-5">
+      <div className="hidden md:block border-t border-slate-50 bg-slate-50/30 p-5">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg shadow-slate-900/20">
             <LayoutGrid size={18} />

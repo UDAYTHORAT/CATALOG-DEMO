@@ -29,7 +29,7 @@ export default React.memo(function TestimonialsPanel({
         }
       />
 
-      <div className="space-y-3">
+      <div id="tour-testimonials-list" className="space-y-3">
         {testimonials.length === 0 && (
           <div className="rounded-lg border border-dashed border-slate-200 bg-white p-4 text-sm font-semibold text-slate-400">
             No reviews yet. Add one to build trust.

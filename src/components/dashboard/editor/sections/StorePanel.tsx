@@ -10,6 +10,7 @@ export default React.memo(function StorePanel({
   logoUrl,
   readiness,
   counts,
+  isWizard = false,
   onChangeStoreName,
   onChangeWhatsApp,
   onChangeLogo,
@@ -20,6 +21,7 @@ export default React.memo(function StorePanel({
   logoUrl: string;
   readiness: { score: number; missingItems: Array<{ id: string; label: string }> };
   counts: { collections: number; products: number; reviews: number };
+  isWizard?: boolean;
   onChangeStoreName: (value: string) => void;
   onChangeWhatsApp: (value: string) => void;
   onChangeLogo: (value: string) => void;
@@ -36,7 +38,7 @@ export default React.memo(function StorePanel({
         <div className="absolute top-0 h-1.5 w-full bg-slate-900" />
         <div className="p-6">
           <div className="flex flex-col items-center gap-6 text-center">
-            <div className="relative group">
+            <div id="tour-store-logo" className="relative group">
               <div className="absolute -inset-2 rounded-3xl bg-slate-100 opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 shadow-inner">
                 <ImageUpload defaultImage={logoUrl} onUploadComplete={onChangeLogo} />
@@ -44,16 +46,19 @@ export default React.memo(function StorePanel({
             </div>
             
             <div className="w-full space-y-5 text-left">
-              <Field label="Business Name">
-                <input
-                  value={storeName}
-                  onChange={(event) => onChangeStoreName(event.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. Urban Living Furniture"
-                />
-              </Field>
+              <div id="tour-store-name">
+                <Field label="Business Name">
+                  <input
+                    value={storeName}
+                    onChange={(event) => onChangeStoreName(event.target.value)}
+                    className={inputClass}
+                    placeholder="e.g. Urban Living Furniture"
+                  />
+                </Field>
+              </div>
               
-              <Field label="WhatsApp Lead Capture">
+              <div id="tour-store-whatsapp">
+                <Field label="WhatsApp Lead Capture">
                 <div className="flex gap-2">
                   <div className="relative w-32 shrink-0">
                     <select
@@ -105,88 +110,93 @@ export default React.memo(function StorePanel({
                   Leads will be sent to this number. Includes country code.
                 </p>
               </Field>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Funnel Readiness */}
-      <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-black text-slate-900">Launch Readiness</p>
-            <p className="text-[10px] font-medium text-slate-500">
-              {score === 100 ? 'Your funnel is perfectly optimized for launch.' : 'Complete these steps for maximum conversion.'}
-            </p>
-          </div>
-          <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border ${
-            score === 100 ? 'border-emerald-200 text-emerald-600' : 'border-slate-200 text-slate-900'
-          }`}>
-            {score}%
-          </div>
-        </div>
-        
-        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
-          <div 
-            className={`absolute h-full rounded-full transition-all duration-700 ease-out ${
-              score === 100 ? 'bg-emerald-500' : 'bg-slate-900'
-            }`} 
-            style={{ width: `${score}%` }} 
-          />
-        </div>
-
-        {missingItems.length > 0 && (
-          <div className="mt-6 space-y-2">
-            <p className="mb-3 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Action Needed</p>
-            {missingItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => onJumpTo(item.id as TabId)}
-                className="flex w-full items-center justify-between rounded-xl bg-white p-3 text-left border border-slate-100 shadow-sm transition-all hover:border-slate-300 active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
-                  <AlertCircle size={14} className="text-amber-500" />
-                  <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
-                </div>
-                <div className="rounded-md bg-slate-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-tight text-slate-400">
-                  Fix Now
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {score === 100 && (
-          <div className="mt-6 flex items-center gap-3 rounded-xl bg-emerald-50 p-3 border border-emerald-100">
-            <CheckCircle2 size={16} className="text-emerald-500" />
-            <p className="text-[11px] font-bold text-emerald-700">Ready for traffic. You're good to go!</p>
-          </div>
-        )}
-      </div>
-
-      {/* Quick Status */}
-      <div>
-        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Current Inventory</p>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: 'Collections', value: counts.collections, icon: LayoutGrid, tab: 'categories' as TabId, color: 'bg-blue-50 text-blue-600' },
-            { label: 'Products', value: counts.products, icon: Package, tab: 'products' as TabId, color: 'bg-purple-50 text-purple-600' },
-            { label: 'Reviews', value: counts.reviews, icon: Star, tab: 'testimonials' as TabId, color: 'bg-amber-50 text-amber-600' },
-          ].map((metric) => (
-            <button
-              key={metric.label}
-              onClick={() => onJumpTo(metric.tab)}
-              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left transition-all hover:border-slate-900 hover:shadow-lg hover:shadow-slate-900/5"
-            >
-              <div className={`mb-4 flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${metric.color}`}>
-                <metric.icon size={16} />
+      {!isWizard && (
+        <>
+          {/* Funnel Readiness */}
+          <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-black text-slate-900">Launch Readiness</p>
+                <p className="text-[10px] font-medium text-slate-500">
+                  {score === 100 ? 'Your funnel is perfectly optimized for launch.' : 'Complete these steps for maximum conversion.'}
+                </p>
               </div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">{metric.value}</p>
-              <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">{metric.label}</p>
-            </button>
-          ))}
-        </div>
-      </div>
+              <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border ${
+                score === 100 ? 'border-emerald-200 text-emerald-600' : 'border-slate-200 text-slate-900'
+              }`}>
+                {score}%
+              </div>
+            </div>
+            
+            <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
+              <div 
+                className={`absolute h-full rounded-full transition-all duration-700 ease-out ${
+                  score === 100 ? 'bg-emerald-500' : 'bg-slate-900'
+                }`} 
+                style={{ width: `${score}%` }} 
+              />
+            </div>
+
+            {missingItems.length > 0 && (
+              <div className="mt-6 space-y-2">
+                <p className="mb-3 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Action Needed</p>
+                {missingItems.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => onJumpTo(item.id as TabId)}
+                    className="flex w-full items-center justify-between rounded-xl bg-white p-3 text-left border border-slate-100 shadow-sm transition-all hover:border-slate-300 active:scale-[0.98]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <AlertCircle size={14} className="text-amber-500" />
+                      <span className="text-[11px] font-bold text-slate-700">{item.label}</span>
+                    </div>
+                    <div className="rounded-md bg-slate-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-tight text-slate-400">
+                      Fix Now
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {score === 100 && (
+              <div className="mt-6 flex items-center gap-3 rounded-xl bg-emerald-50 p-3 border border-emerald-100">
+                <CheckCircle2 size={16} className="text-emerald-500" />
+                <p className="text-[11px] font-bold text-emerald-700">Ready for traffic. You're good to go!</p>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Status */}
+          <div>
+            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Current Inventory</p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Collections', value: counts.collections, icon: LayoutGrid, tab: 'categories' as TabId, color: 'bg-blue-50 text-blue-600' },
+                { label: 'Products', value: counts.products, icon: Package, tab: 'products' as TabId, color: 'bg-purple-50 text-purple-600' },
+                { label: 'Reviews', value: counts.reviews, icon: Star, tab: 'testimonials' as TabId, color: 'bg-amber-50 text-amber-600' },
+              ].map((metric) => (
+                <button
+                  key={metric.label}
+                  onClick={() => onJumpTo(metric.tab)}
+                  className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-left transition-all hover:border-slate-900 hover:shadow-lg hover:shadow-slate-900/5"
+                >
+                  <div className={`mb-4 flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${metric.color}`}>
+                    <metric.icon size={16} />
+                  </div>
+                  <p className="text-2xl font-black tracking-tight text-slate-900">{metric.value}</p>
+                  <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">{metric.label}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 });
