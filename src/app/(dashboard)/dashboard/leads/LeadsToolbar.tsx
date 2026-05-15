@@ -20,7 +20,7 @@ export default function LeadsToolbar({ csvData }: LeadsToolbarProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `funnellink-leads-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `novexiq-leads-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -29,9 +29,9 @@ export default function LeadsToolbar({ csvData }: LeadsToolbarProps) {
     <button
       onClick={handleExport}
       disabled={csvData.length === 0}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-2 px-6 py-3 rounded-[1rem] bg-white border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
     >
-      <Download size={16} />
+      <Download size={18} />
       Export CSV
     </button>
   );

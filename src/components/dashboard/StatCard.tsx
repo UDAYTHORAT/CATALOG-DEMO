@@ -89,26 +89,38 @@ export function StatCard({ label, value, icon, trend, sparkData }: StatCardProps
   const defaultSpark = sparkData || [3, 5, 4, 7, 6, 8, 9, 7, 10, 12];
   const sparkColor = trend?.isPositive !== false ? '#10b981' : '#ef4444';
 
+  const gradientMap: Record<string, { bg: string, shadow: string, text: string, light: string }> = {
+    'Products': { bg: 'from-blue-500 to-indigo-600', shadow: 'shadow-blue-500/20', text: 'text-blue-600', light: 'bg-blue-50' },
+    'Active Funnels': { bg: 'from-indigo-500 to-violet-600', shadow: 'shadow-indigo-500/20', text: 'text-indigo-600', light: 'bg-indigo-50' },
+    'Total Leads': { bg: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-500/20', text: 'text-emerald-600', light: 'bg-emerald-50' },
+    'Conversion': { bg: 'from-amber-400 to-orange-500', shadow: 'shadow-orange-500/20', text: 'text-amber-600', light: 'bg-amber-50' },
+  };
+
+  const theme = gradientMap[label] || gradientMap['Active Funnels'];
+
   return (
-    <div className="bg-white rounded-[1.5rem] p-6 border border-slate-100 relative overflow-hidden group hover:border-indigo-200/60 transition-all duration-300">
-      <div className="relative z-10">
+    <div className="relative bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+      {/* Subtle Background Glow */}
+      <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${theme.bg} opacity-[0.03] group-hover:opacity-[0.08] blur-2xl rounded-full transition-opacity duration-500`} />
+      
+      <div className="relative z-10 flex flex-col h-full justify-between">
         {/* Top row: label + icon */}
-        <div className="flex items-center justify-between mb-5">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
-          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</span>
+          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${theme.bg} flex items-center justify-center text-white shadow-lg ${theme.shadow} transform group-hover:scale-110 transition-transform duration-500`}>
             {icon}
           </div>
         </div>
 
         {/* Value row */}
         <div className="flex items-end justify-between gap-4">
-          <div className="flex items-end gap-3">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-none animate-counter-up">
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-4xl font-black text-slate-900 tracking-tight leading-none animate-counter-up">
               <AnimatedValue value={value} />
             </h3>
             {trend && (
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-md mb-0.5 ${
-                trend.isPositive ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'
+              <span className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg w-fit ${
+                trend.isPositive ? 'text-emerald-700 bg-emerald-100/50' : 'text-red-600 bg-red-100/50'
               }`}>
                 {trend.isPositive ? '↑' : '↓'} {trend.value}%
               </span>
@@ -116,7 +128,7 @@ export function StatCard({ label, value, icon, trend, sparkData }: StatCardProps
           </div>
 
           {/* Sparkline */}
-          <div className="opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="opacity-50 group-hover:opacity-100 transition-opacity duration-500 transform group-hover:-translate-y-1">
             <Sparkline data={defaultSpark} color={sparkColor} />
           </div>
         </div>

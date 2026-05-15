@@ -29,6 +29,26 @@ export default React.memo(function StorePanel({
 }) {
   const { score, missingItems } = readiness;
 
+  const [countryCode, setCountryCode] = React.useState(() => {
+    const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
+    const found = commonCodes.find(code => whatsappNumber.startsWith(code));
+    return found || '91';
+  });
+
+  const [localNumber, setLocalNumber] = React.useState(() => {
+    const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
+    const code = commonCodes.find(c => whatsappNumber.startsWith(c)) || '';
+    return whatsappNumber.startsWith(code) ? whatsappNumber.slice(code.length) : whatsappNumber;
+  });
+
+  // Debounce the parent update
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onChangeWhatsApp(countryCode + localNumber);
+    }, 300); // 300ms debounce
+    return () => clearTimeout(timer);
+  }, [localNumber, countryCode, onChangeWhatsApp]);
+
   return (
     <div className="space-y-8">
       <PanelTitle icon={Settings} label="Store Profile" meta="General Settings" />
@@ -62,17 +82,8 @@ export default React.memo(function StorePanel({
                 <div className="flex gap-2">
                   <div className="relative w-32 shrink-0">
                     <select
-                      value={(() => {
-                        const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
-                        const found = commonCodes.find(code => whatsappNumber.startsWith(code));
-                        return found || '91';
-                      })()}
-                      onChange={(e) => {
-                        const newCode = e.target.value;
-                        const oldCode = ['91', '1', '44', '971', '65', '61', '966', '20'].find(c => whatsappNumber.startsWith(c)) || '';
-                        const rest = whatsappNumber.startsWith(oldCode) ? whatsappNumber.slice(oldCode.length) : whatsappNumber;
-                        onChangeWhatsApp(newCode + rest);
-                      }}
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
                       className={`${inputClass} appearance-none pr-8 text-xs font-bold`}
                     >
                       <option value="91">🇮🇳 +91</option>
@@ -90,16 +101,10 @@ export default React.memo(function StorePanel({
                   </div>
                   <div className="relative flex-1">
                     <input
-                      value={(() => {
-                        const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
-                        const code = commonCodes.find(c => whatsappNumber.startsWith(c)) || '';
-                        return whatsappNumber.startsWith(code) ? whatsappNumber.slice(code.length) : whatsappNumber;
-                      })()}
+                      value={localNumber}
                       onChange={(event) => {
-                        const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
-                        const code = commonCodes.find(c => whatsappNumber.startsWith(c)) || '91';
                         const val = event.target.value.replace(/\D/g, ''); // Keep only digits
-                        onChangeWhatsApp(code + val);
+                        setLocalNumber(val);
                       }}
                       className={inputClass}
                       placeholder="98765 43210"

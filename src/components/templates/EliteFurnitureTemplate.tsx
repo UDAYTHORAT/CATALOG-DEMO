@@ -142,6 +142,10 @@ export default React.memo(function EliteFurnitureTemplate({
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [isCustomRequestOpen, setIsCustomRequestOpen] = useState(false);
   const [customRequestText, setCustomRequestText] = useState("");
+  const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
+  const [availabilityProduct, setAvailabilityProduct] = useState<Product | null>(null);
+  const cityRef = React.useRef<HTMLInputElement>(null);
+  const pincodeRef = React.useRef<HTMLInputElement>(null);
 
   // Extract content from funnel story_mode_data or use defaults
   const isMobileMode = previewMode === 'mobile';
@@ -474,6 +478,85 @@ export default React.memo(function EliteFurnitureTemplate({
     </AnimatePresence>
   );
 
+  const AvailabilityModal = () => (
+    <AnimatePresence>
+      {isAvailabilityOpen && (
+        <motion.div
+          key="availability-popup-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className={`${isPreview ? 'absolute' : 'fixed'} inset-0 z-[9999] flex items-end sm:items-center justify-center`}
+          onClick={() => setIsAvailabilityOpen(false)}
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <motion.div
+            initial={{ y: 60, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 60, opacity: 0, scale: 0.96 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 200 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md mx-4 mb-4 sm:mb-0 bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.25)] overflow-hidden border border-white/60 p-6"
+          >
+            <button
+              onClick={() => setIsAvailabilityOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-colors"
+            >
+              <X size={16} className="text-[#1C1B1A]" />
+            </button>
+            <h3 className="font-serif text-[1.25rem] tracking-tight text-[#1C1B1A] leading-tight mb-2">Check Availability</h3>
+            <p className="text-[11px] text-[#8C8881] font-medium mb-4">Enter your location to get delivery time and exact quote.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[#8C8881]">City</label>
+                <input
+                  ref={cityRef}
+                  type="text"
+                  placeholder="e.g. Mumbai"
+                  className="w-full mt-1 px-4 py-3 rounded-xl bg-[#F7F5F0]/50 border border-black/5 text-sm text-[#1C1B1A]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[#8C8881]">Pincode</label>
+                <input
+                  ref={pincodeRef}
+                  type="text"
+                  placeholder="e.g. 400001"
+                  className="w-full mt-1 px-4 py-3 rounded-xl bg-[#F7F5F0]/50 border border-black/5 text-sm text-[#1C1B1A]"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const city = cityRef.current?.value || '';
+                  const pincode = pincodeRef.current?.value || '';
+                  setIsAvailabilityOpen(false);
+                  const num = content.whatsappNumber?.replace(/\D/g, '') || '';
+                  const message = `Hi ${content.storeName},\n\nI'm interested in getting an exact quote & photos for:\nProduct: ${availabilityProduct?.name} (Starting from ${availabilityProduct?.priceLabel})\n\nLocation: ${city} - ${pincode}\n\nPlease let me know:\n1. Exact price for my required size\n2. Fabric/Wood customization options\n3. Delivery time to my pincode`;
+                  window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, "_blank");
+                }}
+                className="w-full py-4 rounded-xl bg-[#25D366] text-white font-black uppercase tracking-[0.15em] text-[12px] flex items-center justify-center gap-3 transition-all hover:bg-[#20BD5A] active:scale-[0.98]"
+              >
+                Get Best Deal on WhatsApp
+              </button>
+              <button
+                onClick={() => {
+                  setIsAvailabilityOpen(false);
+                  const num = content.whatsappNumber?.replace(/\D/g, '') || '';
+                  const message = `Hi ${content.storeName},\n\nI'm interested in getting an exact quote & photos for:\nProduct: ${availabilityProduct?.name} (Starting from ${availabilityProduct?.priceLabel})\n\nPlease let me know:\n1. Exact price for my required size\n2. Fabric/Wood customization options\n3. Delivery time to my pincode`;
+                  window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, "_blank");
+                }}
+                className="w-full py-2 text-[11px] font-bold uppercase tracking-wider text-[#8C8881] hover:text-[#1C1B1A] transition-colors"
+              >
+                Skip & Chat Directly
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   const BottomCTA = () => (
     <div className="w-full pt-12 pb-6 px-2 flex justify-center">
       <div className="w-full max-w-md">
@@ -500,6 +583,7 @@ export default React.memo(function EliteFurnitureTemplate({
     <div className={`${isPreview ? 'min-h-full' : 'min-h-screen'} bg-[#F7F5F0] text-[#1C1B1A] font-sans relative flex flex-col w-full overflow-x-hidden`}>
       {/* Category Selector Popup for General Inquiry */}
       <CategorySelectorModal />
+      <AvailabilityModal />
       
       {/* HEADER */}
       <AnimatePresence>
@@ -813,7 +897,10 @@ export default React.memo(function EliteFurnitureTemplate({
 
                         <div className="flex flex-col sm:flex-row gap-3">
                           <button
-                            onClick={() => handleWhatsAppCTA("product_match_cta", product)}
+                            onClick={() => {
+                              setAvailabilityProduct(product);
+                              setIsAvailabilityOpen(true);
+                            }}
                             className="flex-1 py-4 lg:py-5 rounded-[1.5rem] bg-[#25D366] text-white text-[13px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(37,211,102,0.2)] hover:bg-[#20BD5A] transition-all"
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -849,12 +936,12 @@ export default React.memo(function EliteFurnitureTemplate({
                             <MessageSquare className="w-5 h-5 text-[#1C1B1A] group-hover:text-[#D47A5A] transition-colors" />
                           </div>
                           <div className="text-left">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#D47A5A] mb-0.5">Personal Concierge</p>
-                            <p className="text-sm font-bold text-[#1C1B1A]">Not finding what you need?</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#D47A5A] mb-0.5">Tailor-Made Design</p>
+                            <p className="text-sm font-bold text-[#1C1B1A]">Get exactly what you want</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#1C1B1A]/40 group-hover:text-[#D47A5A] transition-colors">
-                          Describe & Chat <ArrowRight size={14} />
+                          Tell Us & Chat <ArrowRight size={14} />
                         </div>
                       </motion.button>
                     ) : (
@@ -1043,7 +1130,10 @@ export default React.memo(function EliteFurnitureTemplate({
 
                   <div className="sticky bottom-4 z-50">
                     <button
-                      onClick={() => handleWhatsAppCTA("details_page_cta", selectedProduct)}
+                      onClick={() => {
+                        setAvailabilityProduct(selectedProduct);
+                        setIsAvailabilityOpen(true);
+                      }}
                       className="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white text-[16px] font-black tracking-wide flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.3)] hover:shadow-[0_20px_40px_rgba(37,211,102,0.4)] transition-all active:scale-[0.98] border border-white/20"
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">

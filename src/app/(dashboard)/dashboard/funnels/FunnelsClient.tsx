@@ -81,7 +81,7 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
           </motion.div>
           <h2 className="text-5xl font-black text-slate-900 tracking-tight mb-6">Create Your First Funnel</h2>
           <p className="text-slate-500 max-w-lg mx-auto mb-12 text-xl leading-relaxed font-medium">
-            Join 1,000+ businesses using FunnelLink to turn passive traffic into high-intent customers.
+            Join 1,000+ businesses using Novexiq to turn passive traffic into high-intent customers.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
             <button 
@@ -117,23 +117,24 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 xl:w-auto w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 xl:w-auto w-full">
               {[
-                { label: 'Active Funnels', val: initialFunnels.length, icon: Layers, color: 'indigo' },
-                { label: 'Total Leads', val: totalLeads, icon: Target, color: 'emerald' },
-                { label: 'Avg Conv. Rate', val: `${avgConversion}%`, icon: TrendingUp, color: 'amber' }
+                { label: 'Active Campaigns', val: initialFunnels.length, icon: Layers, gradient: 'from-indigo-500 to-violet-600', shadow: 'shadow-indigo-500/20' },
+                { label: 'Total Leads', val: totalLeads, icon: Target, gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-500/20' },
+                { label: 'Conversion Rate', val: `${avgConversion}%`, icon: TrendingUp, gradient: 'from-amber-400 to-orange-500', shadow: 'shadow-orange-500/20' }
               ].map((stat, i) => (
-                <div key={i} className="bg-white px-6 py-4 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5 min-w-[200px]">
-                  <div className={`p-3 rounded-2xl shadow-inner ${
-                    stat.color === 'indigo' ? 'bg-indigo-50 text-indigo-600' : 
-                    stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' : 
-                    'bg-amber-50 text-amber-600'
-                  }`}>
-                    <stat.icon size={22} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">{stat.label}</p>
-                    <p className="text-2xl font-black text-slate-900 leading-none tracking-tight">{stat.val}</p>
+                <div key={i} className="relative bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group min-w-[220px]">
+                  {/* Subtle Background Glow */}
+                  <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-[0.03] group-hover:opacity-[0.08] blur-2xl rounded-full transition-opacity duration-500`} />
+                  
+                  <div className="flex items-center gap-5 relative z-10">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center text-white shadow-lg ${stat.shadow} transform group-hover:scale-110 transition-transform duration-500`}>
+                      <stat.icon size={24} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">{stat.label}</p>
+                      <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.val}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -141,8 +142,8 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
           </div>
 
           {/* Action Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/80 p-3 rounded-[28px] border border-slate-100 backdrop-blur-md sticky top-4 z-40">
-            <div className="flex items-center gap-2 p-1.5 bg-slate-50/50 rounded-2xl border border-slate-100 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/60 p-4 rounded-[2rem] border border-white backdrop-blur-xl shadow-2xl shadow-slate-200/50 sticky top-4 z-40">
+            <div className="flex items-center gap-2 p-1.5 bg-slate-900/5 rounded-[1.25rem] border border-slate-900/5 w-full md:w-auto">
               {[
                 { id: 'my-funnels', label: 'My Funnels', icon: Layers },
                 { id: 'templates', label: 'Templates', icon: Zap }
@@ -150,40 +151,40 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
                 <button 
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-2.5 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex-1 md:flex-none ${
                     activeTab === tab.id 
-                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
-                      : 'text-slate-500 hover:text-indigo-600 hover:bg-white'
+                      ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50' 
+                      : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
                   }`}
                 >
-                  <tab.icon size={16} className={activeTab === tab.id && tab.id === 'templates' ? 'text-amber-300' : ''} />
+                  <tab.icon size={18} className={activeTab === tab.id && tab.id === 'templates' ? 'text-amber-500 fill-amber-500/20' : ''} />
                   {tab.label}
                 </button>
               ))}
             </div>
 
             <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="relative flex-1 md:w-80">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <div className="relative flex-1 md:w-80 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                 <input 
                   type="text" 
                   placeholder="Search funnels..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-slate-200 focus:border-indigo-300 outline-none transition-all font-bold text-sm shadow-sm"
+                  className="w-full pl-12 pr-4 py-3.5 bg-white/80 rounded-2xl border-2 border-transparent focus:border-indigo-100 focus:bg-white outline-none transition-all font-bold text-sm shadow-sm"
                 />
               </div>
 
-              <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+              <div className="hidden sm:flex bg-white/80 p-1.5 rounded-2xl border border-white shadow-sm">
                 <button 
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
                 >
                   <LayoutGrid size={18} />
                 </button>
                 <button 
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`p-2.5 rounded-xl transition-all ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
                 >
                   <List size={18} />
                 </button>
@@ -191,10 +192,10 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
 
               <button 
                 onClick={() => { setSelectedTemplate(null); setIsModalOpen(true); }}
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-indigo-600 text-white text-sm font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-black uppercase tracking-wider rounded-2xl hover:from-indigo-500 hover:to-violet-500 transition-all shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/40 hover:-translate-y-0.5 active:scale-95 w-full sm:w-auto"
               >
-                <Plus size={18} />
-                <span className="hidden sm:inline">New Funnel</span>
+                <Plus size={18} strokeWidth={3} />
+                <span>New Funnel</span>
               </button>
             </div>
           </div>
@@ -221,73 +222,56 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
                       {/* Grid View Content */}
                       {viewMode === 'grid' ? (
                         <>
-                          <div className={`aspect-video rounded-[18px] mb-4 relative overflow-hidden flex items-center justify-center p-4 bg-gradient-to-br ${
+                          {/* Preview Area */}
+                          <div className={`aspect-[4/3] rounded-[20px] mb-4 relative overflow-hidden flex items-center justify-center bg-gradient-to-br ${
                             funnel.theme === 'minimal' ? 'from-amber-50 to-orange-50' :
                             funnel.theme === 'dark' || funnel.theme === 'onyx' ? 'from-[#121212] to-[#2a2a2a]' : 
-                            funnel.theme === 'kinetic' ? 'from-[#2a1b12] to-[#b78a63]' : 
-                            'from-[#1c1b19] to-[#4a433b]'
+                            'from-[#1c1b19] to-[#3a3530]'
                           }`}>
-                            {/* Abstract Design Elements */}
-                            <div className="absolute inset-0 opacity-20">
-                              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.4)_0%,transparent_60%)]" />
-                            </div>
+                            {/* Template Image */}
+                            <img 
+                              src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80" 
+                              alt="Template Preview"
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
                             
-                            <div className="relative z-10 text-center space-y-2">
-                              <div className="w-10 h-10 mx-auto bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/20 shadow-2xl">
-                                <Layers size={20} className="text-white" />
-                              </div>
-                                <div className="flex items-center justify-center gap-1.5 bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
-                                  <div className="w-1 h-1 bg-white rounded-full animate-pulse" />
-                                  <span className="text-[8px] font-black text-white uppercase tracking-widest">
-                                    {funnel.theme === 'minimal' ? 'ELITE FURNITURE' : 'CONVERSION ENGINE'}
-                                  </span>
-                                </div>
+                            {/* Overlay for better text readability */}
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+
+                            {/* Theme Label */}
+                            <div className="absolute top-4 left-4 z-10">
+                              <span className="text-[10px] font-black uppercase tracking-widest bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm text-slate-900 border border-white">
+                                {funnel.theme === 'minimal' ? 'Elite Furniture' : 'Premium Funnel'}
+                              </span>
                             </div>
 
-                            {/* Floating Stats */}
-                            <div className="absolute bottom-2 left-2 right-2 flex justify-between gap-2">
-                              <div className="bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-lg border border-white flex items-center gap-1">
-                                <Users size={10} className="text-slate-500" />
-                                <span className="text-[9px] font-black text-[#1c1b19]">{funnel.leads_count} Leads</span>
+                            {/* Bottom Stats */}
+                            <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
+                              <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-white flex items-center gap-1.5">
+                                <Users size={12} className="text-slate-500" />
+                                <span className="text-[10px] font-black text-slate-900">{funnel.leads_count} Leads</span>
                               </div>
-                              <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-lg shadow-lg border border-white flex items-center gap-1.5">
-                                <TrendingUp size={10} className="text-[#0f766e]" />
-                                <span className="text-[9px] font-black text-[#0f766e]">High Conv.</span>
+                              <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-white flex items-center gap-1.5">
+                                <TrendingUp size={12} className="text-emerald-600" />
+                                <span className="text-[10px] font-black text-emerald-600">Active</span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="px-2 space-y-6">
-                            <div className="flex items-start justify-between">
-                              <div className="space-y-1">
-                                <h3 className="text-lg font-black text-slate-900 tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-1">
-                                  {funnel.name}
-                                </h3>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-bold text-slate-400 font-mono bg-slate-50 px-1.5 py-0.5 rounded truncate max-w-[120px]">/s/{funnel.slug}</span>
-                                  <button 
-                                    onClick={() => handleCopyLink(funnel.slug, funnel.id)}
-                                    className="p-1 text-slate-300 hover:text-indigo-600 transition-colors"
-                                    title="Copy link"
-                                  >
-                                    {copiedId === funnel.id ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Copy size={14} />}
-                                  </button>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center gap-1">
-                                <Link 
-                                  href={`/s/${funnel.slug}`} 
-                                  target="_blank"
-                                  className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
-                                >
-                                  <ExternalLink size={16} />
-                                </Link>
+                          {/* Info & Actions */}
+                          <div className="px-1 space-y-4">
+                            <div>
+                              <h3 className="text-xl font-bold text-slate-900 tracking-tight line-clamp-1">
+                                {funnel.name}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-xs font-medium text-slate-400 font-mono">/s/{funnel.slug}</span>
                                 <button 
-                                  onClick={() => handleDelete(funnel.id)}
-                                  className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                                  onClick={() => handleCopyLink(funnel.slug, funnel.id)}
+                                  className="p-1 text-slate-300 hover:text-indigo-600 transition-colors"
+                                  title="Copy link"
                                 >
-                                  {deletingId === funnel.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                                  {copiedId === funnel.id ? <CheckCircle2 size={12} className="text-emerald-500" /> : <Copy size={12} />}
                                 </button>
                               </div>
                             </div>
@@ -295,39 +279,28 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
                             <div className="flex items-center gap-2">
                               <Link 
                                 href={`/dashboard/funnels/${funnel.id}/edit`}
-                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-indigo-600 text-white rounded-xl text-[13px] font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-indigo-600 transition-all shadow-sm active:scale-[0.98]"
                               >
-                                <Pencil size={14} />
-                                Edit
+                                <Pencil size={12} />
+                                Edit Engine
                               </Link>
                               <Link 
-                                href={`/dashboard/funnels/${funnel.id}/edit?tab=analytics`}
-                                className="p-3 bg-slate-50 text-slate-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all group/stats"
+                                href={`/s/${funnel.slug}`} 
+                                target="_blank"
+                                className="p-3 bg-slate-50 text-slate-400 border border-slate-100 rounded-xl hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                                title="View live"
                               >
-                                <BarChart3 size={18} className="group-hover/stats:scale-110 transition-transform" />
+                                <ExternalLink size={16} />
                               </Link>
-                            </div>
-
-                            {/* Mini Trend Indicator */}
-                            <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                              <div className="flex items-center gap-2">
-                                <div className="flex -space-x-2">
-                                  {[1,2,3].map(i => (
-                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400">
-                                      {String.fromCharCode(64+i)}
-                                    </div>
-                                  ))}
-                                </div>
-                                <span className="text-[10px] font-bold text-slate-400">+12 recent leads</span>
-                              </div>
-                              <div className="w-16 h-8 opacity-40 group-hover:opacity-100 transition-opacity">
-                                <svg viewBox="0 0 100 40" className="w-full h-full stroke-indigo-600 stroke-2 fill-none">
-                                  <path d="M0,35 Q10,10 20,30 T40,20 T60,35 T80,10 T100,25" strokeLinecap="round" />
-                                </svg>
-                              </div>
+                              <button 
+                                onClick={() => handleDelete(funnel.id)}
+                                className="p-3 bg-slate-50 text-slate-400 border border-slate-100 rounded-xl hover:text-red-600 hover:bg-red-50 transition-all"
+                                title="Delete"
+                              >
+                                {deletingId === funnel.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                              </button>
                             </div>
                           </div>
-
                         </>
                       ) : (
                         /* List View Content */

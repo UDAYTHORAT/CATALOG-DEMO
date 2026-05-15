@@ -80,34 +80,35 @@ export function Sidebar({ user }: { user: SidebarUser }) {
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-40
-        ${collapsed ? 'w-[72px]' : 'w-[260px]'}
-        flex flex-col bg-white border-r border-slate-100
-        transition-all duration-300 ease-in-out
+        ${collapsed ? 'w-[80px]' : 'w-[280px]'}
+        flex flex-col bg-[#0A0A0A] border-r border-white/5
+        transition-all duration-300 ease-in-out shadow-2xl shadow-black/50
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         {/* Logo */}
-        <div className={`h-16 flex items-center border-b border-slate-50 ${collapsed ? 'px-4 justify-center' : 'px-6'}`}>
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md flex-shrink-0">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className={`h-20 flex items-center border-b border-white/5 ${collapsed ? 'px-4 justify-center' : 'px-8'}`}>
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 flex-shrink-0 relative overflow-hidden">
+              <div className="absolute inset-0 bg-white/20 translate-y-[-50%] skew-y-12"></div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="relative z-10">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
             </div>
             {!collapsed && (
-              <span className="text-base font-bold text-slate-900 tracking-tight">
-                Funnel<span className="text-indigo-600">Link</span>
+              <span className="text-xl font-black text-white tracking-tight">
+                Novex<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">iq</span>
               </span>
             )}
           </Link>
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 py-4 overflow-y-auto no-scrollbar">
+        <div className="flex-1 py-8 overflow-y-auto no-scrollbar">
           {!collapsed && (
-            <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest mb-3 px-6">Workspace</p>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-8">Workspace</p>
           )}
-          <nav className={`space-y-0.5 ${collapsed ? 'px-2' : 'px-3'}`}>
+          <nav className={`space-y-1 ${collapsed ? 'px-3' : 'px-4'}`}>
             {navItems.map((item) => {
               const isActive = pathname === item.href || 
                 (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -117,19 +118,24 @@ export function Sidebar({ user }: { user: SidebarUser }) {
                   key={item.name}
                   href={item.href}
                   title={collapsed ? item.name : undefined}
-                  className={`group relative flex items-center ${collapsed ? 'justify-center' : ''} gap-3 ${
-                    collapsed ? 'px-0 py-3' : 'px-3 py-2.5'
-                  } rounded-xl text-sm font-medium transition-all duration-200 ${
+                  className={`group relative flex items-center ${collapsed ? 'justify-center' : ''} gap-4 ${
+                    collapsed ? 'px-0 py-3.5' : 'px-4 py-3.5'
+                  } rounded-xl text-sm font-semibold transition-all duration-300 overflow-hidden ${
                     isActive 
-                    ? 'bg-indigo-50 text-indigo-700' 
-                    : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                    ? 'bg-indigo-500/10 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-indigo-600' : ''}`} />
+                  {/* Active Background Glow */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-transparent opacity-50" />
+                  )}
+
+                  <Icon size={20} className={`flex-shrink-0 relative z-10 transition-colors ${isActive ? 'text-indigo-400' : 'group-hover:text-slate-300'}`} />
                   {!collapsed && (
                     <>
-                      <span className="flex-1">{item.name}</span>
-                      <span className="text-[10px] text-slate-300 font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="flex-1 relative z-10">{item.name}</span>
+                      <span className="text-[10px] text-slate-500 font-mono opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 px-1.5 py-0.5 rounded border border-white/10 relative z-10">
                         ⌘{item.shortcut}
                       </span>
                     </>
@@ -137,12 +143,12 @@ export function Sidebar({ user }: { user: SidebarUser }) {
 
                   {/* Active indicator bar */}
                   {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-indigo-600 rounded-r-full" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-500 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
                   )}
 
                   {/* Collapsed tooltip */}
                   {collapsed && (
-                    <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs font-medium rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
+                    <div className="absolute left-full ml-3 px-3 py-1.5 bg-white text-slate-900 text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-xl border border-slate-100">
                       {item.name}
                     </div>
                   )}
@@ -153,44 +159,47 @@ export function Sidebar({ user }: { user: SidebarUser }) {
         </div>
 
         {/* Collapse Toggle (desktop only) */}
-        <div className={`hidden lg:flex ${collapsed ? 'justify-center' : 'justify-end px-4'} py-2 border-t border-slate-50`}>
+        <div className={`hidden lg:flex ${collapsed ? 'justify-center' : 'justify-end px-6'} py-4 border-t border-white/5`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-50 transition-colors"
+            className="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
+            {collapsed ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}
           </button>
         </div>
 
         {/* User Area */}
-        <div className={`border-t border-slate-100 ${collapsed ? 'p-3' : 'p-4'}`}>
+        <div className={`border-t border-white/5 bg-black/20 ${collapsed ? 'p-4' : 'p-6'}`}>
           {collapsed ? (
             <Link
               href="/dashboard/settings"
-              className="w-10 h-10 mx-auto rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm hover:bg-indigo-100 transition-colors"
+              className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-lg hover:shadow-indigo-500/25 transition-all"
               title={displayName}
             >
               {displayName.charAt(0).toUpperCase()}
             </Link>
           ) : (
             <>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm flex-shrink-0">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-black text-lg flex-shrink-0 shadow-lg shadow-indigo-500/25 border border-white/10">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 truncate">{displayName}</p>
-                  <p className="text-[11px] text-slate-400 truncate">Pro Plan</p>
+                  <p className="text-sm font-bold text-white truncate">{displayName}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 truncate">Pro Plan</p>
+                  </div>
                 </div>
               </div>
               
               <form action={logout}>
                 <button
                   type="submit"
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-red-500/20 hover:border-red-500/30 border border-transparent transition-all group"
                 >
-                  <LogOut size={14} />
+                  <LogOut size={16} className="group-hover:text-red-400 transition-colors" />
                   Log out
                 </button>
               </form>
@@ -202,7 +211,7 @@ export function Sidebar({ user }: { user: SidebarUser }) {
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

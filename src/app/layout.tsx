@@ -19,7 +19,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "FunnelLink — Turn Visitors into WhatsApp Leads",
+  title: "Novexiq — Turn Visitors into WhatsApp Leads",
   description:
     "One smart link that guides visitors through a fast decision flow and sends them to WhatsApp with a clear buying message. Set up in 2 minutes.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "WhatsApp marketing",
   ],
   openGraph: {
-    title: "FunnelLink — Turn Visitors into WhatsApp Leads",
+    title: "Novexiq — Turn Visitors into WhatsApp Leads",
     description:
       "One smart link that guides visitors through a fast decision flow and sends them to WhatsApp with a clear buying message.",
     type: "website",

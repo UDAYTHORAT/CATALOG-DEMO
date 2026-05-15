@@ -10,44 +10,49 @@ export default async function SettingsPage() {
   const store = await getOrCreateStore();
 
   return (
-    <div className="space-y-6 animate-counter-up">
+    <div className="space-y-8 animate-counter-up">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Settings</h1>
-        <p className="text-sm text-slate-400 mt-1">Manage your profile and store configuration.</p>
+        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Settings</h1>
+        <p className="text-base text-slate-500 font-medium mt-1">Manage your account, store branding, and integrations.</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
           {/* Profile Section */}
-          <section className="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden">
-            <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <User size={18} />
+          <section className="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/40">
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 text-indigo-600 flex items-center justify-center shadow-inner border border-indigo-100/50">
+                <User size={20} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-slate-900">Profile</h2>
-                <p className="text-xs text-slate-400">Your account information</p>
+                <h2 className="text-lg font-black text-slate-900 tracking-tight">Profile</h2>
+                <p className="text-xs text-slate-400 font-medium">Your account information</p>
               </div>
             </div>
             <div className="p-8 space-y-6">
               <div className="flex items-center gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                  {(user?.user_metadata?.full_name || 'U').charAt(0)}
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-indigo-500/30 border-2 border-white/20 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-white/10 translate-y-[-50%] skew-y-12" />
+                  <span className="relative z-10">{(user?.user_metadata?.full_name || 'U').charAt(0)}</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">{user?.user_metadata?.full_name || 'User'}</p>
-                  <p className="text-sm text-slate-400">{user?.email}</p>
+                  <p className="text-xl font-black text-slate-900 tracking-tight">{user?.user_metadata?.full_name || 'User'}</p>
+                  <p className="text-sm text-slate-400 font-medium mt-0.5">{user?.email}</p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Active</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-500">Full Name</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Full Name</label>
                   <input type="text" defaultValue={user?.user_metadata?.full_name} disabled className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 font-medium text-sm cursor-not-allowed" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-500">Email</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Email</label>
                   <input type="email" defaultValue={user?.email} disabled className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 font-medium text-sm cursor-not-allowed" />
                 </div>
               </div>
@@ -59,23 +64,14 @@ export default async function SettingsPage() {
         </div>
 
         <div className="space-y-6">
-           {/* Help Card */}
-           <div className="bg-slate-900 rounded-[1.5rem] p-6 text-white">
-              <h3 className="text-base font-bold mb-2">Need help?</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-5">Our team is ready to assist with advanced configurations.</p>
-              <button className="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-semibold transition-all">
-                Contact Support
-              </button>
-           </div>
-
            {/* Danger Zone */}
-           <section className="bg-white rounded-[1.5rem] border border-red-100 overflow-hidden">
-             <div className="p-6">
-               <h2 className="text-sm font-bold text-red-500 mb-2">Danger Zone</h2>
-               <p className="text-xs text-slate-400 mb-4 leading-relaxed">Logging out will end your current session. Your data is safe.</p>
+           <section className="bg-white rounded-[2rem] border border-red-100/50 overflow-hidden shadow-xl shadow-slate-200/40">
+             <div className="p-7">
+               <h2 className="text-sm font-black text-red-500 uppercase tracking-wider mb-2">Danger Zone</h2>
+               <p className="text-xs text-slate-400 mb-5 leading-relaxed font-medium">Logging out will end your current session. Your data is safe and encrypted.</p>
                
                <form action={logout}>
-                 <button className="w-full py-2.5 rounded-xl bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-500 hover:text-white transition-all">
+                 <button className="w-full py-3 rounded-2xl bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30 active:scale-95">
                    Log Out
                  </button>
                </form>

@@ -54,6 +54,7 @@ export interface FunnelTemplate {
   icon: string;
   accentColor: string;
   bgGradient: string;
+  description?: string;
 
   // Step 1: Create Experience
   hero: {
@@ -152,7 +153,7 @@ export const MASTER_TEMPLATES: FunnelTemplate[] = [
   // ━━━ 0. FUNNELAD ELITE (FURNITURE) ━━━
   {
     id: 'funnelad-elite-furniture',
-    name: 'FunnelAd Elite (Furniture)',
+    name: 'Elite Furniture Sales Funnel',
     category: 'Furniture',
     industry: 'ecommerce',
     theme: 'minimal',
@@ -160,6 +161,7 @@ export const MASTER_TEMPLATES: FunnelTemplate[] = [
     accentColor: '#111111',
     bgGradient: 'from-amber-50 via-orange-50 to-stone-100',
     badge: '🚀 ELITE',
+    description: "How it helps: Converts window shoppers into WhatsApp buyers instantly. Why use it: Eliminates friction, showcases products with high intent. Where to use: Instagram ads, bio links, WhatsApp broadcasts.",
 
     hero: {
       headline: 'Tap → See → Chat → Buy',
