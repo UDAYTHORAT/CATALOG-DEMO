@@ -1,8 +1,8 @@
 import React from 'react';
-import { LayoutGrid, MapPin, MessageCircle, Package, Settings, Type, ChevronRight, Zap } from 'lucide-react';
+import { Building2, LayoutGrid, MapPin, MessageCircle, Package, Settings, Type, ChevronRight, Zap } from 'lucide-react';
 import type { Section, SectionId, TabId } from './types';
 
-const sectionMeta: Record<SectionId, { label: string; icon: React.ElementType }> = {
+const defaultSectionMeta: Record<SectionId, { label: string; icon: React.ElementType }> = {
   content: { label: 'Hero Landing', icon: Type },
   categories: { label: 'Collections', icon: LayoutGrid },
   products: { label: 'Product Showcase', icon: Package },
@@ -16,13 +16,30 @@ export default React.memo(function EditorSidebar({
   sections,
   onChangeTab,
   onStoreClick,
+  sectionLabels,
+  storeLabel,
 }: {
   activeTab: TabId;
   sections: Section[];
   onChangeTab: (tab: TabId) => void;
   onReorderSections: (sections: Section[]) => void;
   onStoreClick: () => void;
+  sectionLabels?: Partial<Record<SectionId, { label: string; icon?: React.ElementType }>>;
+  storeLabel?: string;
 }) {
+  // Merge custom labels with defaults
+  const sectionMeta = { ...defaultSectionMeta };
+  if (sectionLabels) {
+    for (const [key, val] of Object.entries(sectionLabels)) {
+      if (sectionMeta[key as SectionId]) {
+        sectionMeta[key as SectionId] = {
+          ...sectionMeta[key as SectionId],
+          ...val,
+        };
+      }
+    }
+  }
+
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="flex-1 flex md:block flex-row md:flex-col gap-4 md:gap-0 md:space-y-8 overflow-x-auto md:overflow-y-auto p-4 scrollbar-none snap-x">
@@ -43,7 +60,7 @@ export default React.memo(function EditorSidebar({
               }`}>
                 <Settings size={16} />
               </div>
-              <span className="text-sm font-bold whitespace-nowrap">Store Identity</span>
+              <span className="text-sm font-bold whitespace-nowrap">{storeLabel || 'Store Identity'}</span>
             </div>
             <ChevronRight size={14} className={`ml-2 ${activeTab === 'store' ? 'text-white/40' : 'text-slate-300'}`} />
           </button>
@@ -66,7 +83,7 @@ export default React.memo(function EditorSidebar({
               }`}>
                 <Zap size={16} className={activeTab === 'whatsapp' ? 'text-white' : 'text-emerald-600'} />
               </div>
-              <span className="text-sm font-bold whitespace-nowrap">WhatsApp Support</span>
+              <span className="text-sm font-bold whitespace-nowrap">{sectionMeta.whatsapp.label}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded border ${

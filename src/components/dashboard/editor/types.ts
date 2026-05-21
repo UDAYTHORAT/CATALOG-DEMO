@@ -32,6 +32,7 @@ export interface ProductItem {
   dimensions?: string;
   material?: string;
   finish?: string;
+  rooms?: any[];
 }
 
 export interface TestimonialItem {
@@ -47,6 +48,14 @@ export interface HeroData {
   subTagline: string;
   heroCtaText: string;
   heroCtaSubtext: string;
+  heroImage?: string;
+  // Real estate specific fields
+  trustBadges?: string[];
+  heroBadge?: string;
+  ownership?: string;
+  possession?: string;
+  startingPrice?: string;
+  status?: string;
 }
 
 export interface CategoriesData {

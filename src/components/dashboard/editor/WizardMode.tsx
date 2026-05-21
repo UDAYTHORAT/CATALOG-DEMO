@@ -24,47 +24,64 @@ interface WizardProps {
 }
 
 // Wizard flow: same tabs as Advanced, minus WhatsApp
-const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; guide: string }[] = [
+const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; guide: string; reLabel?: string; reHint?: string; reProTip?: string }[] = [
   { 
     id: 'store', 
     label: 'Store Identity', 
+    reLabel: 'Project Identity',
     hint: 'Set your store name, WhatsApp number, and logo. This is the foundation of your funnel.',
+    reHint: 'Set your project name, contact number, and branding. This is the foundation of your lead funnel.',
     proTip: 'Use a clean, high-resolution logo. A professional identity builds instant trust with your customers.',
+    reProTip: 'Use a premium project logo. High-fidelity branding builds instant trust with luxury property buyers.',
     guide: '👶 Here is what to fill in:\n• **Logo**: Click or drag a picture here (PNG/JPG up to 5MB).\n• **Business Name**: Type your shop\'s name here (e.g., Urban Living).\n• **WhatsApp Lead Capture**: Put your number with country code (+91). This is where you get leads!'
   },
   { 
     id: 'content', 
     label: 'Hero Landing', 
     hint: 'Write a powerful headline and sub-headline. This is the hook that stops visitors from scrolling away.',
+    reHint: 'Write a majestic project headline. This is the first impression for high-intent property buyers.',
     proTip: 'Focus on benefits, not features. Instead of "We sell furniture", try "Transform your living space with handcrafted luxury".',
+    reProTip: 'Sell the lifestyle, not the square footage. Instead of "New Apartments", try "A West-Facing Residence Designed for Silence and Light".',
     guide: '👶 Here is what to do:\n• Write a big, loud sentence (Headline) to make people say "Wow!".\n• Write a little sentence below that (Sub-headline) to explain more.'
   },
   { 
     id: 'categories', 
     label: 'Collections', 
+    reLabel: 'Persona Matching',
     hint: 'Create 1-3 product collections. Fewer choices lead to faster buying decisions.',
+    reHint: 'Create 1-3 buyer personas (e.g., Family Living, Investment). This helps buyers find their perfect match instantly.',
     proTip: 'Start with your most popular category. Most buyers decide within the first few seconds of viewing your collections.',
+    reProTip: 'Group by intent (Investment vs. Lifestyle). Segmenting your audience increases lead quality significantly.',
     guide: '👶 Here is what to do:\n• Give your group a Name (like "Sofas").\n• Add a Tagline (a short sentence) to describe it.'
   },
   { 
     id: 'products', 
     label: 'Product Showcase', 
+    reLabel: 'Property Showcase',
     hint: 'Add products with clear names, prices, and descriptions. Quality over quantity.',
+    reHint: 'Add residences with clear configurations (2BHK, 3BHK), prices, and spatial details.',
     proTip: 'Always use real product photos if possible. Highlight customization options in the description to increase intent.',
+    reProTip: 'Use high-resolution renders or site photos. Mention specific highlights like "Sky Deck" or "Italian Marble" to drive inquiries.',
     guide: '👶 Here is what to do:\n• Type the Product Name so people know what it is.\n• Put the Price so they know how much it costs.\n• Add a Picture so they can see it.'
   },
   { 
     id: 'testimonials', 
     label: 'Customer Reviews', 
+    reLabel: 'Social Proof',
     hint: 'Add real customer reviews. Social proof is the strongest trust signal for new buyers.',
+    reHint: 'Add real resident or investor reviews. Trust is the primary driver for high-value real estate decisions.',
     proTip: 'Include the customer\'s city if possible. Local social proof feels much more authentic to new visitors.',
+    reProTip: 'Highlight the speed of booking or the quality of service. Real human stories remove hesitation for large investments.',
     guide: '👶 Here is what to do:\n• Put the Customer\'s Name.\n• Write their Review (what they liked).'
   },
   { 
     id: 'location', 
     label: 'Studio Location', 
+    reLabel: 'Project Site',
     hint: 'Add your showroom address or factory location. This helps buyers verify your store is real.',
+    reHint: 'Add your experience center address or project site location. This is crucial for booking site visits.',
     proTip: 'Even if you are online-only, mentioning your base city or factory location helps establish authenticity.',
+    reProTip: 'Include a Google Maps link. 80% of buyers will look at the location context before inquiring.',
     guide: '👶 Here is what to do:\n• Type your Address (where your shop is).\n• Add a Map Link so they can get directions.'
   },
 ];
@@ -192,7 +209,14 @@ export default function WizardMode({
   onSwitchToAdvanced, onFinish, onReorderSections,
 }: WizardProps) {
   const [stepIdx, setStepIdx] = useState(0);
-  const activeTab = WIZARD_FLOW[stepIdx];
+  const isRealEstate = funnel.story_mode_data?.[0]?.templateId === 'funnelad-elite-real-estate';
+  const activeTabRaw = WIZARD_FLOW[stepIdx];
+  const activeTab = {
+    ...activeTabRaw,
+    label: (isRealEstate && activeTabRaw.reLabel) ? activeTabRaw.reLabel : activeTabRaw.label,
+    hint: (isRealEstate && activeTabRaw.reHint) ? activeTabRaw.reHint : activeTabRaw.hint,
+    proTip: (isRealEstate && activeTabRaw.reProTip) ? activeTabRaw.reProTip : activeTabRaw.proTip,
+  };
   const isLast = stepIdx === WIZARD_FLOW.length - 1;
 
   const [showOnboarding, setShowOnboarding] = useState(true);
@@ -541,7 +565,7 @@ export default function WizardMode({
                           }`}>
                             {isDone ? <CheckCircle2 size={14} /> : <span className="text-[10px] font-black">{i + 1}</span>}
                           </div>
-                          <span className="text-xs font-bold">{tab.label}</span>
+                          <span className="text-xs font-bold">{(isRealEstate && tab.reLabel) ? tab.reLabel : tab.label}</span>
                         </div>
                         <ChevronRight size={12} className={`ml-2 ${isActive ? 'text-white/40' : 'text-slate-300'}`} />
                       </button>

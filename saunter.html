@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>SAUNTER · The Glasshouse — Worli Sea Face</title>
+<meta name="description" content="SAUNTER — sea-facing luxury residences at Worli, Mumbai. Spatial tour, interactive blueprint, private concierge." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/framer-motion@11.0.8/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  html,body { background:#0B0A09; color:#F4F4F4; }
+  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-serif { font-family: 'Cormorant Garamond', serif; }
+  ::-webkit-scrollbar { width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb { background:#1D1B18; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useEffect, useMemo, useState } = React;
+const { motion, AnimatePresence } = window.Motion || window.framerMotion;
+
+const TEMPLATE = {
+  brand: "SAUNTER",
+  property: {
+    name: "The Glasshouse",
+    location: "Worli Sea Face · Mumbai",
+    tagline: "Sea-facing residences designed for privacy, light and skyline views.",
+    startingPrice: "₹ 8.5 Cr",
+    status: "Ready for Possession",
+    hero: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=80",
+    heroTag: "Superstructure Complete",
+  },
+  trust: ["Freehold","87% Reserved","EV Parking","Gaggenau","Sea Link · 4 min","Private Ownership"],
+  residences: [
+    { id:"signature", title:"3 BHK Signature", sqft:"1,850 sqft", price:"₹ 6.2 Cr", urgency:"3 Units Remaining",
+      desc:"Sea-facing living volume with private deck and architectural light wells.",
+      plan:[
+        { id:"living", x:6, y:8, w:56, h:44, label:"Living" },
+        { id:"kitchen", x:6, y:56, w:36, h:36, label:"Kitchen" },
+        { id:"master", x:46, y:56, w:48, h:36, label:"Master" },
+        { id:"deck", x:66, y:8, w:28, h:44, label:"Deck" },
+      ]},
+    { id:"penthouse", title:"4 BHK Penthouse", sqft:"2,140 sqft", price:"₹ 8.5 Cr", urgency:"Last Unit Available",
+      desc:"Full-floor residence with private plunge pool and 360° skyline.",
+      plan:[
+        { id:"living", x:6, y:6, w:60, h:38, label:"Living" },
+        { id:"kitchen", x:70, y:6, w:24, h:38, label:"Kitchen" },
+        { id:"master", x:6, y:48, w:44, h:44, label:"Master" },
+        { id:"guest", x:54, y:48, w:22, h:44, label:"Guest" },
+        { id:"deck", x:80, y:48, w:14, h:44, label:"Deck" },
+      ]},
+  ],
+  rooms: {
+    living: { name:"Living Room", sqft:"450 sqft",
+      img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80",
+      notes:["Italian travertine floors","Acoustic glass","Skyline-facing deck"],
+      direction:{x:0,y:0,scale:1} },
+    kitchen: { name:"Kitchen", sqft:"210 sqft",
+      img:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80",
+      notes:["Gaggenau appliances","Calacatta marble island","Concealed pantry"],
+      direction:{x:-40,y:0,scale:1.02} },
+    master: { name:"Master Suite", sqft:"320 sqft",
+      img:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80",
+      notes:["Floor-to-ceiling glazing","Walk-in wardrobe","Private terrace"],
+      direction:{x:40,y:20,scale:1.04} },
+    deck: { name:"Private Deck", sqft:"180 sqft",
+      img:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80",
+      notes:["Cantilevered terrace","Sea breeze orientation","Teak decking"],
+      direction:{x:0,y:-40,scale:0.98} },
+    guest: { name:"Guest Suite", sqft:"240 sqft",
+      img:"https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=2400&q=80",
+      notes:["Independent entry","Ensuite bath","City views"],
+      direction:{x:30,y:10,scale:1} },
+  },
+  cta: {
+    whatsapp:"https://wa.me/919999999999?text=I'm%20interested%20in%20The%20Glasshouse",
+    floorplan:"#floorplan", visit:"#visit",
+  },
+};
+
+function App(){
+  const [screen,setScreen] = useState("home");
+  const [residenceId,setResidenceId] = useState(TEMPLATE.residences[0].id);
+  const residence = useMemo(()=>TEMPLATE.residences.find(r=>r.id===residenceId), [residenceId]);
+
+  useEffect(()=>{
+    Object.values(TEMPLATE.rooms).forEach(r=>{ const i=new Image(); i.src=r.img; });
+    const h=new Image(); h.src=TEMPLATE.property.hero;
+  },[]);
+
+  return (
+    <div className="min-h-screen bg-[#0B0A09] text-[#F4F4F4]">
+      <TopBar onHome={()=>setScreen("home")} />
+      <AnimatePresence mode="wait">
+        {screen==="home" && (
+          <motion.div key="home" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.5,ease:[0.22,1,0.36,1]}}>
+            <Home onExplore={()=>setScreen("residences")} />
+          </motion.div>
+        )}
+        {screen==="residences" && (
+          <motion.div key="res" initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:0.5,ease:[0.22,1,0.36,1]}}>
+            <Residences onBack={()=>setScreen("home")} onPick={(id)=>{setResidenceId(id);setScreen("tour");}} />
+          </motion.div>
+        )}
+        {screen==="tour" && (
+          <motion.div key="tour" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.6,ease:[0.22,1,0.36,1]}}>
+            <Tour residence={residence} onBack={()=>setScreen("residences")} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <ActionBar />
+    </div>
+  );
+}
+
+function TopBar({onHome}){
+  return (
+    <header className="fixed top-0 inset-x-0 z-40 border-b border-[#1D1B18] bg-[#0B0A09]/80 backdrop-blur-md">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-10 h-14 flex items-center justify-between">
+        <button onClick={onHome} className="font-serif text-lg tracking-[0.28em] text-[#F4F4F4] cursor-pointer">{TEMPLATE.brand}</button>
+        <span className="text-[10px] tracking-[0.3em] text-white/60 uppercase">RERA Verified</span>
+      </div>
+    </header>
+  );
+}
+
+function Detail({label,value}){
+  return (
+    <div className="flex justify-between items-baseline py-3 border-b border-[#1D1B18]">
+      <span className="text-[10px] tracking-[0.28em] uppercase text-white/50">{label}</span>
+      <span className="font-serif text-lg text-[#F4F4F4]">{value}</span>
+    </div>
+  );
+}
+
+function Home({onExplore}){
+  const {property,trust} = TEMPLATE;
+  return (
+    <main className="pt-14">
+      <section className="max-w-[1400px] mx-auto px-5 md:px-10 pt-10 md:pt-16 pb-10">
+        <div className="grid md:grid-cols-12 gap-10 items-end">
+          <div className="md:col-span-7">
+            <h1 className="font-serif text-[44px] md:text-[88px] leading-[0.95] tracking-tight">{property.name}</h1>
+            <p className="mt-4 text-sm md:text-base tracking-[0.18em] uppercase text-[#C5A26B]">{property.location}</p>
+            <p className="mt-8 text-[15px] md:text-lg text-white/70 max-w-xl leading-relaxed">{property.tagline}</p>
+            <button onClick={onExplore} className="group mt-10 inline-flex items-center gap-3 border border-[#C5A26B]/60 text-[#C5A26B] px-7 py-3.5 text-[11px] tracking-[0.3em] uppercase hover:bg-[#C5A26B] hover:text-[#0B0A09] transition-colors duration-500 cursor-pointer">
+              Explore Residences <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
+            </button>
+          </div>
+          <div className="md:col-span-5 md:pl-8 md:border-l border-[#1D1B18]">
+            <Detail label="Starting" value={property.startingPrice} />
+            <Detail label="Status" value={property.status} />
+            <Detail label="Ownership" value="Freehold" />
+            <Detail label="Possession" value="Q4 2025" />
+          </div>
+        </div>
+      </section>
+      <section className="relative">
+        <div className="relative w-full h-[60vh] md:h-[78vh] overflow-hidden">
+          <img src={property.hero} alt={property.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0A09] via-[#0B0A09]/10 to-transparent" />
+          <div className="absolute bottom-6 left-5 md:bottom-10 md:left-10">
+            <span className="text-[10px] tracking-[0.32em] uppercase text-[#C5A26B] border border-[#C5A26B]/40 px-3 py-1.5">{property.heroTag}</span>
+          </div>
+        </div>
+      </section>
+      <section className="border-y border-[#1D1B18] bg-[#141210]">
+        <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-5 flex flex-wrap gap-x-8 gap-y-2 justify-center md:justify-between">
+          {trust.map(t => <span key={t} className="text-[11px] tracking-[0.22em] uppercase text-white/70">{t}</span>)}
+        </div>
+      </section>
+      <div className="h-32" />
+    </main>
+  );
+}
+
+function Residences({onBack,onPick}){
+  return (
+    <main className="pt-14 min-h-screen">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-8 flex items-center justify-between">
+        <button onClick={onBack} className="text-[11px] tracking-[0.28em] uppercase text-white/60 hover:text-[#C5A26B] cursor-pointer">← Back</button>
+        <span className="text-[11px] tracking-[0.32em] uppercase text-[#C5A26B]">Residences</span>
+      </div>
+      <div className="max-w-[1400px] mx-auto px-5 md:px-10 pb-32 grid md:grid-cols-2 gap-6 md:gap-8">
+        {TEMPLATE.residences.map((r,i)=>(
+          <ResidenceCard key={r.id} r={r} index={i} onPick={()=>onPick(r.id)} />
+        ))}
+      </div>
+    </main>
+  );
+}
+
+function ResidenceCard({r,index,onPick}){
+  return (
+    <motion.button onClick={onPick}
+      initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:0.6,delay:index*0.1,ease:[0.22,1,0.36,1]}}
+      whileHover={{y:-4}}
+      className="group text-left bg-[#141210] border border-[#1D1B18] hover:border-[#C5A26B]/40 p-7 md:p-10 transition-colors duration-500 cursor-pointer">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-serif text-2xl md:text-3xl">{r.title}</h3>
+          <p className="mt-1 text-[11px] tracking-[0.28em] uppercase text-white/50">{r.sqft}</p>
+        </div>
+        <span className="text-[10px] tracking-[0.28em] uppercase text-[#C5A26B]">{r.urgency}</span>
+      </div>
+      <div className="mt-8"><MiniBlueprint plan={r.plan} /></div>
+      <p className="mt-6 text-sm text-white/60 leading-relaxed max-w-md">{r.desc}</p>
+      <div className="mt-8 flex items-end justify-between">
+        <span className="font-serif text-3xl">{r.price}</span>
+        <span className="text-[11px] tracking-[0.3em] uppercase text-[#C5A26B] group-hover:translate-x-1 transition-transform duration-500">Explore Space →</span>
+      </div>
+    </motion.button>
+  );
+}
+
+function MiniBlueprint({plan,activeId}){
+  return (
+    <div className="relative aspect-[16/10] w-full bg-[#0B0A09] border border-[#1D1B18] overflow-hidden">
+      <svg className="absolute inset-0 w-full h-full opacity-[0.12]" preserveAspectRatio="none">
+        <defs>
+          <pattern id="g" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M24 0H0V24" fill="none" stroke="#C5A26B" strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#g)" />
+      </svg>
+      {plan.map(room=>{
+        const active = room.id===activeId;
+        return (
+          <div key={room.id} className="absolute border transition-all duration-500" style={{
+            left:`${room.x}%`, top:`${room.y}%`, width:`${room.w}%`, height:`${room.h}%`,
+            borderColor: active?"#C5A26B":"rgba(197,162,107,0.25)",
+            background: active?"rgba(197,162,107,0.08)":"transparent",
+            boxShadow: active?"inset 0 0 24px rgba(197,162,107,0.15)":"none",
+          }}>
+            <span className="absolute left-1.5 top-1 text-[8px] tracking-[0.2em] uppercase" style={{color: active?"#C5A26B":"rgba(255,255,255,0.4)"}}>{room.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Tour({residence,onBack}){
+  const roomIds = residence.plan.map(p=>p.id);
+  const [activeId,setActiveId] = useState(roomIds[0]);
+  const [mode,setMode] = useState("day");
+  const room = TEMPLATE.rooms[activeId];
+  return (
+    <main className="pt-14 min-h-screen">
+      <div className="md:grid md:grid-cols-[1fr_420px] md:h-[calc(100vh-3.5rem)]">
+        <div className="relative w-full h-[58vh] md:h-full overflow-hidden bg-[#0B0A09]">
+          <AnimatePresence mode="sync">
+            <motion.div key={activeId}
+              initial={{opacity:0,x:room.direction.x,y:room.direction.y,scale:room.direction.scale*1.04}}
+              animate={{opacity:1,x:0,y:0,scale:1}}
+              exit={{opacity:0,scale:1.02}}
+              transition={{duration:1.1,ease:[0.22,1,0.36,1]}}
+              className="absolute inset-0 will-change-transform">
+              <img src={room.img} alt={room.name} className="w-full h-full object-cover" />
+            </motion.div>
+          </AnimatePresence>
+          <motion.div className="absolute inset-0 pointer-events-none"
+            animate={{background: mode==="dusk"
+              ? "linear-gradient(180deg, rgba(197,118,60,0.18), rgba(11,10,9,0.55))"
+              : "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(11,10,9,0.25))"}}
+            transition={{duration:1.2}} />
+          <div className="absolute bottom-5 left-5 md:bottom-8 md:left-8">
+            <p className="text-[10px] tracking-[0.32em] uppercase text-[#C5A26B]">{residence.title}</p>
+            <h2 className="font-serif text-3xl md:text-5xl text-white mt-1">{room.name}</h2>
+          </div>
+        </div>
+        <aside className="border-t md:border-t-0 md:border-l border-[#1D1B18] bg-[#0B0A09] flex flex-col overflow-y-auto">
+          <div className="flex items-center justify-between p-5 border-b border-[#1D1B18]">
+            <button onClick={onBack} className="text-[11px] tracking-[0.28em] uppercase text-white/60 hover:text-[#C5A26B] cursor-pointer">← Back</button>
+            <div className="flex border border-[#1D1B18]">
+              {["day","dusk"].map(m=>(
+                <button key={m} onClick={()=>setMode(m)}
+                  className={`px-4 py-1.5 text-[10px] tracking-[0.28em] uppercase cursor-pointer transition-colors ${mode===m?"bg-[#C5A26B] text-[#0B0A09]":"text-white/60 hover:text-[#C5A26B]"}`}>{m}</button>
+              ))}
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-[10px] tracking-[0.28em] uppercase text-white/50">{room.sqft}</p>
+            <ul className="mt-5 space-y-2.5">
+              {room.notes.map(n=>(
+                <li key={n} className="text-sm text-white/75 flex gap-3 items-start leading-relaxed">
+                  <span className="text-[#C5A26B] mt-1.5">—</span>{n}
+                </li>
+              ))}
+            </ul>
+            <a href={TEMPLATE.cta.whatsapp} target="_blank" rel="noreferrer"
+              className="mt-7 inline-flex items-center gap-2 border border-[#C5A26B]/60 text-[#C5A26B] px-5 py-3 text-[10px] tracking-[0.3em] uppercase hover:bg-[#C5A26B] hover:text-[#0B0A09] transition-colors duration-500 w-full justify-center">
+              Discuss This Space
+            </a>
+          </div>
+          <div className="p-6 border-t border-[#1D1B18]">
+            <p className="text-[10px] tracking-[0.28em] uppercase text-white/50 mb-4">Interactive Blueprint</p>
+            <MiniBlueprint plan={residence.plan} activeId={activeId} />
+            <div className="mt-4 flex flex-wrap gap-2">
+              {residence.plan.map(p=>(
+                <button key={p.id} onClick={()=>setActiveId(p.id)}
+                  className={`px-3 py-1.5 text-[10px] tracking-[0.24em] uppercase border transition-colors duration-300 cursor-pointer ${p.id===activeId?"border-[#C5A26B] text-[#C5A26B] bg-[#C5A26B]/5":"border-[#1D1B18] text-white/55 hover:text-[#C5A26B] hover:border-[#C5A26B]/40"}`}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="p-6 border-t border-[#1D1B18] mt-auto">
+            <p className="text-[10px] tracking-[0.28em] uppercase text-white/50 mb-3">Ownership</p>
+            <div className="grid grid-cols-2 gap-y-2 text-sm">
+              <span className="text-white/55">Tenure</span><span className="text-white text-right">Freehold</span>
+              <span className="text-white/55">Possession</span><span className="text-white text-right">Ready</span>
+              <span className="text-white/55">Parking</span><span className="text-white text-right">3 EV Bays</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div className="h-24 md:hidden" />
+    </main>
+  );
+}
+
+function ActionBar(){
+  return (
+    <div className="fixed bottom-0 inset-x-0 z-40 border-t border-[#1D1B18] bg-[#0B0A09]/90 backdrop-blur-md">
+      <div className="max-w-[1400px] mx-auto px-3 md:px-10 h-16 grid grid-cols-3 gap-2 items-center">
+        <a href={TEMPLATE.cta.floorplan} className="text-center py-2 text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-white/70 hover:text-[#C5A26B] transition-colors">Floorplan</a>
+        <a href={TEMPLATE.cta.whatsapp} target="_blank" rel="noreferrer" className="text-center py-3 bg-[#C5A26B] text-[#0B0A09] text-[10px] md:text-[11px] tracking-[0.28em] uppercase font-medium hover:bg-[#d4b988] transition-colors">WhatsApp</a>
+        <a href={TEMPLATE.cta.visit} className="text-center py-2 text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-white/70 hover:text-[#C5A26B] transition-colors">Visit</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

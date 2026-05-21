@@ -15,6 +15,10 @@ export default React.memo(function StorePanel({
   onChangeWhatsApp,
   onChangeLogo,
   onJumpTo,
+  panelLabel,
+  nameLabel,
+  namePlaceholder,
+  inventoryLabels,
 }: {
   storeName: string;
   whatsappNumber: string;
@@ -26,6 +30,10 @@ export default React.memo(function StorePanel({
   onChangeWhatsApp: (value: string) => void;
   onChangeLogo: (value: string) => void;
   onJumpTo: (tab: TabId) => void;
+  panelLabel?: string;
+  nameLabel?: string;
+  namePlaceholder?: string;
+  inventoryLabels?: { collections?: string; products?: string; reviews?: string };
 }) {
   const { score, missingItems } = readiness;
 
@@ -51,7 +59,7 @@ export default React.memo(function StorePanel({
 
   return (
     <div className="space-y-8">
-      <PanelTitle icon={Settings} label="Store Profile" meta="General Settings" />
+      <PanelTitle icon={Settings} label={panelLabel || "Store Profile"} meta="General Settings" />
 
       {/* Business Identity Card */}
       <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -67,12 +75,12 @@ export default React.memo(function StorePanel({
             
             <div className="w-full space-y-5 text-left">
               <div id="tour-store-name">
-                <Field label="Business Name">
+                <Field label={nameLabel || "Business Name"}>
                   <input
                     value={storeName}
                     onChange={(event) => onChangeStoreName(event.target.value)}
                     className={inputClass}
-                    placeholder="e.g. Urban Living Furniture"
+                    placeholder={namePlaceholder || "e.g. Urban Living Furniture"}
                   />
                 </Field>
               </div>
@@ -182,9 +190,9 @@ export default React.memo(function StorePanel({
             <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Current Inventory</p>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Collections', value: counts.collections, icon: LayoutGrid, tab: 'categories' as TabId, color: 'bg-blue-50 text-blue-600' },
-                { label: 'Products', value: counts.products, icon: Package, tab: 'products' as TabId, color: 'bg-purple-50 text-purple-600' },
-                { label: 'Reviews', value: counts.reviews, icon: Star, tab: 'testimonials' as TabId, color: 'bg-amber-50 text-amber-600' },
+                { label: inventoryLabels?.collections || 'Collections', value: counts.collections, icon: LayoutGrid, tab: 'categories' as TabId, color: 'bg-blue-50 text-blue-600' },
+                { label: inventoryLabels?.products || 'Products', value: counts.products, icon: Package, tab: 'products' as TabId, color: 'bg-purple-50 text-purple-600' },
+                { label: inventoryLabels?.reviews || 'Reviews', value: counts.reviews, icon: Star, tab: 'testimonials' as TabId, color: 'bg-amber-50 text-amber-600' },
               ].map((metric) => (
                 <button
                   key={metric.label}

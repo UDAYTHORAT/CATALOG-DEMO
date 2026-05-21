@@ -13,6 +13,8 @@ type LeadRecord = {
   funnel_id: string | null;
   products?: {
     name: string | null;
+  }[] | {
+    name: string | null;
   } | null;
 };
 
@@ -68,13 +70,18 @@ export default async function LeadsPage() {
   );
 
   // CSV export
-  const csvData = leads.map(lead => ({
-    Name: lead.visitor_name || 'Anonymous',
-    WhatsApp: lead.whatsapp_number || '',
-    Product: lead.products?.name || 'General',
-    Funnel: funnels.find(f => f.id === lead.funnel_id)?.name || 'Direct',
-    Date: new Date(lead.created_at).toLocaleDateString(),
-  }));
+  const csvData = leads.map(lead => {
+    const prodName = Array.isArray(lead.products)
+      ? lead.products[0]?.name
+      : lead.products?.name;
+    return {
+      Name: lead.visitor_name || 'Anonymous',
+      WhatsApp: lead.whatsapp_number || '',
+      Product: prodName || 'General',
+      Funnel: funnels.find(f => f.id === lead.funnel_id)?.name || 'Direct',
+      Date: new Date(lead.created_at).toLocaleDateString(),
+    };
+  });
 
   // Theme color helper
   function themeAccent(theme: string) {
@@ -121,8 +128,11 @@ export default async function LeadsPage() {
             // Calculate product breakdown
             const productCounts: Record<string, number> = {};
             funnelLeads.forEach(lead => {
-              const prodName = lead.products?.name || 'General Inquiry';
-              productCounts[prodName] = (productCounts[prodName] || 0) + 1;
+              const prodName = Array.isArray(lead.products)
+                ? lead.products[0]?.name
+                : lead.products?.name;
+              const finalProdName = prodName || 'General Inquiry';
+              productCounts[finalProdName] = (productCounts[finalProdName] || 0) + 1;
             });
             
             const productEntries = Object.entries(productCounts).sort((a, b) => b[1] - a[1]);

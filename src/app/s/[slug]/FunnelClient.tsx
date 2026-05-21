@@ -1,6 +1,7 @@
 'use client';
 
 import EliteFurnitureTemplate, { type FunnelProduct } from '@/components/templates/EliteFurnitureTemplate';
+import EliteRealEstateTemplate from '@/components/templates/EliteRealEstateTemplate';
 
 export type { FunnelProduct };
 
@@ -25,7 +26,11 @@ interface Props {
 }
 
 export default function FunnelClient(props: Props) {
-  // In the future, you can dynamically render different templates here
-  // based on props.funnel.template_id or props.funnel.theme.
+  const templateId = props.funnel.story_mode_data?.[0]?.templateId as string | undefined;
+
+  if (templateId === 'funnelad-elite-real-estate') {
+    return <EliteRealEstateTemplate {...props} />;
+  }
+
   return <EliteFurnitureTemplate {...props} />;
 }

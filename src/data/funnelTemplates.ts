@@ -104,7 +104,6 @@ export interface FunnelTemplate {
   enquirySub: string;
 
   // Meta
-  description: string;
   features: string[];
   stats: { convRate: string; avgLeads: string };
   badge?: string;
@@ -202,7 +201,6 @@ export const MASTER_TEMPLATES: FunnelTemplate[] = [
     enquiryHeadline: 'WhatsApp first, always',
     enquirySub: 'No forms. No friction.',
 
-    description: 'Elite FunnelAd link that turns taps into WhatsApp conversations. Built for furniture stores and high-ticket catalogs.',
     features: ['Landing + Category Tap', '3-Product Stack', 'Prefilled WhatsApp', 'Theme Builder Ready'],
     stats: { convRate: '38%', avgLeads: '240/mo' },
 
@@ -266,6 +264,125 @@ export const MASTER_TEMPLATES: FunnelTemplate[] = [
         card: '#ffffff',
         accent: '#111111',
         accentText: '#ffffff',
+        whatsapp: '#25d366',
+      },
+    },
+  },
+  // ━━━ 1. LUXURY REAL ESTATE FUNNEL ━━━
+  {
+    id: 'funnelad-elite-real-estate',
+    name: 'Luxury Property Funnel System',
+    category: 'Real Estate',
+    industry: 'realestate',
+    theme: 'dark',
+    icon: '🏙',
+    accentColor: '#0f172a',
+    bgGradient: 'from-slate-950 via-slate-900 to-slate-800',
+    badge: 'LUXE',
+    description: 'Transforms real estate browsing into a cinematic buying experience with WhatsApp-first conversion.',
+
+    hero: {
+      headline: 'Own The Skyline',
+      subheadline: 'Private sky decks, resort amenities, and priority inventory alerts in minutes.',
+      ctaLabel: 'See Available Residences',
+      ctaColor: '#0f172a',
+    },
+    goal: 'leads',
+
+    trust: {
+      title: 'Built for luxury conversions',
+      items: ['RERA approved inventory', 'Floor plans in minutes', 'Private tours on demand', 'Limited unit visibility'],
+      stats: '320+ families moved in',
+    },
+    testimonial: {
+      text: 'The gallery experience felt premium and effortless. We booked in a week.',
+      author: 'Aarav G.',
+      role: 'Sky Villa Owner',
+    },
+
+    questions: [],
+
+    resultDefault: {
+      title: 'Get your private shortlist',
+      description: 'Luxury advisors send floor plans, prices, and availability in minutes.',
+      ctaLabel: 'Get Floor Plan',
+      ctaType: 'whatsapp',
+    },
+    resultRules: [],
+
+    urgency: {
+      headline: 'Tower 3 is almost sold out',
+      subtext: 'Price revision in 48 hours - lock your preferred unit now.',
+      type: 'offer',
+    },
+
+    enquiryFields: [],
+    enquiryHeadline: 'WhatsApp first, always',
+    enquirySub: 'Floor plans and pricing within minutes.',
+
+    features: ['Immersive hero', 'Lifestyle matching', 'Luxury property reveals', 'WhatsApp-first booking'],
+    stats: { convRate: '42%', avgLeads: '180/mo' },
+
+    faq: [
+      { q: 'Can I customize the property cards?', a: 'Yes, edit listings, pricing, and highlights in the editor.' },
+      { q: 'Does it work for luxury rentals?', a: 'Yes, adjust messaging to focus on lease terms.' },
+      { q: 'How fast do leads respond?', a: 'Most inquiries reply within 10 minutes on WhatsApp.' },
+    ],
+
+    funnelad: {
+      landing: {
+        kicker: 'The Property Experience',
+        title: 'Own The Skyline',
+        subtitle: 'Private sky decks and resort living. Starting Rs 2.9 Cr',
+        ratingLine: '4.9 rating - 320+ families moved in',
+        categories: [
+          { key: 'family', label: 'Family Living', icon: '🏡', matchers: ['family', 'kids', 'school'] },
+          { key: 'investment', label: 'Investment', icon: '📈', matchers: ['investment', 'roi', 'rental'] },
+          { key: 'luxury', label: 'Luxury Lifestyle', icon: '✨', matchers: ['luxury', 'sky', 'penthouse'] },
+        ],
+        trustBullets: ['RERA approved', 'Possession 2027', 'Prime Baner location'],
+        ctaHelper: 'Get floor plan and pricing instantly',
+        ctaLabel: 'See Available Residences',
+        mapEmbedUrl: 'https://www.google.com/maps?q=Baner%20Pune&output=embed',
+        mapAddress: 'Baner Hills, Pune',
+      },
+      products: {
+        headerKicker: 'Handpicked for your lifestyle',
+        slots: [
+          {
+            badge: 'Most Popular',
+            ctaLabel: 'Get Floor Plan',
+            highlight: true,
+            benefitsFallback: ['Sky deck views', 'Concierge services'],
+          },
+          {
+            badge: 'Investor Favorite',
+            ctaLabel: 'View ROI Units',
+            highlight: false,
+            benefitsFallback: ['High rental demand', 'Quick possession'],
+          },
+          {
+            badge: 'Premium Edition',
+            ctaLabel: 'Schedule Tour',
+            highlight: false,
+            benefitsFallback: ['Private elevator', 'Rooftop lounge'],
+          },
+        ],
+        extraTitle: 'Want the full inventory?',
+        extraSubtitle: 'Chat with a luxury advisor for all available units',
+      },
+      whatsapp: {
+        messageWithProduct:
+          'Hi, I want the floor plan and pricing for {product_name}. Please share availability and tour slots.',
+        messageNoProduct:
+          'Hi, I am interested in a {category} residence. Please share current inventory and pricing.',
+      },
+      theme: {
+        background: '#0b1120',
+        text: '#f8fafc',
+        card: '#0f172a',
+        accent: '#f59e0b',
+        accentText: '#0b1120',
         whatsapp: '#25d366',
       },
     },

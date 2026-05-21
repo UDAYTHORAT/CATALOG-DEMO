@@ -142,7 +142,7 @@ export function FunnelsClient({ initialFunnels, availableProducts }: FunnelsClie
           </div>
 
           {/* Action Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/60 p-4 rounded-[2rem] border border-white backdrop-blur-xl shadow-2xl shadow-slate-200/50 sticky top-4 z-40">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/60 p-4 rounded-[2rem] border border-white backdrop-blur-xl shadow-2xl shadow-slate-200/50">
             <div className="flex items-center gap-2 p-1.5 bg-slate-900/5 rounded-[1.25rem] border border-slate-900/5 w-full md:w-auto">
               {[
                 { id: 'my-funnels', label: 'My Funnels', icon: Layers },

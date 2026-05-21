@@ -2,10 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { getProducts } from '@/app/actions/products';
 import FunnelAdFurnitureEditor from '@/components/dashboard/templates/FunnelAdFurnitureEditor';
-
-type FunnelProductLink = {
-  product_id: string | null;
-};
+import FunnelAdRealEstateEditor from '@/components/dashboard/templates/FunnelAdRealEstateEditor';
 
 export default async function EditFunnelPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,12 +28,13 @@ export default async function EditFunnelPage({ params }: { params: Promise<{ id:
   const products = await getProducts();
 
   // Extract linked product IDs
-  const linkedProductIds = (funnel.funnel_products as FunnelProductLink[] | null | undefined)?.flatMap((link) =>
-    link.product_id ? [link.product_id] : []
-  ) || [];
+  const templateId = funnel?.story_mode_data?.[0]?.templateId as string | undefined;
+  const EditorComponent = templateId === 'funnelad-elite-real-estate'
+    ? FunnelAdRealEstateEditor
+    : FunnelAdFurnitureEditor;
 
   return (
-    <FunnelAdFurnitureEditor
+    <EditorComponent
       funnel={funnel}
       allProducts={products}
     />

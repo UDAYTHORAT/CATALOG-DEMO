@@ -5,6 +5,7 @@ import { X, Smartphone, Monitor, ArrowRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { FunnelMockContent } from './FunnelMockContent';
 import EliteFurnitureTemplate from '@/components/templates/EliteFurnitureTemplate';
+import EliteRealEstateTemplate from '@/components/templates/EliteRealEstateTemplate';
 import { createInitialContent } from './editor/utils';
 
 interface TemplatePreviewModalProps {
@@ -18,6 +19,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
   const [view, setView] = useState<'desktop' | 'mobile'>('mobile');
 
   const isEliteFurniture = template?.id === 'funnelad-elite-furniture';
+  const isEliteRealEstate = template?.id === 'funnelad-elite-real-estate';
   
   const elitePreviewProps = useMemo(() => {
     if (!isEliteFurniture) return null;
@@ -111,6 +113,144 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
     };
   }, [isEliteFurniture, template?.id, view]);
 
+  const realEstatePreviewProps = useMemo(() => {
+    if (!isEliteRealEstate) return null;
+    const mockFunnel = { id: template.id, story_mode_data: [{ templateId: template.id }] } as any;
+    const content = createInitialContent(mockFunnel);
+    content.logoUrl = '';
+
+    const mockProducts = [
+      {
+        id: 'signature',
+        category_id: 'luxury',
+        name: '3 BHK Signature',
+        priceLabel: '₹ 6.2 Cr',
+        urgency: '3 Units Remaining',
+        delivery: 'Possession: Q4 2025',
+        dimensions: '1,850 sqft',
+        description: 'Sea-facing living volume with private deck and architectural light wells.',
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+        rooms: [
+          {
+            id: 'living',
+            name: 'Living Room',
+            area: '450 sqft',
+            img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+            details: ['Italian travertine floors', 'Acoustic glass', 'Skyline-facing deck'],
+            direction: { x: 0, y: 0, scale: 1 },
+            x: 6, y: 8, w: 56, h: 44,
+            label: 'Living'
+          },
+          {
+            id: 'kitchen',
+            name: 'Kitchen',
+            area: '210 sqft',
+            img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
+            details: ['Gaggenau appliances', 'Calacatta marble island', 'Concealed pantry'],
+            direction: { x: -40, y: 0, scale: 1.02 },
+            x: 6, y: 56, w: 36, h: 36,
+            label: 'Kitchen'
+          },
+          {
+            id: 'master',
+            name: 'Master Suite',
+            area: '320 sqft',
+            img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
+            details: ['Floor-to-ceiling glazing', 'Walk-in wardrobe', 'Private terrace'],
+            direction: { x: 40, y: 20, scale: 1.04 },
+            x: 46, y: 56, w: 48, h: 36,
+            label: 'Master'
+          },
+          {
+            id: 'deck',
+            name: 'Private Deck',
+            area: '180 sqft',
+            img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
+            details: ['Cantilevered terrace', 'Sea breeze orientation', 'Teak decking'],
+            direction: { x: 0, y: -40, scale: 0.98 },
+            x: 66, y: 8, w: 28, h: 44,
+            label: 'Deck'
+          }
+        ]
+      },
+      {
+        id: 'penthouse',
+        category_id: 'luxury',
+        name: '4 BHK Penthouse',
+        priceLabel: '₹ 8.5 Cr',
+        urgency: 'Last Unit Available',
+        delivery: 'Possession: Q4 2025',
+        dimensions: '2,140 sqft',
+        description: 'Full-floor residence with private plunge pool and 360° skyline.',
+        image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
+        rooms: [
+          {
+            id: 'living',
+            name: 'Living Room',
+            area: '450 sqft',
+            img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+            details: ['Italian travertine floors', 'Acoustic glass', 'Skyline-facing deck'],
+            direction: { x: 0, y: 0, scale: 1 },
+            x: 6, y: 6, w: 60, h: 38,
+            label: 'Living'
+          },
+          {
+            id: 'kitchen',
+            name: 'Kitchen',
+            area: '210 sqft',
+            img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
+            details: ['Gaggenau appliances', 'Calacatta marble island', 'Concealed pantry'],
+            direction: { x: -40, y: 0, scale: 1.02 },
+            x: 70, y: 6, w: 24, h: 38,
+            label: 'Kitchen'
+          },
+          {
+            id: 'master',
+            name: 'Master Suite',
+            area: '320 sqft',
+            img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
+            details: ['Floor-to-ceiling glazing', 'Walk-in wardrobe', 'Private terrace'],
+            direction: { x: 40, y: 20, scale: 1.04 },
+            x: 6, y: 48, w: 44, h: 44,
+            label: 'Master'
+          },
+          {
+            id: 'guest',
+            name: 'Guest Suite',
+            area: '240 sqft',
+            img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=2400&q=80',
+            details: ['Independent entry', 'Ensuite bath', 'City views'],
+            direction: { x: 30, y: 10, scale: 1 },
+            x: 54, y: 48, w: 22, h: 44,
+            label: 'Guest'
+          },
+          {
+            id: 'deck',
+            name: 'Private Deck',
+            area: '180 sqft',
+            img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
+            details: ['Cantilevered terrace', 'Sea breeze orientation', 'Teak decking'],
+            direction: { x: 0, y: -40, scale: 0.98 },
+            x: 80, y: 48, w: 14, h: 44,
+            label: 'Deck'
+          }
+        ]
+      }
+    ];
+
+    return {
+      funnel: { ...mockFunnel, story_mode_data: [{ templateId: template.id, content }] },
+      store: {
+        name: content.storeName,
+        whatsapp_number: content.whatsappNumber,
+        logo_url: null,
+      },
+      products: mockProducts,
+      isPreview: true,
+      previewMode: view,
+    };
+  }, [isEliteRealEstate, template?.id, view]);
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) { window.addEventListener('keydown', h); document.body.style.overflow = 'hidden'; }
@@ -175,9 +315,13 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
                   <div className="flex-1 mx-6"><div className="bg-white/50 backdrop-blur-sm border border-black/5 rounded-lg px-3 py-1 text-[10px] text-slate-400 text-center font-medium truncate">funnellink.co/s/{template.id}</div></div>
                 </div>
               )}
-              <div id="mobile-scroll-container" className={`overflow-y-auto no-scrollbar ${view==='desktop'?'h-[calc(100%-40px)]':'h-full relative z-10'}`}>
+              <div id="mobile-scroll-container" className={`relative overflow-y-auto overflow-x-hidden no-scrollbar z-10 ${view==='desktop'?'h-[calc(100%-40px)]':'h-full'}`} style={{ transform: 'translate3d(0,0,0)' }}>
                 {isEliteFurniture && elitePreviewProps ? (
                   <EliteFurnitureTemplate {...elitePreviewProps} />
+                ) : isEliteRealEstate && realEstatePreviewProps ? (
+                  <div className="relative w-full" style={{ overflowX: 'hidden' }}>
+                    <EliteRealEstateTemplate {...realEstatePreviewProps} />
+                  </div>
                 ) : (
                   <FunnelMockContent template={template} isMobile={view==='mobile'} />
                 )}

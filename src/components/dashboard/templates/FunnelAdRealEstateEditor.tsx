@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { produce } from 'immer';
 import {
+  Building2,
   CheckCircle2,
   ChevronLeft,
   Copy,
@@ -13,25 +14,19 @@ import {
   Eye,
   Edit2,
   Monitor,
-  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   Redo2,
   Rocket,
   Save,
   Smartphone,
-  Sun,
   Tablet,
   Undo2,
   ExternalLink,
   X,
   HelpCircle,
-  Info,
   ChevronRight,
-  Target,
-  MousePointer2,
   Trophy,
-  PartyPopper,
   ShieldCheck,
   Zap,
   Wand2,
@@ -47,9 +42,9 @@ import EditorSidebar from '@/components/dashboard/editor/EditorSidebar';
 import PreviewPane from '@/components/dashboard/editor/PreviewPane';
 import WizardMode from '@/components/dashboard/editor/WizardMode';
 import CategoriesPanel from '@/components/dashboard/editor/sections/CategoriesPanel';
-import HeroPanel from '@/components/dashboard/editor/sections/HeroPanel';
+import RealEstateHeroPanel from '@/components/dashboard/editor/sections/RealEstateHeroPanel';
 import LocationPanel from '@/components/dashboard/editor/sections/LocationPanel';
-import ProductsPanel from '@/components/dashboard/editor/sections/ProductsPanel';
+import RealEstateProductsPanel from '@/components/dashboard/editor/sections/RealEstateProductsPanel';
 import StorePanel from '@/components/dashboard/editor/sections/StorePanel';
 import TestimonialsPanel from '@/components/dashboard/editor/sections/TestimonialsPanel';
 import WhatsAppPanel from '@/components/dashboard/editor/sections/WhatsAppPanel';
@@ -77,21 +72,17 @@ import {
   getSectionData,
 } from '@/components/dashboard/editor/utils';
 
-const previewModes: Array<{ id: PreviewMode; label: string; icon: React.ReactNode }> = [
-  { id: 'mobile', label: 'Mobile', icon: <Smartphone className="h-4 w-4" /> },
-  { id: 'tablet', label: 'Tablet', icon: <Tablet className="h-4 w-4" /> },
-  { id: 'desktop', label: 'Desktop', icon: <Monitor className="h-4 w-4" /> },
-];
+type GuideHighlightMap = Record<string, DOMRect | null>;
 
-export default function FunnelAdFurnitureEditor({
+export default function FunnelAdRealEstateEditor({
   funnel,
   allProducts: products = [],
 }: {
   funnel: Funnel;
   allProducts?: Product[];
 }) {
-  const templateId = (funnel.story_mode_data?.[0]?.templateId as string | undefined) ?? 'funnelad-elite-furniture';
-  const defaultSectionsRef = useRef<Section[]>(createDefaultSections(templateId));
+  const templateId = (funnel.story_mode_data?.[0]?.templateId as string | undefined) ?? 'funnelad-elite-real-estate';
+  const defaultSections = useMemo(() => createDefaultSections(templateId), [templateId]);
   const initialContent = useMemo(() => createInitialContent(funnel), [funnel]);
 
   // ✅ FIX #1: Properly destructure the history hook for cleaner state access
@@ -113,13 +104,14 @@ export default function FunnelAdFurnitureEditor({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [changeTick, setChangeTick] = useState(0);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
   const [editorMode, setEditorMode] = useState<'choosing' | 'wizard' | 'advanced'>('choosing');
+  const [isHydrated, setIsHydrated] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [guideHighlights, setGuideHighlights] = useState<any>({});
+  const [guideHighlights, setGuideHighlights] = useState<GuideHighlightMap>({});
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
@@ -140,6 +132,7 @@ export default function FunnelAdFurnitureEditor({
   }, []);
 
   useEffect(() => {
+    setIsHydrated(true);
     const saved = localStorage.getItem(`editor_mode_${funnel.id}`);
     if (saved === 'advanced' || saved === 'wizard') {
       setEditorMode(saved as 'advanced' | 'wizard');
@@ -201,7 +194,7 @@ export default function FunnelAdFurnitureEditor({
       updateContent((draft) => {
         let section = draft.sections.find((item) => item.id === sectionId);
         if (!section) {
-          const fallback = defaultSectionsRef.current.find((item) => item.id === sectionId);
+          const fallback = defaultSections.find((item) => item.id === sectionId);
           if (!fallback) return;
           const nextSection = structuredClone(fallback);
           draft.sections.push(nextSection);
@@ -210,7 +203,7 @@ export default function FunnelAdFurnitureEditor({
         updater(section.data);
       });
     },
-    [updateContent]
+    [defaultSections, updateContent]
   );
 
   const handleStoreUpdate = useCallback(
@@ -225,32 +218,32 @@ export default function FunnelAdFurnitureEditor({
   const heroData = getSectionData<HeroData>(
     liveContent,
     'content',
-    defaultSectionsRef.current.find((section) => section.id === 'content')?.data as HeroData
+    defaultSections.find((section) => section.id === 'content')?.data as HeroData
   );
   const categoriesData = getSectionData<CategoriesData>(
     liveContent,
     'categories',
-    defaultSectionsRef.current.find((section) => section.id === 'categories')?.data as CategoriesData
+    defaultSections.find((section) => section.id === 'categories')?.data as CategoriesData
   );
   const productsData = getSectionData<ProductsData>(
     liveContent,
     'products',
-    defaultSectionsRef.current.find((section) => section.id === 'products')?.data as ProductsData
+    defaultSections.find((section) => section.id === 'products')?.data as ProductsData
   );
   const testimonialsData = getSectionData<TestimonialsData>(
     liveContent,
     'testimonials',
-    defaultSectionsRef.current.find((section) => section.id === 'testimonials')?.data as TestimonialsData
+    defaultSections.find((section) => section.id === 'testimonials')?.data as TestimonialsData
   );
   const locationData = getSectionData<LocationData>(
     liveContent,
     'location',
-    defaultSectionsRef.current.find((section) => section.id === 'location')?.data as LocationData
+    defaultSections.find((section) => section.id === 'location')?.data as LocationData
   );
   const whatsappData = getSectionData<WhatsAppData>(
     liveContent,
     'whatsapp',
-    defaultSectionsRef.current.find((section) => section.id === 'whatsapp')?.data as WhatsAppData
+    defaultSections.find((section) => section.id === 'whatsapp')?.data as WhatsAppData
   );
 
   const handleReorderSections = useCallback((nextSections: Section[]) => {
@@ -331,22 +324,49 @@ export default function FunnelAdFurnitureEditor({
   const handleAddCustomProduct = useCallback(() => {
     handleSectionUpdate('products', (data) => {
       const productsList = (data as ProductsData).products;
-      const defaultCatId = categoriesData.categories[0]?.id ?? 'seating';
-      const countInCat = productsList.filter(p => p.category_id === defaultCatId).length;
 
-      if (countInCat >= 3) {
-        alert(`The category "${categoriesData.categories[0]?.label}" is full (max 3).`);
-        return;
-      }
-
-      productsList.unshift({
-        id: `custom-${Date.now()}`,
-        category_id: defaultCatId,
-        name: 'Custom Product',
-        priceLabel: 'Rs 1,200',
-        image: FALLBACK_PRODUCT_IMAGE,
-        urgency: 'New arrival',
-        delivery: '7-10 Days',
+      productsList.push({
+        id: `bhk-${Date.now()}`,
+        category_id: categoriesData.categories[0]?.id ?? 'family',
+        name: 'New BHK',
+        priceLabel: '₹ 0',
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+        urgency: 'New Listing',
+        delivery: 'Possession: TBD',
+        dimensions: '0 sqft',
+        description: 'A new residence configuration.',
+        rooms: [
+          {
+            id: `room-${Date.now()}-1`,
+            name: 'Living Room',
+            area: '300 sqft',
+            img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+            details: ['Premium flooring', 'Natural light'],
+            direction: { x: 0, y: 0, scale: 1 },
+            x: 6, y: 8, w: 56, h: 44,
+            label: 'Living'
+          },
+          {
+            id: `room-${Date.now()}-2`,
+            name: 'Kitchen',
+            area: '150 sqft',
+            img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
+            details: ['Modular kitchen', 'Modern appliances'],
+            direction: { x: -40, y: 0, scale: 1.02 },
+            x: 6, y: 56, w: 36, h: 36,
+            label: 'Kitchen'
+          },
+          {
+            id: `room-${Date.now()}-3`,
+            name: 'Master Bedroom',
+            area: '200 sqft',
+            img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
+            details: ['Ensuite bathroom', 'Walk-in wardrobe'],
+            direction: { x: 40, y: 20, scale: 1.04 },
+            x: 46, y: 56, w: 48, h: 36,
+            label: 'Master'
+          }
+        ] as any
       });
     });
   }, [categoriesData.categories, handleSectionUpdate]);
@@ -595,6 +615,58 @@ export default function FunnelAdFurnitureEditor({
     copyTimer.current = setTimeout(() => setCopied(false), 1200);
   }, [funnel?.slug]);
 
+  // ✅ ADVANCED: Outcome-Driven Spotlight Tour
+  const tourSteps = useMemo(() => [
+    {
+      id: 'sidebar',
+      title: "Your Project Studio",
+      label: "Step 1 — Branding",
+      description: "This is where you define the project identity — project name, logo, hero visuals, residences, and more. Each tab on the left controls a critical part of your lead generation funnel.",
+      proTip: "Start with the Project tab to set your developer branding. High-fidelity logos build instant trust with luxury property buyers.",
+      icon: ShieldCheck,
+      color: "indigo",
+      position: "left-12 top-[140px]",
+      arrow: "left-[-12px] top-1/2 -translate-y-1/2 border-r-white",
+      highlightClass: "left-6 top-[100px] w-[660px] h-[calc(100vh-140px)]"
+    },
+    {
+      id: 'tabs',
+      title: "Lead Generation Tabs",
+      label: "Step 2 — Navigate",
+      description: "Switch between sections: Project Identity, Majestic Hero, Residences, Personas, Social Proof, Project Site, and Lead Capture. Each controls a specific conversion touchpoint.",
+      proTip: "Focus on the Residences tab — add high-res renders and clear pricing. That's what stops the scroll.",
+      icon: Zap,
+      color: "amber",
+      position: "left-[100px] top-[200px]",
+      arrow: "left-1/2 -translate-x-1/2 top-[-12px] border-b-white",
+      highlightClass: "left-[20px] top-[180px] w-12 h-64"
+    },
+    {
+      id: 'preview',
+      title: "Interactive Preview",
+      label: "Step 3 — Visualize",
+      description: "See your property funnel exactly as your buyers will see it. Test the virtual walkthrough and spatial tour features in real-time.",
+      proTip: "Toggle between Mobile and Desktop. 90% of your leads will come from mobile devices.",
+      icon: Smartphone,
+      color: "emerald",
+      position: "right-[15%] top-[250px]",
+      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
+      highlightClass: "right-[4%] top-[100px] w-[calc(100%-720px)] h-[calc(100vh-140px)]"
+    },
+    {
+      id: 'launch',
+      title: "Go Live Instantly",
+      label: "Step 4 — Conversion",
+      description: "Once your project looks majestic, hit Publish. Your high-conversion property funnel will be live and ready to capture leads.",
+      proTip: "Use the 'Copy Link' feature to share your funnel directly on Instagram, Facebook Ads, or WhatsApp.",
+      icon: Rocket,
+      color: "rose",
+      position: "right-12 top-[40px]",
+      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
+      highlightClass: "right-6 top-[20px] w-48 h-12"
+    }
+  ], []);
+
   // Dynamic Guide Tracking
   useEffect(() => {
     if (!showOnboarding || editorMode !== 'advanced') return;
@@ -615,7 +687,7 @@ export default function FunnelAdFurnitureEditor({
     }
 
     const interval = setInterval(() => {
-      const highlights: any = {};
+      const highlights: GuideHighlightMap = {};
       
       const sidebarEl = document.getElementById('tour-sidebar');
       if (sidebarEl) highlights.sidebar = sidebarEl.getBoundingClientRect();
@@ -629,7 +701,7 @@ export default function FunnelAdFurnitureEditor({
       const launchEl = document.getElementById(window.innerWidth < 1024 ? 'tour-launch-mobile' : 'tour-launch-desktop');
       if (launchEl) highlights.launch = launchEl.getBoundingClientRect();
       
-      setGuideHighlights((prev: any) => {
+      setGuideHighlights((prev) => {
         let changed = false;
         for (const k of ['sidebar', 'tabs', 'preview', 'launch']) {
           if (!prev[k] && highlights[k]) changed = true;
@@ -641,15 +713,15 @@ export default function FunnelAdFurnitureEditor({
       });
     }, 16);
     return () => clearInterval(interval);
-  }, [showOnboarding, editorMode, onboardingStep]);
+  }, [showOnboarding, editorMode, onboardingStep, tourSteps]);
 
   const readiness = useMemo(() => {
     const items = [
-      { id: 'store', label: 'Store Name', met: draftContent.storeName.trim().length > 0 },
-      { id: 'store', label: 'WhatsApp Number', met: draftContent.whatsappNumber.trim().length > 0 },
-      { id: 'categories', label: 'Product Collections', met: categoriesData.categories.length > 0 },
-      { id: 'products', label: 'Featured Products', met: productsData.products.length > 0 },
-      { id: 'testimonials', label: 'Customer Reviews', met: testimonialsData.testimonials.length > 0 },
+      { id: 'store', label: 'Project Name', met: draftContent.storeName.trim().length > 0 },
+      { id: 'store', label: 'Contact Number', met: draftContent.whatsappNumber.trim().length > 0 },
+      { id: 'categories', label: 'Buyer Personas', met: categoriesData.categories.length > 0 },
+      { id: 'products', label: 'Residence Listings', met: productsData.products.length > 0 },
+      { id: 'testimonials', label: 'Client Reviews', met: testimonialsData.testimonials.length > 0 },
     ];
 
     const metItems = items.filter(i => i.met);
@@ -685,13 +757,21 @@ export default function FunnelAdFurnitureEditor({
           onChangeWhatsApp={(value) => handleStoreUpdate('whatsappNumber', value)}
           onChangeLogo={(value) => handleStoreUpdate('logoUrl', value)}
           onJumpTo={(tab) => setActiveTab(tab)}
+          panelLabel="Developer Profile"
+          nameLabel="Developer / Brand Name"
+          namePlaceholder="e.g. Aurelia Residences"
+          inventoryLabels={{
+            collections: 'Personas',
+            products: 'Residences',
+            reviews: 'Social Proof',
+          }}
         />
       );
     }
 
     if (currentTab === 'content') {
       return (
-        <HeroPanel
+        <RealEstateHeroPanel
           data={heroData}
           hideCtaSection={editorMode === 'wizard'}
           onChange={(updates) => {
@@ -716,15 +796,11 @@ export default function FunnelAdFurnitureEditor({
 
     if (currentTab === 'products') {
       return (
-        <ProductsPanel
+        <RealEstateProductsPanel
           data={productsData}
-          categories={categoriesData.categories}
-          allProducts={products}
-          onAddFromCatalog={handleAddProductFromCatalog}
           onAddCustomProduct={handleAddCustomProduct}
           onRemove={handleRemoveProduct}
           onUpdate={handleUpdateProduct}
-          isWizard={editorMode === 'wizard'}
         />
       );
     }
@@ -771,58 +847,6 @@ export default function FunnelAdFurnitureEditor({
     return null;
   };
 
-  // ✅ ADVANCED: Outcome-Driven Spotlight Tour
-  const tourSteps = [
-    {
-      id: 'sidebar',
-      title: "Your Editing Panel",
-      label: "Step 1 — Setup",
-      description: "This is where you edit everything — your store name, logo, hero section, products, and more. Each tab on the left controls a different part of your funnel.",
-      proTip: "Start with the Store tab to set your brand name and logo. A professional identity builds instant trust with customers.",
-      icon: ShieldCheck,
-      color: "indigo",
-      position: "left-12 top-[140px]",
-      arrow: "left-[-12px] top-1/2 -translate-y-1/2 border-r-white",
-      highlightClass: "left-6 top-[100px] w-[660px] h-[calc(100vh-140px)]"
-    },
-    {
-      id: 'tabs',
-      title: "Navigation Tabs",
-      label: "Step 2 — Navigate",
-      description: "Use these tabs to switch between sections: Store, Hero, Products, Categories, Testimonials, Location, and WhatsApp. Each one controls a specific part of your page.",
-      proTip: "Focus on the Products tab first — add great images and prices. That's what your customers care about most.",
-      icon: Zap,
-      color: "amber",
-      position: "left-[100px] top-[200px]",
-      arrow: "left-1/2 -translate-x-1/2 top-[-12px] border-b-white",
-      highlightClass: "left-[20px] top-[180px] w-12 h-64"
-    },
-    {
-      id: 'preview',
-      title: "Live Preview",
-      label: "Step 3 — Preview",
-      description: "This is how your funnel looks to customers on their phone. Every change you make on the left updates here instantly — what you see is what they get.",
-      proTip: "Check if buttons are easy to tap and text is readable. Most of your visitors will be on mobile devices.",
-      icon: Smartphone,
-      color: "emerald",
-      position: "right-[15%] top-[250px]",
-      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
-      highlightClass: "right-[4%] top-[100px] w-[calc(100%-720px)] h-[calc(100vh-140px)]"
-    },
-    {
-      id: 'launch',
-      title: "Save & Launch",
-      label: "Step 4 — Go Live",
-      description: "When you're happy with your funnel, hit Save. You can also copy the shareable link and send it to customers via WhatsApp, Instagram, or anywhere.",
-      proTip: "Don't wait for perfection — publish early, share the link, and improve as you go. You can always come back and edit.",
-      icon: Rocket,
-      color: "rose",
-      position: "right-12 top-[40px]",
-      arrow: "right-[-12px] top-1/2 -translate-y-1/2 border-l-white",
-      highlightClass: "right-6 top-[20px] w-48 h-12"
-    }
-  ];
-
   const handleNextTour = () => {
     if (onboardingStep < tourSteps.length) {
       setOnboardingStep(prev => prev + 1);
@@ -837,7 +861,7 @@ export default function FunnelAdFurnitureEditor({
   };
 
   // ===================== MODE SELECTOR =====================
-  if (editorMode === 'choosing') {
+  if (!isHydrated || editorMode === 'choosing') {
     return (
       <div className="flex h-full items-center justify-center bg-white">
         <div className="w-full max-w-3xl px-8">
@@ -867,7 +891,7 @@ export default function FunnelAdFurnitureEditor({
               >
                 Quick Setup
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-8">Step-by-step guided wizard. Enter your store info, add products, and go live in under 30 seconds.</p>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Step-by-step guided wizard. Add project identity, residences, and go live in under 30 seconds.</p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600">
                   <Clock size={14} />
@@ -892,7 +916,7 @@ export default function FunnelAdFurnitureEditor({
               >
                 Advanced Editor
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-8">Full sidebar + live preview. Fine-tune every detail — hero copy, WhatsApp templates, product specs, and more.</p>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Full sidebar + live preview. Fine-tune every detail — hero copy, WhatsApp scripts, residence specs, and more.</p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-600">
                   <Settings2 size={14} />
@@ -940,8 +964,8 @@ export default function FunnelAdFurnitureEditor({
           const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
           const isMobile = windowWidth < 1024;
 
-          const hlData = guideHighlights[step.id] || {};
-          const hl: React.CSSProperties = hlData.top !== undefined ? {
+          const hlData = guideHighlights[step.id];
+          const hl: React.CSSProperties = hlData ? {
             top: hlData.top,
             left: hlData.left,
             width: hlData.width,
@@ -954,7 +978,7 @@ export default function FunnelAdFurnitureEditor({
           if (isMobile) {
             // Smart docking logic
             const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-            if (hlData.top !== undefined && hlData.top > windowHeight / 2) {
+            if (hlData?.top !== undefined && hlData.top > windowHeight / 2) {
               cardStyle = { left: 16, right: 16, top: 80, bottom: 'auto', transform: 'none' };
             } else {
               cardStyle = { left: 16, right: 16, bottom: 24, top: 'auto', transform: 'none' };
@@ -984,15 +1008,15 @@ export default function FunnelAdFurnitureEditor({
                 onClick={() => setShowOnboarding(false)}
               >
                 {/* Top dimmer */}
-                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hlData.top ?? 0 }} />
+                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hlData?.top ?? 0 }} />
                 {/* Bottom dimmer */}
-                {hlData.height ? (
+                {hlData?.height ? (
                   <div className="absolute left-0 right-0 bottom-0 bg-black/40" style={{ top: hlData.top + hlData.height }} />
                 ) : null}
                 {/* Left dimmer */}
-                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: 0, width: hlData.left ?? 0, height: hlData.height }} />
+                <div className="absolute bg-black/40" style={{ top: hlData?.top ?? 0, left: 0, width: hlData?.left ?? 0, height: hlData?.height }} />
                 {/* Right dimmer */}
-                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: (hlData.left ?? 0) + (hlData.width ?? 0), right: 0, height: hlData.height }} />
+                <div className="absolute bg-black/40" style={{ top: hlData?.top ?? 0, left: (hlData?.left ?? 0) + (hlData?.width ?? 0), right: 0, height: hlData?.height }} />
               </motion.div>
 
               {/* Highlight border ring around the focused area */}
@@ -1107,7 +1131,7 @@ export default function FunnelAdFurnitureEditor({
                       className="text-4xl text-slate-900 mb-2"
                       style={{ fontFamily: "'Tanker', serif" }}
                     >
-                      You're All Set!
+                      You&apos;re All Set!
                     </h2>
                     <p className="text-slate-400 font-medium text-sm">Start building your elite funnel now.</p>
                   </div>
@@ -1133,7 +1157,7 @@ export default function FunnelAdFurnitureEditor({
           <div className={`h-5 w-px ${isDarkMode ? 'bg-white/10' : 'bg-slate-200'}`} />
           <div>
             <p className={`text-xs uppercase tracking-[0.3em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Editor</p>
-            <p className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{funnel?.welcome_title ?? 'Furniture Funnel'}</p>
+            <p className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{funnel?.welcome_title ?? 'Real Estate Funnel'}</p>
           </div>
         </div>
 
@@ -1371,6 +1395,15 @@ export default function FunnelAdFurnitureEditor({
                     onChangeTab={setActiveTab}
                     onReorderSections={handleReorderSections}
                     onStoreClick={() => setActiveTab('store')}
+                    storeLabel="Project Identity"
+                    sectionLabels={{
+                      content: { label: 'Property Hero', icon: Building2 },
+                      categories: { label: 'Buyer Personas' },
+                      products: { label: 'Residences', icon: Building2 },
+                      testimonials: { label: 'Social Proof' },
+                      location: { label: 'Project Location' },
+                      whatsapp: { label: 'Lead Capture' },
+                    }}
                   />
                 </div>
                 
@@ -1523,7 +1556,7 @@ export default function FunnelAdFurnitureEditor({
                     Your Funnel is Live!
                   </h3>
                   <p className="mb-8 text-[15px] leading-relaxed text-slate-600 px-4">
-                    Congratulations! Your high-conversion furniture funnel is now published and ready to capture leads.
+                    Congratulations! Your high-conversion real estate funnel is now published and ready to capture leads.
                   </p>
 
                   <div className="mb-10 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4">
