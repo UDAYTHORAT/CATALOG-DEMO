@@ -59,12 +59,12 @@ const defaultHeroData: HeroData = {
 };
 
 const defaultRealEstateHeroData: HeroData = {
-  tagline: 'Own The Skyline.',
-  subTagline: 'Private sky decks. Resort living. Starting Rs 2.9 Cr.',
-  heroCtaText: 'See Available Residences',
+  tagline: 'Own The Skyline',
+  subTagline: 'Private sea-facing residences with panoramic views.',
+  heroCtaText: 'Explore Residences',
   heroCtaSubtext: 'Get floor plan on WhatsApp',
-  trustBadges: ['Freehold', '87% Reserved', 'EV Parking', 'Gaggenau', 'Sea Link · 4 min', 'Private Ownership'],
-  heroBadge: 'Superstructure Complete',
+  trustBadges: ['Vastu Compliant', '87% Reserved', 'EV Parking', 'School 5 Mins', 'Sea Link · 4 min', 'Freehold'],
+  heroBadge: 'Exclusive Release',
   ownership: 'Freehold',
   possession: 'Q4 2025',
   startingPrice: '₹ 6.2 Cr',
@@ -168,49 +168,35 @@ const defaultRealEstateProducts: ProductsData = {
       urgency: '5 Units Left',
       delivery: 'Ready to Move',
       dimensions: '1,200 sqft',
+      facing: 'West Facing',
       description: 'Efficiently designed 2-bedroom residence with an open-plan living space and a private balcony.',
-      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=2400&q=80',
+      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=2400&q=80',
+      specifications: [
+        { label: 'Configuration', value: '2 Bed, 2 Bath' },
+        { label: 'Status', value: 'Ready to Move' },
+        { label: 'Vastu', value: '100% Compliant' },
+        { label: 'Floor Level', value: 'High-Rise (25th+)' },
+        { label: 'Parking', value: '1 Covered Spot' },
+        { label: 'Maintenance', value: '₹8,500/Month' }
+      ],
       rooms: [
-        {
-          id: 'living',
-          name: 'Living Room',
-          area: '320 sqft',
-          img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-          details: ['Engineered wood floors', 'Full-height windows', 'Open kitchen view'],
-          direction: { x: 0, y: 0, scale: 1 },
-          x: 6, y: 8, w: 56, h: 44,
-          label: 'Living'
-        },
-        {
-          id: 'kitchen',
-          name: 'Kitchen',
-          area: '140 sqft',
-          img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
-          details: ['Modular kitchen', 'Quartz countertop', 'Built-in chimney'],
-          direction: { x: -40, y: 0, scale: 1.02 },
-          x: 6, y: 56, w: 36, h: 36,
-          label: 'Kitchen'
-        },
-        {
-          id: 'master',
-          name: 'Master Bedroom',
-          area: '240 sqft',
-          img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
-          details: ['Ensuite bathroom', 'Walk-in wardrobe', 'Balcony access'],
-          direction: { x: 40, y: 20, scale: 1.04 },
-          x: 46, y: 56, w: 48, h: 36,
-          label: 'Master'
-        },
-        {
-          id: 'bedroom2',
-          name: 'Bedroom 2',
-          area: '180 sqft',
-          img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=2400&q=80',
-          details: ['City view', 'Built-in storage', 'Attached bathroom'],
-          direction: { x: 30, y: 10, scale: 1 },
-          x: 66, y: 8, w: 28, h: 44,
-          label: 'Bed 2'
-        }
+        // Base Rooms (Drawn First)
+        { id: 'deck', type: 'balcony', name: 'Sunset Balcony', area: '450 sqft', img: '/2BHK/2BHK-BALCONY.png', details: ['Outdoor seating space', 'Clear glass railing'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'SUNSET BALCONY (WEST ↑)' },
+        { id: 'living', type: 'living', name: 'Living & Dining Area', area: '850 sqft', img: '/2BHK/2BHK-LIVING.png', details: ['Large gathering space', 'Premium marble flooring'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 90, h: 30, label: 'LIVING + DINING' },
+        { id: 'kitchen', type: 'kitchen', name: 'Modern Kitchen', area: '320 sqft', img: '/2BHK/2BHK-KITCHEN.png', details: ['Large island counter', 'Built-in premium appliances'], direction: {x:0,y:0,scale:1}, x: 41, y: 50, w: 54, h: 15, label: 'KITCHEN' },
+        { id: 'master', type: 'bedroom', name: 'Master Bedroom', area: '550 sqft', img: '/2BHK/2BHK-MASTER BEDROOM.png', details: ['Soundproof windows', 'Wooden wall paneling'], direction: {x:0,y:0,scale:1}, x: 47, y: 75, w: 48, h: 20, label: 'MASTER BEDROOM' },
+        { id: 'bed2', type: 'bedroom', name: 'Guest Bedroom', area: '340 sqft', img: '/2BHK/2BHK-GUEST-ROOM.png', details: ['Attached bathroom', 'Large full-height windows'], direction: {x:0,y:0,scale:1}, x: 5, y: 75, w: 42, h: 20, label: 'GUEST BEDROOM' },
+        
+        // Connectors & Foyers
+        { id: 'entrance', type: 'entrance', name: 'Entrance Lobby', area: '180 sqft', img: '/2BHK/2BHK-ENTRY.png', details: ['Wide double-door entry', 'Wall display area'], direction: {x:0,y:0,scale:1}, x: 5, y: 50, w: 36, h: 15, label: '↓ ENTRANCE' },
+        { id: 'corridor', type: 'corridor', name: 'Main Passage', area: '210 sqft', img: '/2BHK/2BHK -PRIVATE PASSAGE.png', details: ['Extra hidden storage', 'Bright ceiling lights'], direction: {x:0,y:0,scale:1}, x: 5, y: 65, w: 63, h: 10, label: 'PASSAGE' },
+        
+        // Overlapping Sub-Rooms (Carved out, Drawn on Top)
+        { id: 'utility', type: 'utility', name: 'Utility Area', area: '80 sqft', img: '/2BHK/2BHK-UTILITY.png', details: ['Washing machine space', 'Separate maid access'], direction: {x:0,y:0,scale:1}, x: 80, y: 50, w: 15, h: 15, label: 'UTILITY' },
+        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '60 sqft', img: '/2BHK/2BHK-POWDER.png', details: ['Guest toilet', 'Modern washbasin'], direction: {x:0,y:0,scale:1}, x: 68, y: 65, w: 27, h: 10, label: 'POWDER ROOM' },
+        { id: 'mbath', type: 'bathroom', name: 'Master Bathroom', area: '120 sqft', img: '/2BHK/2BHK-MASTER BATHROOM.png', details: ['Large bathtub', 'Glass shower area'], direction: {x:0,y:0,scale:1}, x: 80, y: 75, w: 15, h: 10, label: 'MASTER BATH' },
+        { id: 'mcloset', type: 'corridor', name: 'Walk-in Closet', area: '80 sqft', img: '/2BHK/2BHK-WALKING.png', details: ['Glass wardrobes', 'Lots of storage space'], direction: {x:0,y:0,scale:1}, x: 80, y: 85, w: 15, h: 10, label: 'CLOSET' },
+        { id: 'bath2', type: 'bathroom', name: 'Guest Bathroom', area: '80 sqft', img: '/2BHK/2BHK-GUEST BATH.png', details: ['Modern mirror design', 'Premium shower fittings'], direction: {x:0,y:0,scale:1}, x: 5, y: 75, w: 10, h: 10, label: 'BATH' }
       ]
     },
     {
@@ -221,49 +207,42 @@ const defaultRealEstateProducts: ProductsData = {
       urgency: '3 Units Remaining',
       delivery: 'Possession: Q4 2025',
       dimensions: '1,850 sqft',
-      description: 'Sea-facing living volume with private deck and architectural light wells.',
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
+      facing: 'East Facing',
+      description: 'Spacious 3-bedroom luxury apartment featuring panoramic city views, an expansive living area, and premium finishes.',
+      image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=2400&q=80',
+      specifications: [
+        { label: 'Configuration', value: '3 Bed, 3 Bath, Balcony' },
+        { label: 'Status', value: 'Ready to Move' },
+        { label: 'Vastu', value: 'East-Facing Compliant' },
+        { label: 'Ceiling Height', value: '10.5 ft Clearance' },
+        { label: 'Floor Level', value: 'Premium Podium' },
+        { label: 'Parking', value: '2 Covered Spots' }
+      ],
       rooms: [
-        {
-          id: 'living',
-          name: 'Living Room',
-          area: '450 sqft',
-          img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-          details: ['Italian travertine floors', 'Acoustic glass', 'Skyline-facing deck'],
-          direction: { x: 0, y: 0, scale: 1 },
-          x: 6, y: 8, w: 56, h: 44,
-          label: 'Living'
-        },
-        {
-          id: 'kitchen',
-          name: 'Kitchen',
-          area: '210 sqft',
-          img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
-          details: ['Gaggenau appliances', 'Calacatta marble island', 'Concealed pantry'],
-          direction: { x: -40, y: 0, scale: 1.02 },
-          x: 6, y: 56, w: 36, h: 36,
-          label: 'Kitchen'
-        },
-        {
-          id: 'master',
-          name: 'Master Suite',
-          area: '320 sqft',
-          img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
-          details: ['Floor-to-ceiling glazing', 'Walk-in wardrobe', 'Private terrace'],
-          direction: { x: 40, y: 20, scale: 1.04 },
-          x: 46, y: 56, w: 48, h: 36,
-          label: 'Master'
-        },
-        {
-          id: 'deck',
-          name: 'Private Deck',
-          area: '180 sqft',
-          img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
-          details: ['Cantilevered terrace', 'Sea breeze orientation', 'Teak decking'],
-          direction: { x: 0, y: -40, scale: 0.98 },
-          x: 66, y: 8, w: 28, h: 44,
-          label: 'Deck'
-        }
+        // Base Rooms (Drawn First)
+        { id: 'deck', type: 'balcony', name: 'Large Balcony', area: '450 sqft', img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80', details: ['Clear views', 'Space for outdoor dining'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'BALCONY (WEST ↑)' },
+        
+        { id: 'living', type: 'living', name: 'Main Living Room', area: '650 sqft', img: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80', details: ['High ceiling', 'Wide city views'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 55, h: 25, label: 'LIVING ROOM' },
+        { id: 'dining', type: 'dining', name: 'Family Dining Area', area: '320 sqft', img: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=1200&q=80', details: ['Space for big table', 'Bright lighting'], direction: {x:0,y:0,scale:1}, x: 60, y: 20, w: 35, h: 25, label: 'DINING AREA' },
+        
+        // Connectors & Kitchen
+        { id: 'entrance', type: 'entrance', name: 'Entrance Foyer', area: '150 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Private entry', 'Welcoming design'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 25, h: 15, label: '↓ ENTRANCE' },
+        { id: 'kitchen', type: 'kitchen', name: 'Open Kitchen', area: '350 sqft', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80', details: ['Breakfast counter', 'Easy flow to dining'], direction: {x:0,y:0,scale:1}, x: 30, y: 45, w: 65, h: 15, label: 'KITCHEN' },
+        
+        { id: 'corridor', type: 'corridor', name: 'Main Corridor', area: '200 sqft', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80', details: ['Bright hallway', 'Connecting all bedrooms'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'CORRIDOR' },
+        
+        // Private Wing (Bedrooms)
+        { id: 'bed2', type: 'bedroom', name: 'Kids / Guest Bedroom', area: '280 sqft', img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80', details: ['Study corner', 'Attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
+        { id: 'master', type: 'bedroom', name: 'Master Bedroom', area: '450 sqft', img: 'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80', details: ['Large windows', 'Big walk-in closet'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 40, h: 25, label: 'MASTER BEDROOM' },
+        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '280 sqft', img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80', details: ['Great city views', 'Comfortable seating space'], direction: {x:0,y:0,scale:1}, x: 70, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
+        
+        // Overlapping Sub-Rooms (Carved out, visually receded small boxes)
+        { id: 'utility', type: 'utility', name: 'Utility Area', area: '60 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Washing machine space'], direction: {x:0,y:0,scale:1}, x: 80, y: 45, w: 15, h: 10, label: 'UTILITY' },
+        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Guest toilet'], direction: {x:0,y:0,scale:1}, x: 80, y: 60, w: 15, h: 10, label: 'POWDER' },
+        { id: 'mbath', type: 'bathroom', name: 'Master Bathroom', area: '80 sqft', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', details: ['Two washbasins', 'Spacious shower'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 15, h: 10, label: 'MASTER BATH' },
+        { id: 'mcloset', type: 'corridor', name: 'Walk-in Closet', area: '60 sqft', img: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=1200&q=80', details: ['Bright lighting', 'Lots of space'], direction: {x:0,y:0,scale:1}, x: 55, y: 80, w: 15, h: 10, label: 'CLOSET' },
+        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
+        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 85, y: 85, w: 10, h: 10, label: 'BATH' }
       ]
     },
     {
@@ -273,60 +252,54 @@ const defaultRealEstateProducts: ProductsData = {
       priceLabel: '₹ 8.5 Cr',
       urgency: 'Last Unit Available',
       delivery: 'Possession: Q4 2025',
-      dimensions: '2,140 sqft',
-      description: 'Full-floor residence with private plunge pool and 360° skyline.',
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
+      dimensions: '3,200 sqft',
+      facing: 'North-East Facing',
+      description: 'Ultra-luxury penthouse with a private sky garden, a home theater lounge, and an exclusive glass library corridor.',
+      image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2400&q=80',
+      specifications: [
+        { label: 'Configuration', value: '4 Bed, 4 Bath, Terrace' },
+        { label: 'Status', value: 'Under Construction' },
+        { label: 'Vastu', value: 'North-East Entry' },
+        { label: 'Elevator', value: 'Private Lift Lobby' },
+        { label: 'Parking', value: '3 Dedicated Spaces' },
+        { label: 'Maintenance', value: 'Concierge Included' }
+      ],
       rooms: [
-        {
-          id: 'living',
-          name: 'Living Room',
-          area: '450 sqft',
-          img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-          details: ['Italian travertine floors', 'Acoustic glass', 'Skyline-facing deck'],
-          direction: { x: 0, y: 0, scale: 1 },
-          x: 6, y: 6, w: 60, h: 38,
-          label: 'Living'
-        },
-        {
-          id: 'kitchen',
-          name: 'Kitchen',
-          area: '210 sqft',
-          img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
-          details: ['Gaggenau appliances', 'Calacatta marble island', 'Concealed pantry'],
-          direction: { x: -40, y: 0, scale: 1.02 },
-          x: 70, y: 6, w: 24, h: 38,
-          label: 'Kitchen'
-        },
-        {
-          id: 'master',
-          name: 'Master Suite',
-          area: '320 sqft',
-          img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
-          details: ['Floor-to-ceiling glazing', 'Walk-in wardrobe', 'Private terrace'],
-          direction: { x: 40, y: 20, scale: 1.04 },
-          x: 6, y: 48, w: 44, h: 44,
-          label: 'Master'
-        },
-        {
-          id: 'guest',
-          name: 'Guest Suite',
-          area: '240 sqft',
-          img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=2400&q=80',
-          details: ['Independent entry', 'Ensuite bath', 'City views'],
-          direction: { x: 30, y: 10, scale: 1 },
-          x: 54, y: 48, w: 22, h: 44,
-          label: 'Guest'
-        },
-        {
-          id: 'deck',
-          name: 'Private Deck',
-          area: '180 sqft',
-          img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80',
-          details: ['Cantilevered terrace', 'Sea breeze orientation', 'Teak decking'],
-          direction: { x: 0, y: -40, scale: 0.98 },
-          x: 80, y: 48, w: 14, h: 44,
-          label: 'Deck'
-        }
+        // 1. The Sky Garden (West Light Experience)
+        { id: 'deck', type: 'balcony', name: 'Terrace Garden', area: '600 sqft', img: 'https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=1200&q=80', details: ['Plants and greenery', 'Water feature'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'TERRACE (WEST ↑)' },
+
+        // 2. The Grand Social Axis
+        { id: 'living', type: 'living', name: 'Main Living Room', area: '800 sqft', img: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80', details: ['Huge seating area', 'TV and media setup'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 40, h: 25, label: 'LIVING ROOM' },
+        { id: 'dining', type: 'dining', name: 'Large Dining Area', area: '450 sqft', img: 'https://images.unsplash.com/photo-1559599189-fe84dea4eb79?auto=format&fit=crop&w=1200&q=80', details: ['Space for 8 people', 'Beautiful lighting'], direction: {x:0,y:0,scale:1}, x: 45, y: 20, w: 25, h: 25, label: 'DINING AREA' },
+        { id: 'kitchen', type: 'kitchen', name: 'Spacious Kitchen', area: '450 sqft', img: 'https://images.unsplash.com/photo-1556909211-ed127c556b6a?auto=format&fit=crop&w=1200&q=80', details: ['Open counter design', 'Lots of storage cabinets'], direction: {x:0,y:0,scale:1}, x: 70, y: 20, w: 25, h: 25, label: 'KITCHEN' },
+
+        // 3. Arrival Sequence & Service
+        { id: 'bed4', type: 'bedroom', name: 'Guest Bedroom', area: '350 sqft', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80', details: ['Close to the main door', 'Very private'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 30, h: 15, label: 'GUEST BEDROOM' },
+        { id: 'niche', type: 'corridor', name: 'Display Area', area: '150 sqft', img: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=1200&q=80', details: ['Wooden divider', 'Space for artwork'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 15, label: 'DISPLAY' },
+        { id: 'entrance', type: 'entrance', name: 'Main Entrance Lobby', area: '300 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Wide entry', 'Hidden ceiling lights'], direction: {x:0,y:0,scale:1}, x: 45, y: 45, w: 25, h: 15, label: '↓ MAIN ENTRANCE' },
+        { id: 'spine', type: 'corridor', name: 'Service Corridor', area: '250 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Hidden doors', 'Separate staff path'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 25, h: 15, label: 'SERVICE PATH' },
+
+        // 4. Circulation
+        { id: 'corridor', type: 'corridor', name: 'Glass Corridor', area: '400 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Glass walls on one side', 'Very bright'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'MAIN CORRIDOR' },
+
+        // 5. Private Suites
+        { id: 'bed2', type: 'bedroom', name: 'Second Master Bedroom', area: '400 sqft', img: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=80', details: ['Great outside views', 'Large attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
+        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '400 sqft', img: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80', details: ['Premium styling', 'Very spacious'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
+        { id: 'master', type: 'bedroom', name: 'Grand Master Bedroom', area: '750 sqft', img: 'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80', details: ['Reading corner', 'Biggest room in house'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 40, h: 25, label: 'GRAND MASTER' },
+
+        // Overlapping Sub-Rooms (Carved out, receding)
+        { id: 'mcloset', type: 'corridor', name: 'Large Walk-in Closet', area: '150 sqft', img: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=1200&q=80', details: ['Island storage in middle', 'Dressing table area'], direction: {x:0,y:0,scale:1}, x: 80, y: 70, w: 15, h: 10, label: 'CLOSET' },
+        { id: 'mbath', type: 'bathroom', name: 'Luxury Master Bathroom', area: '180 sqft', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', details: ['Big bathtub', 'Double shower space'], direction: {x:0,y:0,scale:1}, x: 80, y: 80, w: 15, h: 15, label: 'MASTER BATH' },
+        
+        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Hidden door design'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 5, label: 'POWDER' },
+        
+        { id: 'bath4', type: 'bathroom', name: 'Guest Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Easy access from room'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 10, h: 10, label: 'BATH' },
+        
+        { id: 'staff', type: 'bedroom', name: 'Maid Room', area: '80 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Separate back door entry'], direction: {x:0,y:0,scale:1}, x: 85, y: 45, w: 10, h: 10, label: 'MAID' },
+        { id: 'utility', type: 'utility', name: 'Utility & Laundry', area: '80 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Washing machine setup'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 15, h: 10, label: 'UTILITY' },
+
+        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
+        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 30, y: 85, w: 10, h: 10, label: 'BATH' }
       ]
     }
   ],
@@ -367,21 +340,21 @@ const defaultRealEstateTestimonials: TestimonialsData = {
       id: 'rt1',
       name: 'Vikram S.',
       city: 'Pune',
-      text: 'We booked within a week. The tour felt premium and the view sealed the decision.',
+      text: 'The ventilation and privacy were the main reasons we booked.',
       rating: 5,
     },
     {
       id: 'rt2',
       name: 'Meera A.',
       city: 'Mumbai',
-      text: 'The sales gallery experience was effortless. WhatsApp updates and floor plans were instant.',
+      text: 'My parents loved the sunlight in the living room.',
       rating: 5,
     },
     {
       id: 'rt3',
       name: 'Rahul D.',
       city: 'Bangalore',
-      text: 'We chose the investment unit after seeing the rental projections. Smoothest purchase ever.',
+      text: 'The floor plan felt much bigger in person.',
       rating: 5,
     },
   ],
@@ -396,7 +369,7 @@ const defaultLocation: LocationData = {
 
 const defaultRealEstateLocation: LocationData = {
   experienceCenterName: 'Aurelia Sky Gallery',
-  experienceCenterAddress: 'Tower 3, Baner Hills, Pune',
+  experienceCenterAddress: 'Worli Sea Face · Mumbai',
   mapImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
   mapLink: 'https://www.google.com/maps?q=Baner%20Pune&output=embed',
 };

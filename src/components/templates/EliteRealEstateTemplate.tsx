@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { defaultRooms2BHK, defaultRooms3BHK, defaultRooms4BHK } from "./EliteRealEstateLayouts";
 import { createLead } from "@/app/actions/leads";
 import type {
   CategoriesData,
@@ -83,6 +84,8 @@ export default function EliteRealEstateTemplate({
   previewMode,
   onEditSection,
 }: TemplateProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const defaultSections = useMemo(() => createDefaultSections(REAL_ESTATE_TEMPLATE_ID), []);
   const savedContent = funnel.story_mode_data?.[0]?.content as Content | undefined;
 
@@ -140,145 +143,10 @@ export default function EliteRealEstateTemplate({
 
   const normalizedProducts = useMemo(() => {
     return rawProducts.map((product: any, productIdx: number) => {
-      const isPenthouseIndex = productIdx % 2 !== 0;
+      const is2BHK = product.name?.includes('2') || product.name?.toLowerCase().includes('two');
+      const isPenthouseIndex = product.name?.includes('4') || product.name?.toLowerCase().includes('four') || product.name?.toLowerCase().includes('penthouse') || (!is2BHK && productIdx % 2 !== 0);
 
-      const defaultRooms3BHK = [
-        { 
-          id: 'living', 
-          name: 'Living Room', 
-          area: '450 sqft', 
-          atmosphere: 'Sea-facing lounge', 
-          note: 'Italian travertine floors, acoustic glass, skyline-facing deck.', 
-          details: ["Italian travertine floors", "Acoustic glass", "Skyline-facing deck"], 
-          images: [
-            product.image_url || product.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-            'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '6%', top: '8%', width: '56%', height: '44%' },
-          x: 6, y: 8, w: 56, h: 44, label: "Living",
-          direction: { x: 0, y: 0, scale: 1 },
-          highlight: true 
-        },
-        { 
-          id: 'kitchen', 
-          name: 'Kitchen', 
-          area: '210 sqft', 
-          atmosphere: 'Culinary studio', 
-          note: 'Gaggenau appliances, Calacatta marble island, concealed pantry.', 
-          details: ["Gaggenau appliances", "Calacatta marble island", "Concealed pantry"], 
-          images: [
-            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '6%', top: '56%', width: '36%', height: '36%' },
-          x: 6, y: 56, w: 36, h: 36, label: "Kitchen",
-          direction: { x: -40, y: 0, scale: 1.02 }
-        },
-        { 
-          id: 'master', 
-          name: 'Master Suite', 
-          area: '320 sqft', 
-          atmosphere: 'Absolute privacy', 
-          note: 'Floor-to-ceiling glazing, walk-in wardrobe, private terrace.', 
-          details: ["Floor-to-ceiling glazing", "Walk-in wardrobe", "Private terrace"], 
-          images: [
-            product.image_url_2 || product.image2 || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '46%', top: '56%', width: '48%', height: '36%' },
-          x: 46, y: 56, w: 48, h: 36, label: "Master",
-          direction: { x: 40, y: 20, scale: 1.04 }
-        },
-        { 
-          id: 'deck', 
-          name: 'Private Deck', 
-          area: '180 sqft', 
-          atmosphere: 'Sunset view', 
-          note: 'Cantilevered terrace, sea breeze orientation, teak decking.', 
-          details: ["Cantilevered terrace", "Sea breeze orientation", "Teak decking"], 
-          images: [
-            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '66%', top: '8%', width: '28%', height: '44%' },
-          x: 66, y: 8, w: 28, h: 44, label: "Deck",
-          direction: { x: 0, y: -40, scale: 0.98 }
-        }
-      ];
-
-      const defaultRooms4BHK = [
-        { 
-          id: 'living', 
-          name: 'Living Room', 
-          area: '450 sqft', 
-          atmosphere: 'Skyline expanse', 
-          note: 'Italian travertine floors, acoustic glass, skyline-facing deck.', 
-          details: ["Italian travertine floors", "Acoustic glass", "Skyline-facing deck"], 
-          images: [
-            product.image_url || product.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-            'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '6%', top: '6%', width: '60%', height: '38%' },
-          x: 6, y: 6, w: 60, h: 38, label: "Living",
-          direction: { x: 0, y: 0, scale: 1 },
-          highlight: true 
-        },
-        { 
-          id: 'kitchen', 
-          name: 'Kitchen', 
-          area: '210 sqft', 
-          atmosphere: 'Gourmet suite', 
-          note: 'Gaggenau appliances, Calacatta marble island, concealed pantry.', 
-          details: ["Gaggenau appliances", "Calacatta marble island", "Concealed pantry"], 
-          images: [
-            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '70%', top: '6%', width: '24%', height: '38%' },
-          x: 70, y: 6, w: 24, h: 38, label: "Kitchen",
-          direction: { x: -40, y: 0, scale: 1.02 }
-        },
-        { 
-          id: 'master', 
-          name: 'Master Suite', 
-          area: '320 sqft', 
-          atmosphere: 'Horizon suite', 
-          note: 'Floor-to-ceiling glazing, walk-in wardrobe, private terrace.', 
-          details: ["Floor-to-ceiling glazing", "Walk-in wardrobe", "Private terrace"], 
-          images: [
-            product.image_url_2 || product.image2 || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '6%', top: '48%', width: '44%', height: '44%' },
-          x: 6, y: 48, w: 44, h: 44, label: "Master",
-          direction: { x: 40, y: 20, scale: 1.04 }
-        },
-        { 
-          id: 'guest', 
-          name: 'Guest Suite', 
-          area: '240 sqft', 
-          atmosphere: 'Private sanctuary', 
-          note: 'Independent entry, ensuite bath, city views.', 
-          details: ["Independent entry", "Ensuite bath", "City views"], 
-          images: [
-            'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '54%', top: '48%', width: '22%', height: '44%' },
-          x: 54, y: 48, w: 22, h: 44, label: "Guest",
-          direction: { x: 30, y: 10, scale: 1 }
-        },
-        { 
-          id: 'deck', 
-          name: 'Private Deck', 
-          area: '180 sqft', 
-          atmosphere: 'Infinity sky', 
-          note: 'Cantilevered terrace, sea breeze orientation, teak decking.', 
-          details: ["Cantilevered terrace", "Sea breeze orientation", "Teak decking"], 
-          images: [
-            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=2400&q=80'
-          ].filter(Boolean), 
-          layout: { left: '80%', top: '48%', width: '14%', height: '44%' },
-          x: 80, y: 48, w: 14, h: 44, label: "Deck",
-          direction: { x: 0, y: -40, scale: 0.98 }
-        }
-      ];
-
-      const defaultRooms = isPenthouseIndex ? defaultRooms4BHK : defaultRooms3BHK;
+      const defaultRooms = isPenthouseIndex ? defaultRooms4BHK : (is2BHK ? defaultRooms2BHK : defaultRooms3BHK);
       const rawRooms = product.rooms || defaultRooms;
 
       const mappedRooms = rawRooms.map((room: any, rIdx: number) => {
@@ -290,7 +158,7 @@ export default function EliteRealEstateTemplate({
           name: room.name || room.label || 'Room',
           area: room.area || room.sqft || '200 sqft',
           atmosphere: room.atmosphere || 'Serene space',
-          note: room.note || room.description || room.desc || 'A masterfully designed volume.',
+          note: room.note || room.description || room.desc || 'Designed around uninterrupted sea views and natural light.',
           details: room.details || room.notes || ['Premium finish', 'High ceiling'],
           images: room.images || [room.img || room.image].filter(Boolean) || [product.image_url || product.image].filter(Boolean),
           x: room.x !== undefined ? room.x : coords.x,
@@ -318,13 +186,70 @@ export default function EliteRealEstateTemplate({
         description: product.description || (isPenthouseIndex ? 'Full-floor residence with private plunge pool and 360° skyline.' : 'Sea-facing living volume with private deck and architectural light wells.'),
         dimensions: product.dimensions || (isPenthouseIndex ? '2,140 sqft' : '1,850 sqft'),
         tier: product.tier || 'most_popular',
-        rooms: mappedRooms
+        rooms: mappedRooms,
+        compassAngle: product.compassAngle,
+        sunSide: product.sunSide,
+        ownership: product.ownership,
+        automotive: product.automotive,
+        propertyDetailsTitle: product.propertyDetailsTitle,
+        ownershipLabel: product.ownershipLabel,
+        deliveryLabel: product.deliveryLabel,
+        automotiveLabel: product.automotiveLabel,
+        spaceCtaText: product.spaceCtaText
       };
     });
   }, [rawProducts]);
 
   const [screen, setScreen] = useState<'home' | 'residences' | 'tour'>('home');
   const [residenceId, setResidenceId] = useState<string | null>(null);
+  const [selectedPersona, setSelectedPersona] = useState<any>(null);
+  const [isConciergeOpen, setIsConciergeOpen] = useState<boolean>(false);
+  const [modalTop, setModalTop] = useState<number>(0);
+  const [modalHeight, setModalHeight] = useState<number | string>('100vh');
+  
+  // Buyer Qualification Form State
+  const [qBudget, setQBudget] = useState('');
+  const [qPurpose, setQPurpose] = useState('');
+  const [qTimeline, setQTimeline] = useState('');
+  const [qPreference, setQPreference] = useState('');
+
+  const openConcierge = useCallback(() => {
+    let parent = containerRef.current?.parentElement;
+    while (parent) {
+      const overflowY = window.getComputedStyle(parent).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll' || parent.id === 'mobile-scroll-container') {
+        break;
+      }
+      parent = parent.parentElement;
+    }
+    
+    if (parent) {
+      setModalTop(parent.scrollTop);
+      setModalHeight(parent.clientHeight);
+    } else {
+      setModalTop(window.scrollY || document.documentElement.scrollTop);
+      setModalHeight(window.innerHeight || '100vh');
+    }
+    setIsConciergeOpen(true);
+  }, []);
+
+  // Scroll to top when screen changes
+  useEffect(() => {
+    // Scroll window
+    if (!isPreview) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    // Find closest scrollable parent in editor and scroll it
+    let node = containerRef.current?.parentElement;
+    while (node) {
+      const overflowY = window.getComputedStyle(node).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        node.scrollTop = 0;
+        break;
+      }
+      node = node.parentElement;
+    }
+  }, [screen, isPreview]);
 
   const activeResidence = useMemo(() => {
     const match = normalizedProducts.find((p) => p.id === residenceId);
@@ -369,13 +294,17 @@ export default function EliteRealEstateTemplate({
         }
       }
 
+      if (selectedPersona) {
+        message += `\n\nI am particularly interested as a: *${selectedPersona.label}* (${selectedPersona.tagline}).`;
+      }
+
       window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank');
     },
-    [content.baseContent.storeName, content.baseContent.whatsappNumber, content.whatsappData.productInquiryText, content.whatsappData.welcomeMessage, funnel?.id, isPreview, store?.id]
+    [content.baseContent.storeName, content.baseContent.whatsappNumber, content.whatsappData.productInquiryText, content.whatsappData.welcomeMessage, funnel?.id, isPreview, store?.id, selectedPersona]
   );
 
   return (
-    <div className="relative w-full min-h-screen bg-[#FAF9F5] text-[#1C1917] selection:bg-[#9A7B44]/20 font-sans">
+    <div ref={containerRef} className="relative w-full min-h-screen bg-[#FAF9F5] text-[#1C1917] selection:bg-[#9A7B44]/20 font-sans">
       <style dangerouslySetInnerHTML={{
         __html: `
          @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
@@ -408,13 +337,17 @@ export default function EliteRealEstateTemplate({
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <Home
-              content={content}
-              normalizedProducts={normalizedProducts}
-              onExplore={() => setScreen("residences")}
-              isPreview={isPreview}
-              previewMode={previewMode}
-              onEditSection={onEditSection}
-            />
+               content={content}
+               normalizedProducts={normalizedProducts}
+               onExplore={() => setScreen("residences")}
+               isPreview={isPreview}
+               previewMode={previewMode}
+               onEditSection={onEditSection}
+               selectedPersona={selectedPersona}
+               setSelectedPersona={setSelectedPersona}
+               handleWhatsAppCTA={handleWhatsAppCTA}
+               openConcierge={openConcierge}
+             />
           </motion.div>
         )}
         {screen === "residences" && (
@@ -454,6 +387,7 @@ export default function EliteRealEstateTemplate({
               isPreview={isPreview}
               previewMode={previewMode}
               onEditSection={onEditSection}
+              heroData={content.heroData}
             />
           </motion.div>
         )}
@@ -461,13 +395,118 @@ export default function EliteRealEstateTemplate({
 
       {screen === "home" && (
         <ActionBar
-          onFloorplan={() => setScreen("residences")}
-          onWhatsApp={() => handleWhatsAppCTA("action_bar_whatsapp", activeResidence)}
-          onVisit={() => handleWhatsAppCTA("action_bar_visit", activeResidence, `Hi ${content.baseContent.storeName || "SAUNTER"}, I'd like to schedule a private visit to ${activeResidence?.name || 'the property'}.`)}
+          onExplore={(residenceId) => {
+            if (residenceId) setResidenceId(residenceId);
+            setScreen("residences");
+          }}
+          onWhatsApp={(msg) => handleWhatsAppCTA("action_bar_whatsapp", activeResidence, msg)}
+          onVisit={(msg) => handleWhatsAppCTA("action_bar_visit", activeResidence, msg)}
+          products={normalizedProducts}
           isPreview={isPreview}
           previewMode={previewMode}
+          storeName={content.baseContent.storeName || "SAUNTER"}
+          activeResidence={activeResidence}
+          whatsappNumber={content.baseContent.whatsappNumber || ''}
         />
       )}
+
+      {/* ── Bespoke Concierge Modal (Ultra Premium) ── */}
+      <AnimatePresence>
+        {isConciergeOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute left-0 w-full z-[999999] bg-[#0A0A0A]/80 backdrop-blur-md p-4 md:p-6 flex items-center justify-center"
+            onClick={() => setIsConciergeOpen(false)}
+            style={{ 
+              top: modalTop, 
+              height: modalHeight, 
+              zIndex: 999999 
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-lg bg-white rounded-2xl p-8 md:p-10 shadow-2xl border border-[#E7E5E4] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setIsConciergeOpen(false)}
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#FAF9F5] border border-[#E7E5E4] flex items-center justify-center text-[#A8A29E] hover:text-[#1C1917] hover:bg-[#F5F5F4] transition-all duration-300"
+              >
+                ✕
+              </button>
+
+              <div className="mb-8 relative z-10 text-center">
+                <span className="inline-block px-3 py-1 bg-[#FAF9F5] border border-[#E7E5E4] rounded-full text-[9px] tracking-[0.25em] uppercase font-bold text-[#78716C] mb-4">
+                  Personalized Match
+                </span>
+                <h3 className="font-serif text-3xl text-[#1C1917] leading-tight">What are your priorities?</h3>
+                <p className="text-sm text-[#78716C] mt-3 leading-relaxed max-w-sm mx-auto">
+                  Select your preferences so we can connect you with the right advisor.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-5 mb-8 relative z-10 overflow-y-auto max-h-[50vh] pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E7E5E4 transparent' }}>
+                {[
+                  { id: 'budget', label: 'Budget', options: ['₹1–2 Cr', '₹2–5 Cr', '₹5 Cr+'], state: qBudget, setter: setQBudget },
+                  { id: 'purpose', label: 'Purpose', options: ['Family Home', 'Investment', 'Upgrade'], state: qPurpose, setter: setQPurpose },
+                  { id: 'timeline', label: 'Timeline', options: ['Immediate', '3 Months', 'Exploring'], state: qTimeline, setter: setQTimeline },
+                  { id: 'preference', label: 'Preference', options: ['View', 'Privacy', 'Sunlight', 'Balcony', 'Vastu'], state: qPreference, setter: setQPreference }
+                ].map((q) => (
+                  <div key={q.id} className="w-full text-left bg-[#FAF9F5] border border-[#E7E5E4] p-5 rounded-xl">
+                    <h4 className="font-serif text-lg text-[#1C1917] mb-4">{q.label}</h4>
+                    <div className="flex flex-wrap gap-2.5">
+                      {q.options.map(opt => (
+                        <button 
+                          key={opt}
+                          onClick={() => q.setter(opt)}
+                          className={`px-4 py-2.5 rounded-full border text-[11px] uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${q.state === opt ? 'border-[#1C1917] bg-[#1C1917] text-white' : 'border-[#E7E5E4] bg-white text-[#78716C] hover:border-[#1C1917]/30 hover:text-[#1C1917]'}`}
+                        >
+                          {q.state === opt && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col items-center gap-4 pt-4 relative z-10 border-t border-[#E7E5E4] mt-2">
+                <button
+                  onClick={() => {
+                     setIsConciergeOpen(false);
+                     let msg = `Hi ${content.baseContent.storeName || 'Advisor'},\n\nI would like to schedule a private consultation for the residences.\n\nHere are my preferences:\n` + 
+                     (qBudget ? `• Budget: ${qBudget}\n` : '') +
+                     (qPurpose ? `• Purpose: ${qPurpose}\n` : '') +
+                     (qTimeline ? `• Timeline: ${qTimeline}\n` : '') +
+                     (qPreference ? `• Priority: ${qPreference}\n` : '') +
+                     `\nPlease let me know the next steps.`;
+                     handleWhatsAppCTA("concierge_qualification", null, msg);
+                  }}
+                  className="w-full py-4 bg-[#1C1917] text-white text-[11px] uppercase tracking-widest font-bold rounded-xl hover:bg-black transition-colors duration-400"
+                >
+                  Connect With Advisor →
+                </button>
+                <button
+                  onClick={() => {
+                    setIsConciergeOpen(false);
+                    let message = `Hi ${content.baseContent.storeName || "Advisor"},\n\nI am inquiring about the residences. Please connect me to an advisor.`;
+                    handleWhatsAppCTA("concierge_skip", null, message);
+                  }}
+                  className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#A8A29E] hover:text-[#1C1917] transition-colors underline underline-offset-4 decoration-[#E7E5E4] hover:decoration-[#1C1917]"
+                >
+                  Skip & Ask General Inquiry
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -495,22 +534,21 @@ function TopBar({
         isPreview
           ? `absolute inset-x-0 ${isMobilePreview ? 'top-6' : 'top-0'}`
           : 'fixed top-0 inset-x-0'
-      } z-40 bg-[#FAF9F5]/70 backdrop-blur-lg border-b border-[#E7E5E4]/30`}
+      } z-40 bg-white/80 backdrop-blur-md border-b border-[#E7E5E4]/50 shadow-sm`}
     >
       <div
-        className={`max-w-[1400px] mx-auto ${isMobilePreview ? 'px-5' : 'px-5 md:px-10'} flex items-center justify-between ${
+        className={`max-w-[1400px] mx-auto ${isMobilePreview ? 'px-5' : 'px-5 md:px-10'} flex items-center justify-center ${
           isMobilePreview ? 'h-16 pt-2' : 'h-14'
         }`}
       >
         <button
           onClick={onHome}
-          className={`font-serif ${isMobilePreview ? 'text-sm tracking-wider' : 'text-sm md:text-lg tracking-wider'} text-[#1C1917] cursor-pointer uppercase whitespace-nowrap truncate max-w-[65%]`}
+          className={`font-serif group flex items-center justify-center gap-1.5 ${
+            isMobilePreview ? 'text-sm' : 'text-sm md:text-lg'
+          } tracking-[0.08em] text-[#1C1917] hover:text-[#9A7B44] transition-colors cursor-pointer uppercase whitespace-nowrap truncate max-w-[90%]`}
         >
-          {brandName}
+          <span>{brandName}</span>
         </button>
-        <span className={`${isMobilePreview ? 'text-[8px]' : 'text-[8px] md:text-[10px]'} tracking-wider text-[#78716C] uppercase whitespace-nowrap font-medium`}>
-          RERA Verified
-        </span>
       </div>
     </header>
   );
@@ -531,7 +569,11 @@ function Home({
   onExplore,
   isPreview,
   previewMode,
-  onEditSection
+  onEditSection,
+  selectedPersona,
+  setSelectedPersona,
+  handleWhatsAppCTA,
+  openConcierge
 }: {
   content: any;
   normalizedProducts: any[];
@@ -539,18 +581,27 @@ function Home({
   isPreview: boolean;
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: SectionId) => void;
+  selectedPersona: any;
+  setSelectedPersona: (persona: any) => void;
+  handleWhatsAppCTA: (intent: string, product?: any, messageOverride?: string) => void;
+  openConcierge: () => void;
 }) {
   const isMobilePreview = isPreview && previewMode === 'mobile';
+  const isTabletPreview = isPreview && previewMode === 'tablet';
+  const isCompact = isMobilePreview || isTabletPreview;
   const { heroData, locationData, categoriesData, testimonialsData } = content;
+  // Intercept the long default text
+  const taglineText = heroData?.tagline === 'Sea-facing 3 & 4 BHK residences in Worli starting ₹6.2 Cr' ? 'Own The Skyline' : (heroData?.tagline || 'Own The Skyline');
+  const subTaglineText = heroData?.subTagline === 'Private decks, natural ventilation, and skyline views.' ? 'Private sea-facing residences with panoramic views.' : (heroData?.subTagline || 'Private sea-facing residences with panoramic skyline views.');
+  const experienceCenterAddress = locationData?.experienceCenterAddress === 'Tower 3, Baner Hills, Pune' ? 'Worli Sea Face · Mumbai' : (locationData?.experienceCenterAddress || 'Worli Sea Face · Mumbai');
+  const ctaText = (heroData?.heroCtaText === 'Book Private Visit' || heroData?.heroCtaText === 'Explore Layouts') ? 'Explore Residences' : (heroData?.heroCtaText || 'Explore Residences');
+
   const startingPrice = heroData?.startingPrice || normalizedProducts[0]?.priceLabel || "₹ 6.2 Cr";
   const status = heroData?.status || normalizedProducts[0]?.delivery || "Ready for Possession";
-  const experienceCenterAddress = locationData?.experienceCenterAddress || "Worli Sea Face · Mumbai";
   const heroImage = heroData?.heroImage || "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2400&q=80";
 
-  const isCompact = isMobilePreview || false;
-
   return (
-    <main className={`${isMobilePreview ? 'pt-24' : 'pt-14'}`}>
+    <main className={`${isCompact ? 'pt-24' : 'pt-14'}`}>
       {/* ── FULLSCREEN HERO ── */}
       <section
         className={`relative w-full ${isCompact ? 'h-[88vh]' : 'h-[92vh]'} overflow-hidden cursor-pointer`}
@@ -564,54 +615,71 @@ function Home({
         {/* Adjusted gradients for better contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/20" />
 
-        {/* Top row — badges (Grouped cleanly at top left) */}
-        <div className={`absolute ${isCompact ? 'top-5 left-5 right-5' : 'top-6 left-8 right-8'} flex flex-wrap gap-2`}>
-          <span className="px-2.5 py-1.5 bg-black/30 backdrop-blur-md text-white/90 text-[9px] font-semibold tracking-wider uppercase border border-white/10 rounded-sm shadow-sm">
-            {heroData?.heroBadge || 'RERA Verified'}
-          </span>
-          <span className="px-2.5 py-1.5 bg-black/30 backdrop-blur-md text-white/90 text-[9px] font-semibold tracking-wider uppercase border border-white/10 rounded-sm shadow-sm">
-            {status}
-          </span>
-        </div>
-
         {/* Center — title */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <p className={`text-[10px] tracking-widest uppercase text-white/70 mb-4 font-semibold drop-shadow-md`}>
             {experienceCenterAddress}
           </p>
-          <h1 className={`font-serif ${isCompact ? 'text-5xl' : 'text-6xl md:text-[7rem]'} leading-[0.95] text-white tracking-tight drop-shadow-lg`}>
-            {heroData?.tagline || "Own The Skyline"}
+          <h1 className={`font-serif ${isCompact ? 'text-4xl' : 'text-5xl md:text-6xl lg:text-[4.5rem]'} leading-[1.05] text-white tracking-tight drop-shadow-lg max-w-4xl`}>
+            {taglineText}
           </h1>
           <p className={`mt-6 ${isCompact ? 'text-sm' : 'text-base'} text-white/80 max-w-lg leading-relaxed drop-shadow-md`}>
-            {heroData?.subTagline || "Private sea-facing residences with panoramic skyline views."}
+            {subTaglineText}
           </p>
         </div>
 
         {/* Bottom row — CTA + price (App-like side-by-side layout) */}
-        <div className={`absolute bottom-0 left-0 right-0 ${isCompact ? 'px-5 pb-6' : 'px-8 md:px-14 pb-10'}`}>
-          <div className="border-t border-white/15 pt-5 flex flex-row items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-white/60 text-[9px] uppercase tracking-wider font-semibold mb-0.5">Starting</span>
-              <span className="text-white font-serif text-2xl md:text-3xl drop-shadow-md">{startingPrice}</span>
+        <div className={`absolute bottom-0 left-0 right-0 ${isCompact ? 'px-5 pb-5' : 'px-8 md:px-14 pb-10'}`}>
+          <div className={`border-t border-white/15 pt-4 md:pt-5 flex flex-row items-center justify-between ${isCompact ? 'gap-2' : 'gap-4'}`}>
+            <div className="flex flex-col min-w-0 pr-2">
+              <span className={`text-white/60 ${isCompact ? 'text-[7px]' : 'text-[8px] md:text-[9px]'} uppercase tracking-wider font-semibold mb-1 truncate`}>
+                Starting Price {status ? `· ${status}` : ''}
+              </span>
+              <span className={`text-white font-serif ${isCompact ? 'text-lg' : 'text-xl md:text-3xl'} drop-shadow-md leading-none truncate`}>{startingPrice}</span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); onExplore(); }}
-              className={`group inline-flex items-center justify-center gap-2.5 bg-white text-[#1C1917] ${
-                isCompact ? 'px-6 py-3.5 text-[10px]' : 'px-8 py-4 text-[11px]'
-              } tracking-wider uppercase font-bold hover:bg-[#9A7B44] hover:text-white transition-all duration-400 cursor-pointer rounded-sm shadow-lg`}
+              className={`group inline-flex items-center justify-center gap-1.5 bg-white text-[#1C1917] ${
+                isCompact ? 'px-3.5 py-3 text-[8px]' : 'px-8 py-4 text-[11px]'
+              } tracking-[0.15em] md:tracking-[0.2em] uppercase font-bold hover:bg-[#9A7B44] hover:text-white transition-all duration-400 cursor-pointer rounded-sm shrink-0 whitespace-nowrap`}
             >
-              Explore <span className="transition-transform duration-400 group-hover:translate-x-1">→</span>
+              {ctaText} <span className="transition-transform duration-400 group-hover:translate-x-1">→</span>
             </button>
           </div>
         </div>
       </section>
 
+      {/* ── EMOTIONAL STORYTELLING (CINEMATIC) ── */}
+      <section
+        className={`max-w-[1400px] mx-auto px-5 ${isCompact ? 'py-16' : 'md:px-10 py-28'} flex flex-col items-center justify-center text-center cursor-pointer relative`}
+        onClick={() => isPreview && onEditSection?.('content')}
+      >
+        <motion.div
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true, margin: "-100px" }}
+           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+           className="relative z-10"
+        >
+          <span className="text-[10px] tracking-[0.3em] uppercase text-[#9A7B44] font-bold mb-6 block">The Experience</span>
+          <h2 className="font-serif text-3xl md:text-5xl lg:text-6xl text-[#1C1917] leading-tight max-w-4xl mx-auto mb-8 tracking-tight">
+            {heroData?.emotionalTitle || "Wake up above the skyline."}
+          </h2>
+          <p className="text-sm md:text-base lg:text-lg text-[#78716C] leading-relaxed max-w-2xl mx-auto font-serif italic">
+            {heroData?.emotionalBody || "Private decks. Morning light. Quiet elevation above the city. A sanctuary designed for those who value space as the ultimate luxury."}
+          </p>
+        </motion.div>
+        
+        {/* Subtle decorative atmospheric element */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-3xl bg-gradient-to-b from-transparent via-[#FAF9F5] to-transparent opacity-80 pointer-events-none" />
+      </section>
+
       {/* ── AVAILABLE RESIDENCES ── */}
       <section
-        className={`max-w-[1400px] mx-auto px-5 ${isCompact ? '' : 'md:px-10'} py-16 cursor-pointer`}
+        className={`max-w-[1400px] mx-auto px-5 ${isCompact ? '' : 'md:px-10'} pb-20 pt-10 cursor-pointer`}
         onClick={() => isPreview && onEditSection?.('products')}
       >
-        <div className="flex items-end justify-between mb-10">
+        <div className="flex items-end justify-between mb-10 border-b border-[#E7E5E4] pb-6">
           <div>
             <span className="text-[10px] tracking-wider uppercase text-[#9A7B44] font-medium">
               Available
@@ -661,10 +729,9 @@ function Home({
                 <div className="mt-3 flex items-center justify-between px-0.5">
                   <div className="flex items-baseline gap-2">
                     <span className="font-serif text-xl text-[#1C1917]">{p.priceLabel}</span>
-                    <span className="text-[10px] text-[#A8A29E]">· {rooms.length} rooms</span>
                   </div>
                   <span className="text-[10px] font-medium text-[#9A7B44] group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center gap-1">
-                    View →
+                    View Details →
                   </span>
                 </div>
               </div>
@@ -672,6 +739,11 @@ function Home({
           })}
         </div>
       </section>
+
+
+
+
+
 
       {/* ── LOCATION ── */}
       <section
@@ -803,7 +875,11 @@ function ResidenceCard({ r, index, onPick }: { r: any; index: number; onPick: ()
           {r.urgency}
         </span>
       </div>
-      <MiniBlueprint plan={r.rooms || []} />
+      <MiniBlueprint 
+        plan={r.rooms || []} 
+        sunSideProp={r.sunSide}
+        compassAngleProp={r.compassAngle}
+      />
       <p className="mt-5 text-sm text-[#57534E] leading-relaxed max-w-md">{r.description}</p>
       <div className="mt-6 flex items-end justify-between">
         <span className="font-serif text-3xl text-[#1C1917]">{r.priceLabel}</span>
@@ -852,11 +928,15 @@ const DEFAULT_MINI_STYLE = MINI_TYPE_STYLES.living;
 function MiniBlueprint({
   plan,
   activeId,
-  onSelectRoom
+  onSelectRoom,
+  sunSideProp,
+  compassAngleProp
 }: {
   plan: any[];
   activeId?: string;
   onSelectRoom?: (id: string) => void;
+  sunSideProp?: 'top' | 'top-right' | 'right' | 'bottom-right' | 'bottom' | 'bottom-left' | 'left' | 'top-left';
+  compassAngleProp?: number;
 }) {
   const totalRooms = plan.length;
   const mappedRooms = plan.map((room: any, index: number) => {
@@ -873,29 +953,26 @@ function MiniBlueprint({
   });
 
   return (
-    <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-[#FAF9F5] to-[#F0EDE5] border border-[#E7E5E4]/60 overflow-hidden">
-      {/* Grid pattern */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.12]" preserveAspectRatio="none">
-        <defs>
-          <pattern id="g" width="24" height="24" patternUnits="userSpaceOnUse">
-            <path d="M24 0H0V24" fill="none" stroke="#9A7B44" strokeWidth="0.3" />
-          </pattern>
-          {/* Bathroom hatching */}
-          <pattern id="mini-bath-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="5" stroke="#06b6d4" strokeWidth="0.6" opacity="0.25" />
-          </pattern>
-          {/* Balcony hatching */}
-          <pattern id="mini-balcony-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="#10b981" strokeWidth="0.5" opacity="0.2" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#g)" />
-      </svg>
-      {/* Compass */}
-      <div className="absolute top-2 right-3 flex items-center gap-1 opacity-30">
-        <span className="text-[7px] tracking-wider uppercase font-bold text-[#9A7B44]">N</span>
-        <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 3,6 5,5 7,6" fill="#9A7B44"/></svg>
-      </div>
+    <div className="relative aspect-[4/3] w-full bg-[#FAF9F5] border border-[#E7E5E4]/60 overflow-hidden select-none rounded-lg">
+      <div className="absolute top-[-5.55%] left-[-5.55%] w-[111.1%] h-[111.1%]">
+        {/* Grid pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.12]" preserveAspectRatio="none">
+          <defs>
+            <pattern id="g" width="24" height="24" patternUnits="userSpaceOnUse">
+              <path d="M24 0H0V24" fill="none" stroke="#9A7B44" strokeWidth="0.3" />
+            </pattern>
+            {/* Bathroom hatching */}
+            <pattern id="mini-bath-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="5" stroke="#06b6d4" strokeWidth="0.6" opacity="0.25" />
+            </pattern>
+            {/* Balcony hatching */}
+            <pattern id="mini-balcony-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#10b981" strokeWidth="0.5" opacity="0.2" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g)" />
+        </svg>
+
       {/* Room cells */}
       {mappedRooms.map((room) => {
         const active = room.id === activeId;
@@ -910,38 +987,47 @@ function MiniBlueprint({
         const isVertical = room.h > room.w * 1.25;
         const needsRotation = isVertical && room.w < 22;
         const availableSpace = needsRotation ? room.h : room.w;
+        const availableHeight = needsRotation ? room.w : room.h;
         const labelLength = room.label.length;
         const charWidthFactor = 0.46; // Sattoshi font letter spacing factor
 
-        let fontSize = 9;
-        const requiredSpace = labelLength * fontSize * charWidthFactor;
-        if (requiredSpace > availableSpace) {
-          fontSize = Math.max(5.5, (availableSpace / (labelLength * charWidthFactor)));
-        }
+        // Dynamically scale font size according to the block size
+        let fontSize = (availableSpace / (labelLength * charWidthFactor)) * 0.75; // Fill ~75% of width
+        fontSize = Math.min(fontSize, availableHeight * 0.45); // Max 45% of height
+        
+        // Final boundaries (minimum readable, maximum tasteful size)
+        fontSize = Math.max(6.5, Math.min(18, fontSize));
 
-        // Cap for extremely tight bounds
-        if (room.w < 9 && !needsRotation) fontSize = 5.5;
-        if (room.h < 9 && needsRotation) fontSize = 5.5;
+        // If bounds are tight, use the minimum readable size
+        if (room.w < 5 && !needsRotation) fontSize = 6.5;
+        if (room.h < 5 && needsRotation) fontSize = 6.5;
 
         const rotateStyle = needsRotation ? { writingMode: 'vertical-rl' as const, transform: 'rotate(180deg)' } : {};
+
+        // Dynamically assign base z-index strictly by inverse area. 
+        // A smaller room will ALWAYS have a higher z-index than a larger room, even if the larger room is selected.
+        const area = (room.w || 10) * (room.h || 10);
+        const baseZ = 100000 - Math.floor(area) * 10;
+        const dynamicZIndex = baseZ + (active ? 3 : 0);
 
         return (
           <Tag
             key={room.id}
             {...(onSelectRoom ? { onClick: () => onSelectRoom(room.id) } : {})}
-            className={`absolute transition-all duration-400 ${
-              onSelectRoom ? 'cursor-pointer' : 'cursor-default'
-            } ${active ? 'z-10' : 'z-0'}`}
+            className={`absolute transition-all duration-400 ease-out overflow-hidden ${
+              onSelectRoom ? 'cursor-pointer hover:shadow-sm' : 'cursor-default'
+            }`}
             style={{
+              zIndex: dynamicZIndex,
               left: `${room.x}%`,
               top: `${room.y}%`,
               width: `${room.w}%`,
               height: `${room.h}%`,
-              border: `2px ${isBalcony ? 'dashed' : 'solid'} ${active ? style.activeBorder : style.border}`,
+              border: `1px ${isBalcony ? 'dashed' : 'solid'} ${active ? style.activeBorder : style.border}`,
               background: active ? style.activeBg : style.bg,
               boxShadow: active
-                ? `0 2px 12px rgba(154,123,68,0.15), inset 0 0 16px rgba(154,123,68,0.06)`
-                : "0 1px 3px rgba(0,0,0,0.03)",
+                ? `0 2px 8px rgba(154,123,68,0.1), inset 0 0 12px rgba(154,123,68,0.03)`
+                : "0 1px 2px rgba(0,0,0,0.01)",
             }}
           >
             {/* Bathroom hatching overlay */}
@@ -957,26 +1043,22 @@ function MiniBlueprint({
               </svg>
             )}
             {/* Center-aligned smart auto-scaling & rotating room label */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-1 pointer-events-none overflow-hidden">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-1 pointer-events-none z-10">
               <span
-                className="font-bold uppercase tracking-[0.12em] text-center leading-none max-w-full block whitespace-nowrap"
+                className="font-bold uppercase tracking-[0.15em] text-center leading-none block whitespace-nowrap"
                 style={{
                   fontSize: `${fontSize}px`,
-                  color: active ? '#9A7B44' : style.text,
+                  color: active ? '#1C1917' : style.text,
                   ...rotateStyle
                 }}
               >
                 {room.label}
               </span>
-              {active && (
-                <span className="mt-1 text-[6px] tracking-widest uppercase font-mono text-[#9A7B44]/50 leading-none">
-                  {room.w}×{room.h}
-                </span>
-              )}
             </div>
           </Tag>
         );
       })}
+      </div>
     </div>
   );
 }
@@ -988,7 +1070,8 @@ function Tour({
   storeName,
   isPreview,
   previewMode,
-  onEditSection
+  onEditSection,
+  heroData
 }: {
   residence: any;
   onBack: () => void;
@@ -997,13 +1080,17 @@ function Tour({
   isPreview: boolean;
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: SectionId) => void;
+  heroData?: any;
 }) {
   const GOLD = '#9A7B44';
   const isMobilePreview = isPreview && previewMode === 'mobile';
+  const isTabletPreview = isPreview && previewMode === 'tablet';
+  const isCompact = isMobilePreview || isTabletPreview;
   const rooms = residence?.rooms || [];
   const [activeId, setActiveId] = useState<string>(rooms[0]?.id || "");
   const [imgIdx, setImgIdx] = useState(0);
   const [blueprintOpen, setBlueprintOpen] = useState(false);
+  const mobileTopRef = useRef<HTMLDivElement>(null);
 
   const room = useMemo(() => {
     return rooms.find((r: any) => r.id === activeId) || rooms[0];
@@ -1033,18 +1120,50 @@ function Tour({
     `Hi ${storeName}, I am exploring the ${room.name} of ${residence.name}. I'd love to discuss this space.`
   );
 
-  return (
-    <main className={`${isMobilePreview ? 'pt-24' : 'pt-14'} min-h-screen bg-[#FAF9F5] text-[#1C1917] overflow-hidden`}>
+  const handleSwipe = (direction: 'left' | 'right') => {
+    if (direction === 'left') {
+      if (allImages.length > 1 && imgIdx < allImages.length - 1) {
+        setImgIdx(prev => prev + 1);
+      } else {
+        goNext();
+      }
+    } else {
+      if (allImages.length > 1 && imgIdx > 0) {
+        setImgIdx(prev => prev - 1);
+      } else {
+        goPrev();
+      }
+    }
+  };
 
-      {/* ── DESKTOP/TABLET: Split-panel — Image left + Sidebar right ── */}
-      {!isMobilePreview && (
-        <section className="relative w-full h-[calc(100vh-3.5rem)] flex">
+  const onDragEnd = (e: any, { offset }: any) => {
+    const swipe = offset.x;
+    if (swipe < -50) handleSwipe('left');
+    else if (swipe > 50) handleSwipe('right');
+  };
+
+  return (
+    <main className={`${isCompact ? 'pt-24' : 'pt-14'} min-h-screen bg-[#FAF9F5] text-[#1C1917] overflow-hidden`}>
+
+      {/* ── DESKTOP: Split-panel — Image left + Sidebar right ── */}
+      <section className={`relative w-full h-[calc(100vh-3.5rem)] ${isCompact ? 'hidden' : (isPreview ? 'flex' : 'hidden lg:flex')}`}>
 
           {/* LEFT — Image area */}
           <div className="relative flex-1 h-full overflow-hidden">
             <AnimatePresence mode="sync">
-              <motion.div key={`${activeId}-${imgIdx}`} initial={{ opacity: 0, scale: 1.08 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }} className="absolute inset-0 will-change-transform">
-                <img src={img} alt={room.name} className="w-full h-full object-cover" />
+              <motion.div 
+                key={`${activeId}-${imgIdx}`} 
+                initial={{ opacity: 0, scale: 1.08 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0, scale: 1.04 }} 
+                transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }} 
+                className="absolute inset-0 will-change-transform cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={onDragEnd}
+              >
+                <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
               </motion.div>
             </AnimatePresence>
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.7) 100%)' }} />
@@ -1057,9 +1176,6 @@ function Tour({
                 <span className="w-9 h-9 rounded-full bg-white/8 backdrop-blur-xl border border-white/15 flex items-center justify-center group-hover:bg-white/15 transition-colors text-sm">←</span>
                 <span className="text-xs tracking-[0.3em] uppercase font-medium">Back</span>
               </button>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/8 backdrop-blur-xl text-white/90 text-base font-semibold tracking-[0.25em] uppercase border border-white/15 rounded-full">
-                <span className="w-1 h-1 rounded-full" style={{ background: GOLD }} />{residence.name}
-              </span>
             </div>
 
             {/* Bottom title overlay */}
@@ -1089,90 +1205,160 @@ function Tour({
           </div>
 
           {/* RIGHT — Sidebar panel */}
-          <div className="w-[300px] lg:w-[380px] shrink-0 h-full bg-[#FAF9F5] border-l border-[#E7E5E4] flex flex-col z-10">
+          <div className="w-[40%] md:w-[35%] shrink-0 h-full bg-[#FAF9F5] border-l border-[#E7E5E4] flex flex-col z-10">
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E9C89233 transparent' }}>
-              {/* Price header */}
-              <div className="px-5 pt-5 pb-4 border-b border-[#E7E5E4] shrink-0">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] tracking-[0.15em] uppercase font-bold" style={{ color: GOLD }}>Residence</span>
-                  <span className="text-[#1C1917] font-serif text-xl">{residence.priceLabel}</span>
+              {/* Property Overview Header */}
+              <div className="px-5 pt-6 pb-5 border-b border-[#E7E5E4] shrink-0 bg-white flex flex-row items-end justify-between gap-4">
+                <div className="flex flex-col gap-2">
+                  <h1 className="font-serif text-[26px] text-[#1C1917] leading-none tracking-tight">
+                    {residence.name}
+                  </h1>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0 pb-0.5">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-[#9A7B44]/80 font-bold">Total Area</span>
+                  <span className="text-xl font-serif text-[#9A7B44] leading-none tracking-wide">
+                    {residence.dimensions || '1,850 sqft'}
+                  </span>
                 </div>
               </div>
 
               {/* Floor Plan — always visible */}
               <div className="px-5 py-5 border-b border-[#E7E5E4] shrink-0">
-                <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-4" style={{ color: GOLD }}>Select a Space</p>
-                <div className="bg-white border border-[#E7E5E4] rounded-xl p-4">
-                  <MiniBlueprint plan={rooms} activeId={activeId} onSelectRoom={(id) => setActiveId(id)} />
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold" style={{ color: GOLD }}>Residence Layout</p>
+                  <div className="flex items-center gap-1.5 text-[#A8A29E]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                    <span className="text-[9px] font-sans tracking-[0.15em] uppercase font-bold">
+                      {residence.facing || (residence.sunSide ? `${residence.sunSide} Facing` : (residence.name?.includes('2') ? 'West Facing' : residence.name?.includes('4') ? 'North-East Facing' : 'East Facing'))}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white border border-[#E7E5E4] shadow-sm rounded-xl p-1.5">
+                  <MiniBlueprint 
+                    plan={rooms} 
+                    activeId={activeId} 
+                    onSelectRoom={(id) => setActiveId(id)} 
+                    sunSideProp={residence?.sunSide}
+                    compassAngleProp={residence?.compassAngle}
+                  />
                 </div>
               </div>
 
-              {/* Features */}
-              {(room.details || []).length > 0 && (
-                <div className="px-5 py-5 border-b border-[#E7E5E4] shrink-0">
-                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-3" style={{ color: GOLD }}>Space Highlights</p>
-                  <div className="flex flex-col gap-2">
-                    {(room.details || []).map((f: string) => (
-                      <div key={f} className="flex items-center gap-2.5 px-3 py-2 bg-white border border-[#E7E5E4] rounded-lg">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: GOLD }} />
-                        <span className="text-xs text-[#57534E]">{f}</span>
+
+              {/* Features & Note (Animated on Room Change) */}
+              <div className="px-5 border-b border-[#E7E5E4]/60 shrink-0 min-h-[200px] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeId}
+                    initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="py-6"
+                  >
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[9px] tracking-[0.25em] uppercase font-bold text-[#9A7B44]">Room Features</span>
+                        <div className="h-[1px] flex-1 bg-gradient-to-r from-[#9A7B44]/30 to-transparent" />
+                      </div>
+                      <h3 className="text-2xl font-serif text-[#1C1917] tracking-tight flex flex-col gap-1">
+                        <span>{room.name}</span>
+                        {(room.atmosphere || room.area) && (
+                          <span className="text-sm font-sans text-[#78716C] tracking-wide">
+                            {[room.atmosphere, room.area].filter(Boolean).join(' · ')}
+                          </span>
+                        )}
+                      </h3>
+                    </div>
+                    
+                    {(room.details || []).length > 0 ? (
+                      <div className="flex flex-col gap-2.5 mb-8">
+                        {(room.details || []).map((f: string, i: number) => (
+                          <div key={f} className="group relative bg-white border border-[#E7E5E4]/80 rounded-2xl p-4 flex items-center gap-4 overflow-hidden transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-[#9A7B44]/30 cursor-default">
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#9A7B44] scale-y-0 origin-top group-hover:scale-y-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" />
+                            <div className="w-8 h-8 rounded-full bg-[#FAF9F5] flex items-center justify-center shrink-0 border border-[#E7E5E4]/50 group-hover:rotate-90 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
+                              <svg width="10" height="10" viewBox="0 0 10 10" className="opacity-60"><polygon points="5,0 6.5,3.5 10,5 6.5,6.5 5,10 3.5,6.5 0,5 3.5,3.5" fill={GOLD}/></svg>
+                            </div>
+                            <span className="text-[13px] text-[#1C1917] font-medium tracking-wide leading-relaxed group-hover:translate-x-1 transition-transform duration-500">{f}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-[#A8A29E] italic font-serif mb-6">No specific details available for this space.</p>
+                    )}
+
+                    {room.note && (
+                      <div className="pt-2 pb-4">
+                        <p className="text-base text-[#1C1917] font-serif leading-relaxed pl-4 border-l-2 border-[#9A7B44]/30 italic">
+                          {room.note}
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Ownership (High-end Spec Sheet style) */}
+              <div className="px-5 py-6 shrink-0">
+                <div className="relative overflow-hidden bg-[#1C1917] rounded-2xl p-6 text-white shadow-md">
+                  
+                  <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-6 text-white/60 relative z-10">{residence.propertyDetailsTitle || 'Property Details'}</p>
+                  
+                  <div className="flex flex-col gap-5 relative z-10">
+                    {(residence.specifications || [
+                      { label: residence.ownershipLabel || 'Tenure', value: residence.ownership || heroData?.ownership || 'Freehold Estate' }, 
+                      { label: residence.deliveryLabel || 'Possession', value: residence.delivery || heroData?.possession || 'Ready to Move' }, 
+                      { label: residence.automotiveLabel || 'Parking', value: residence.automotive || heroData?.automotive || '3 Dedicated Spaces' }
+                    ]).map((s: any) => (
+                      <div key={s.label} className="flex items-end justify-between border-b border-white/10 pb-3">
+                        <span className="text-[11px] tracking-wider uppercase text-white/50 font-medium">{s.label}</span>
+                        <span className="text-sm font-serif tracking-wide text-white/90">{s.value}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* Ownership */}
-              <div className="px-5 py-5 border-b border-[#E7E5E4] shrink-0">
-                <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-3" style={{ color: GOLD }}>Ownership</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[{ label: 'Tenure', value: 'Freehold' }, { label: 'Possession', value: residence.delivery || 'Ready' }, { label: 'Parking', value: '3 EV Bays' }].map((s) => (
-                    <div key={s.label} className="bg-white border border-[#E7E5E4] rounded-lg p-3 text-center">
-                      <span className="block text-[9px] tracking-[0.1em] uppercase text-[#A8A29E] font-bold mb-1">{s.label}</span>
-                      <span className="block text-xs text-[#1C1917] font-semibold">{s.value}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
-
-              {/* Note */}
-              {room.note && (
-                <div className="px-5 py-5 border-b border-[#E7E5E4] shrink-0">
-                  <p className="text-sm text-[#78716C] italic font-serif leading-relaxed">"{room.note}"</p>
-                </div>
-              )}
             </div>
 
             {/* Sticky CTA */}
-            <div className="px-5 py-5 bg-[#FAF9F5] shrink-0 border-t border-[#E7E5E4]">
-              <button onClick={onInquire} className="w-full py-3.5 text-[11px] tracking-wider uppercase font-bold rounded-sm cursor-pointer transition-all duration-500 hover:bg-[#86693a] text-white" style={{ background: GOLD }}>
-                Inquire About This Space →
+            <div className="px-5 py-6 bg-[#FAF9F5] shrink-0 border-t border-[#E7E5E4]">
+              <button onClick={onInquire} className="relative w-full overflow-hidden group py-5 text-xs tracking-[0.2em] uppercase font-bold rounded-xl cursor-pointer text-white bg-[#1C1917] hover:bg-black transition-colors duration-400">
+                <span className="relative z-10 flex items-center justify-center gap-3">
+                  {residence.spaceCtaText || heroData?.spaceCtaText || 'Discuss This Space'} <span className="text-[#9A7B44] group-hover:translate-x-1 transition-transform duration-400">→</span>
+                </span>
               </button>
             </div>
           </div>
         </section>
-      )}
 
-
-      {/* ── MOBILE: Image hero + scrollable content ── */}
-      {isMobilePreview && (
-        <div className="flex flex-col">
+      {/* ── MOBILE/TABLET: Image hero + scrollable content ── */}
+      <div ref={mobileTopRef} className={`flex-col ${isCompact ? 'flex' : (isPreview ? 'hidden' : 'flex lg:hidden')}`}>
 
           {/* IMAGE HERO — 55vh with title overlay */}
-          <div className="relative w-full h-[55vh] overflow-hidden shrink-0">
+          <div className="relative w-full h-[55vh] md:h-[70vh] overflow-hidden shrink-0">
             <AnimatePresence mode="sync">
-              <motion.div key={`${activeId}-${imgIdx}`} initial={{ opacity: 0, scale: 1.08 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.03 }} transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }} className="absolute inset-0 will-change-transform">
-                <img src={img} alt={room.name} className="w-full h-full object-cover" />
+              <motion.div 
+                key={`${activeId}-${imgIdx}`} 
+                initial={{ opacity: 0, scale: 1.08 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0, scale: 1.03 }} 
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }} 
+                className="absolute inset-0 will-change-transform cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={onDragEnd}
+              >
+                <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
               </motion.div>
             </AnimatePresence>
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.8) 100%)' }} />
 
             {/* Top bar */}
-            <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-4 pt-3">
-              <button onClick={onBack} className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors text-sm cursor-pointer">←</button>
-              <span className="px-3 py-1 bg-black/30 backdrop-blur-xl text-white/90 text-xs font-semibold tracking-[0.25em] uppercase border border-white/10 rounded-full">{residence.priceLabel}</span>
+            <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-4 pt-4">
+              <button onClick={onBack} className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors text-sm cursor-pointer shadow-md shrink-0">←</button>
             </div>
 
             {/* Room title + dots on image */}
@@ -1195,106 +1381,366 @@ function Tour({
           </div>
 
           {/* SCROLLABLE CONTENT PANEL */}
-          <div className="bg-[#FAF9F5] relative z-10 px-5 pt-5 pb-28">
+          <div className="bg-[#FAF9F5] relative z-10 px-5 pt-7 pb-28">
 
-            {/* Floor Plan */}
-            <div className="mb-6">
-              <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-4" style={{ color: GOLD }}>Spatial Layout</p>
-              <div className="bg-white border border-[#E7E5E4] rounded-xl p-4">
-                <MiniBlueprint plan={rooms} activeId={activeId} onSelectRoom={(id) => setActiveId(id)} />
+            {/* Property Overview Header */}
+            <div className="mb-6 pb-6 border-b border-[#E7E5E4] flex flex-row items-end justify-between gap-4">
+              <div className="flex flex-col gap-2">
+                <h1 className="font-serif text-2xl text-[#1C1917] leading-none tracking-tight">
+                  {residence.name}
+                </h1>
+              </div>
+              <div className="flex flex-col items-end gap-1 shrink-0">
+                <span className="text-[9px] uppercase tracking-[0.2em] text-[#9A7B44]/80 font-bold">Total Area</span>
+                <span className="text-lg font-serif text-[#9A7B44] leading-none tracking-wide">
+                  {residence.dimensions || '1,850 sqft'}
+                </span>
               </div>
             </div>
 
-            {/* Features */}
-            {(room.details || []).length > 0 && (
-              <div className="mb-6">
-                <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-3" style={{ color: GOLD }}>Space Highlights</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {(room.details || []).map((f: string) => (
-                    <div key={f} className="flex items-center gap-2.5 px-3 py-2.5 bg-white border border-[#E7E5E4] rounded-lg">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: GOLD }} />
-                      <span className="text-xs text-[#57534E]">{f}</span>
-                    </div>
-                  ))}
+            {/* Floor Plan */}
+            <div className="mb-6 md:max-w-[440px] md:mx-auto">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] tracking-[0.15em] uppercase font-bold" style={{ color: GOLD }}>Residence Layout</p>
+                <div className="flex items-center gap-1.5 text-[#A8A29E]">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                  <span className="text-[9px] font-sans tracking-[0.15em] uppercase font-bold">
+                    {residence.facing || (residence.sunSide ? `${residence.sunSide} Facing` : (residence.name?.includes('2') ? 'West Facing' : residence.name?.includes('4') ? 'North-East Facing' : 'East Facing'))}
+                  </span>
                 </div>
               </div>
-            )}
+              <div className="bg-white border border-[#E7E5E4] shadow-sm rounded-xl p-1.5">
+                <MiniBlueprint 
+                  plan={rooms} 
+                  activeId={activeId} 
+                  onSelectRoom={(id) => {
+                    setActiveId(id);
+                    if (mobileTopRef.current) {
+                      mobileTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }} 
+                  sunSideProp={residence?.sunSide}
+                  compassAngleProp={residence?.compassAngle}
+                />
+              </div>
+            </div>
 
-            {/* Ownership */}
-            <div className="mb-6">
-              <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-3" style={{ color: GOLD }}>Ownership</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[{ label: 'Tenure', value: 'Freehold' }, { label: 'Possession', value: residence.delivery || 'Ready' }, { label: 'Parking', value: '3 EV Bays' }].map((s) => (
-                  <div key={s.label} className="bg-white border border-[#E7E5E4] rounded-lg p-3 text-center">
-                    <span className="block text-[9px] tracking-[0.1em] uppercase text-[#A8A29E] font-bold mb-1">{s.label}</span>
-                    <span className="block text-xs text-[#1C1917] font-semibold">{s.value}</span>
+
+            {/* Features & Note (Animated on Room Change) */}
+            <div className="mb-8 mt-2 min-h-[200px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeId}
+                  initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-[9px] tracking-[0.25em] uppercase font-bold text-[#9A7B44]">Room Features</span>
+                      <div className="h-[1px] flex-1 bg-gradient-to-r from-[#9A7B44]/30 to-transparent" />
+                    </div>
+                    <h3 className="text-2xl font-serif text-[#1C1917] tracking-tight flex flex-col gap-1">
+                      <span>{room.name}</span>
+                      {(room.atmosphere || room.area) && (
+                        <span className="text-sm font-sans text-[#78716C] tracking-wide">
+                          {[room.atmosphere, room.area].filter(Boolean).join(' · ')}
+                        </span>
+                      )}
+                    </h3>
+                  </div>
+                  
+                  {(room.details || []).length > 0 ? (
+                    <div className="flex flex-col gap-2.5 mb-8">
+                      {(room.details || []).map((f: string, i: number) => (
+                        <div key={f} className="group relative bg-white border border-[#E7E5E4]/80 rounded-2xl p-4 flex items-center gap-4 overflow-hidden transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-[#9A7B44]/30 cursor-default">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#9A7B44] scale-y-0 origin-top group-hover:scale-y-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" />
+                          <div className="w-8 h-8 rounded-full bg-[#FAF9F5] flex items-center justify-center shrink-0 border border-[#E7E5E4]/50 group-hover:rotate-90 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
+                            <svg width="10" height="10" viewBox="0 0 10 10" className="opacity-60"><polygon points="5,0 6.5,3.5 10,5 6.5,6.5 5,10 3.5,6.5 0,5 3.5,3.5" fill={GOLD}/></svg>
+                          </div>
+                          <span className="text-[13px] text-[#1C1917] font-medium tracking-wide leading-relaxed group-hover:translate-x-1 transition-transform duration-500">{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[#A8A29E] italic font-serif mb-6">No specific details available for this space.</p>
+                  )}
+
+                  {room.note && (
+                    <div className="pt-2 pb-4">
+                      <p className="text-base text-[#1C1917] font-serif leading-relaxed pl-4 border-l-2 border-[#9A7B44]/30 italic">
+                        {room.note}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Ownership (High-end Spec Sheet style) */}
+            <div className="mb-8 relative overflow-hidden bg-[#1C1917] rounded-2xl p-6 text-white shadow-xl">
+              
+              <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-6 text-white/60 relative z-10">{residence.propertyDetailsTitle || 'Property Details'}</p>
+              
+              <div className="flex flex-col gap-5 relative z-10">
+                {(residence.specifications || [
+                  { label: residence.ownershipLabel || 'Tenure', value: residence.ownership || heroData?.ownership || 'Freehold Estate' }, 
+                  { label: residence.deliveryLabel || 'Possession', value: residence.delivery || heroData?.possession || 'Ready to Move' }, 
+                  { label: residence.automotiveLabel || 'Parking', value: residence.automotive || heroData?.automotive || '3 Dedicated Spaces' }
+                ]).map((s: any) => (
+                  <div key={s.label} className="flex items-end justify-between border-b border-white/10 pb-3">
+                    <span className="text-[11px] tracking-wider uppercase text-white/50 font-medium">{s.label}</span>
+                    <span className="text-sm font-serif tracking-wide text-white/90">{s.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Note */}
-            {room.note && (
-              <div className="mb-6 py-4 border-t border-b border-[#E7E5E4]">
-                <p className="text-sm text-[#78716C] italic font-serif leading-relaxed">"{room.note}"</p>
-              </div>
-            )}
-
             {/* CTA */}
-            <button onClick={onInquire} className="w-full py-3.5 text-[10px] tracking-wider uppercase font-bold rounded-sm cursor-pointer transition-all duration-500 hover:bg-[#86693a] text-white" style={{ background: GOLD }}>
-              Inquire About This Space →
+            <button onClick={onInquire} className="relative w-full overflow-hidden group py-5 text-xs tracking-[0.2em] uppercase font-bold rounded-xl cursor-pointer text-white bg-[#1C1917] hover:bg-black transition-colors duration-400 mt-2">
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                {residence.spaceCtaText || heroData?.spaceCtaText || 'Inquire About This Space'} <span className="text-[#9A7B44] group-hover:translate-x-1 transition-transform duration-400">→</span>
+              </span>
             </button>
           </div>
         </div>
-      )}
     </main>
   );
 }
 
 
 function ActionBar({
-  onFloorplan,
+  onExplore,
   onWhatsApp,
   onVisit,
+  products,
   isPreview,
-  previewMode
+  previewMode,
+  storeName,
+  activeResidence,
+  whatsappNumber,
 }: {
-  onFloorplan: () => void;
-  onWhatsApp: () => void;
-  onVisit: () => void;
+  onExplore: (residenceId?: string) => void;
+  onWhatsApp: (msg?: string) => void;
+  onVisit: (msg?: string) => void;
+  products?: any[];
   isPreview?: boolean;
   previewMode?: 'mobile' | 'tablet' | 'desktop';
+  storeName: string;
+  activeResidence?: any;
+  whatsappNumber: string;
 }) {
   const isMobilePreview = isPreview && previewMode === 'mobile';
+  const [activeMenu, setActiveMenu] = useState<'explore' | 'concierge' | 'viewing' | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(activeResidence || products?.[0]);
+  const [chatStep, setChatStep] = useState<'intent' | 'config' | 'preview'>('intent');
+  const [viewStep, setViewStep] = useState<'config' | 'preference'>('config');
+  const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
+  const [customMessage, setCustomMessage] = useState('');
+
+  useEffect(() => {
+    if (activeResidence) setSelectedProduct(activeResidence);
+  }, [activeResidence]);
+
+  useEffect(() => {
+    if (activeMenu !== 'concierge') {
+      setChatStep('intent');
+      setSelectedIntent(null);
+    }
+    if (activeMenu !== 'viewing') {
+      setViewStep('config');
+    }
+  }, [activeMenu]);
 
   return (
-    <div
-      className={`${
-        isPreview
-          ? `absolute inset-x-0 ${isMobilePreview ? 'bottom-6' : 'bottom-0'}`
-          : 'fixed bottom-0 inset-x-0'
-      } z-40 border-t border-[#E7E5E4] bg-[#FAF9F5]/90 backdrop-blur-md`}
-    >
-      <div className={`max-w-[1400px] mx-auto ${isMobilePreview ? 'px-3' : 'px-3 md:px-10'} h-16 grid grid-cols-3 gap-2 items-center`}>
-        <button
-          onClick={onFloorplan}
-          className={`text-center py-2 ${isMobilePreview ? 'text-[10px]' : 'text-[10px] md:text-[11px]'} tracking-wider uppercase text-[#57534E] hover:text-[#9A7B44] transition-colors cursor-pointer`}
-        >
-          Floorplan
-        </button>
-        <button
-          onClick={onWhatsApp}
-          className={`text-center py-3 bg-[#9A7B44] text-white ${isMobilePreview ? 'text-[10px]' : 'text-[10px] md:text-[11px]'} tracking-wider uppercase font-medium hover:bg-[#86693a] transition-colors cursor-pointer rounded-sm`}
-        >
-          WhatsApp
-        </button>
-        <button
-          onClick={onVisit}
-          className={`text-center py-2 ${isMobilePreview ? 'text-[10px]' : 'text-[10px] md:text-[11px]'} tracking-wider uppercase text-[#57534E] hover:text-[#9A7B44] transition-colors cursor-pointer`}
-        >
-          Visit
-        </button>
+    <>
+      <div
+        className={`${
+          isPreview ? `absolute ${isMobilePreview ? 'bottom-6' : 'bottom-8'}` : 'fixed bottom-8'
+        } left-1/2 -translate-x-1/2 z-40`}
+      >
+        <div className="bg-[#1C1917]/85 backdrop-blur-xl border border-white/10 p-1.5 rounded-[2rem] flex items-center shadow-2xl">
+          
+          {/* 1. EXPLORE */}
+          <button
+            onClick={() => { setActiveMenu(null); onExplore(selectedProduct?.id); }}
+            className="px-4 md:px-5 py-3 text-[9px] md:text-[10px] tracking-[0.2em] font-bold uppercase text-white/70 hover:text-[#9A7B44] transition-all cursor-pointer rounded-full hover:bg-white/5"
+          >
+            Explore
+          </button>
+          
+
+          {/* 3. CONCIERGE */}
+          <div className="relative">
+            <button
+              onClick={() => setActiveMenu(activeMenu === 'concierge' ? null : 'concierge')}
+              className="px-4 md:px-5 py-3 bg-[#FAF9F5] text-[#1C1917] text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(154,123,68,0.1)] cursor-pointer rounded-full flex items-center gap-2"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-[#1C1917]"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.062-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+              Chat
+            </button>
+            
+            <AnimatePresence>
+              {activeMenu === 'concierge' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 15, scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 w-[260px] mb-4 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden z-50 flex flex-col p-2"
+                >
+                  <div className="px-3 pt-3 pb-3 text-center border-b border-white/10 mb-1 relative flex items-center justify-center">
+                    {chatStep !== 'intent' && (
+                      <button onClick={() => setChatStep(chatStep === 'preview' ? 'config' : 'intent')} className="absolute left-3 text-white/50 hover:text-white transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-3.5 h-3.5" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                      </button>
+                    )}
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#9A7B44]">
+                      {chatStep === 'intent' ? 'How may we assist you?' : chatStep === 'config' ? 'Select Configuration' : 'Message Preview'}
+                    </span>
+                  </div>
+
+                  {chatStep === 'intent' ? (
+                    <div className="flex flex-col gap-1 mt-1">
+                      {[
+                        { label: 'Explore Availability', action: 'explore current availability' },
+                        { label: 'Request Floorplans', action: 'request detailed floorplans' },
+                        { label: 'Arrange Viewing', action: 'arrange a private viewing' },
+                        { label: 'Investment Details', action: 'discuss investment details' },
+                      ].map((intent, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setSelectedIntent(intent.action);
+                            setChatStep('config');
+                          }}
+                          className="text-center px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                          <span className="text-[11px] font-bold tracking-wide text-white/90 hover:text-[#9A7B44] transition-colors">{intent.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : chatStep === 'config' ? (
+                    <div className="flex flex-col gap-1 mt-1">
+                      {products?.map((p: any) => (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            setSelectedProduct(p);
+                            setCustomMessage(`Hello ${storeName},\n\nI would like to ${selectedIntent} for the ${p.name}.\n\nPlease share the next steps.`);
+                            setChatStep('preview');
+                          }}
+                          className="flex flex-col items-center text-center px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer"
+                        >
+                          <span className="text-[11px] font-bold text-white group-hover:text-[#9A7B44] transition-colors">{p.name}</span>
+                          <span className="text-[9px] uppercase tracking-wider text-white/50 mt-1">{p.atmosphere || 'Skyline Living'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-1 mt-1 p-2">
+                      <textarea
+                        value={customMessage}
+                        onChange={(e) => setCustomMessage(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 mb-2 text-[10px] text-white/90 leading-relaxed font-sans text-left outline-none focus:border-[#9A7B44]/50 transition-colors resize-none h-[110px]"
+                      />
+                      <button
+                        onClick={() => {
+                          setActiveMenu(null);
+                          onWhatsApp(customMessage);
+                        }}
+                        className="w-full py-2.5 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/20 transition-colors rounded-xl flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-[#25D366]">Continue to WhatsApp →</span>
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* 4. VIEWING */}
+          <div className="relative">
+            <button
+              onClick={() => setActiveMenu(activeMenu === 'viewing' ? null : 'viewing')}
+              className="px-4 md:px-5 py-3 text-[9px] md:text-[10px] tracking-[0.2em] font-bold uppercase text-white/70 hover:text-[#9A7B44] transition-all cursor-pointer rounded-full hover:bg-white/5"
+            >
+              Visit
+            </button>
+            
+            <AnimatePresence>
+              {activeMenu === 'viewing' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 15, scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute bottom-full right-0 w-[240px] mb-4 bg-[#1C1917]/95 backdrop-blur-xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden z-50 flex flex-col p-2"
+                >
+                  <div className="px-3 pt-3 pb-3 text-center border-b border-white/10 mb-1 relative flex items-center justify-center">
+                    {viewStep === 'preference' && (
+                      <button onClick={() => setViewStep('config')} className="absolute left-3 text-white/50 hover:text-white transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-3.5 h-3.5" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                      </button>
+                    )}
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#9A7B44]">
+                      {viewStep === 'config' ? 'Arrange a Private Viewing' : 'Preferred Experience'}
+                    </span>
+                  </div>
+                  
+                  {viewStep === 'config' ? (
+                    <div className="flex flex-col gap-1 mt-1">
+                      {products?.map((p: any) => (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            setSelectedProduct(p);
+                            setViewStep('preference');
+                          }}
+                          className="flex flex-col items-center text-center px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer"
+                        >
+                          <span className="text-[11px] font-bold text-white group-hover:text-[#9A7B44] transition-colors">{p.name}</span>
+                          <span className="text-[9px] uppercase tracking-wider text-white/50 mt-1">{p.atmosphere || 'Skyline Living'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-1 mt-1">
+                      {['Morning Tour', 'Sunset Viewing', 'Weekend Visit'].map((tour, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setActiveMenu(null);
+                            onVisit(`Hello ${storeName},\n\nI would like to arrange a ${tour} for the ${selectedProduct?.name || 'residence'}.\n\nPlease let me know your availability.`);
+                          }}
+                          className="flex flex-col items-center text-center px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer"
+                        >
+                          <span className="text-[11px] font-bold text-white group-hover:text-[#9A7B44] transition-colors">{tour}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
-    </div>
+      
+      {/* Click outside overlay */}
+      <AnimatePresence>
+        {activeMenu && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-30 bg-[#1C1917]/10 backdrop-blur-[2px]" 
+            onClick={() => setActiveMenu(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }

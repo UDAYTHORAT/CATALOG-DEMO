@@ -15,9 +15,11 @@ export default React.memo(function EditorSidebar({
   activeTab,
   sections,
   onChangeTab,
+  onReorderSections,
   onStoreClick,
   sectionLabels,
   storeLabel,
+  extraTabs,
 }: {
   activeTab: TabId;
   sections: Section[];
@@ -26,6 +28,7 @@ export default React.memo(function EditorSidebar({
   onStoreClick: () => void;
   sectionLabels?: Partial<Record<SectionId, { label: string; icon?: React.ElementType }>>;
   storeLabel?: string;
+  extraTabs?: { id: TabId; label: string; icon: React.ElementType }[];
 }) {
   // Merge custom labels with defaults
   const sectionMeta = { ...defaultSectionMeta };
@@ -102,13 +105,13 @@ export default React.memo(function EditorSidebar({
           <div className="flex md:block gap-4 md:gap-0 md:space-y-3 shrink-0 md:shrink">
             {sections
               .filter(s => s.id !== 'whatsapp') // Show others here
-              .map((section) => {
+              .flatMap((section) => {
                 const meta = sectionMeta[section.id as SectionId];
-                if (!meta) return null;
+                if (!meta) return [];
                 const Icon = meta.icon;
                 const isActive = activeTab === section.id;
 
-                return (
+                const sectionButton = (
                   <button
                     key={section.id}
                     onClick={() => onChangeTab(section.id)}
@@ -129,6 +132,37 @@ export default React.memo(function EditorSidebar({
                     <ChevronRight size={14} className={`ml-2 ${isActive ? 'text-white/40' : 'text-slate-300'}`} />
                   </button>
                 );
+
+                if (section.id === 'products' && extraTabs) {
+                  const extraButtons = extraTabs.map((tab) => {
+                    const TabIcon = tab.icon;
+                    const isTabActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => onChangeTab(tab.id)}
+                        className={`group shrink-0 flex md:w-full items-center justify-between rounded-xl border px-4 py-3.5 transition-all snap-start ${
+                          isTabActive
+                            ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/10'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                            isTabActive ? 'bg-white/10' : 'bg-slate-100 group-hover:bg-slate-200'
+                          }`}>
+                            <TabIcon size={16} />
+                          </div>
+                          <span className="text-sm font-bold whitespace-nowrap">{tab.label}</span>
+                        </div>
+                        <ChevronRight size={14} className={`ml-2 ${isTabActive ? 'text-white/40' : 'text-slate-300'}`} />
+                      </button>
+                    );
+                  });
+                  return [sectionButton, ...extraButtons];
+                }
+
+                return [sectionButton];
               })}
           </div>
         </div>

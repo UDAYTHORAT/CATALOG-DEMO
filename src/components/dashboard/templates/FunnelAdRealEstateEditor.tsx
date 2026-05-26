@@ -33,6 +33,7 @@ import {
   Settings2,
   Clock,
   ArrowRight,
+  LayoutList,
 } from 'lucide-react';
 import { useEditorHistory } from '@/components/dashboard/editor/hooks/useEditorHistory';
 import type { Funnel } from '@/app/actions/funnels';
@@ -45,6 +46,7 @@ import CategoriesPanel from '@/components/dashboard/editor/sections/CategoriesPa
 import RealEstateHeroPanel from '@/components/dashboard/editor/sections/RealEstateHeroPanel';
 import LocationPanel from '@/components/dashboard/editor/sections/LocationPanel';
 import RealEstateProductsPanel from '@/components/dashboard/editor/sections/RealEstateProductsPanel';
+import RealEstateLayoutsPanel from '@/components/dashboard/editor/sections/RealEstateLayoutsPanel';
 import StorePanel from '@/components/dashboard/editor/sections/StorePanel';
 import TestimonialsPanel from '@/components/dashboard/editor/sections/TestimonialsPanel';
 import WhatsAppPanel from '@/components/dashboard/editor/sections/WhatsAppPanel';
@@ -113,6 +115,24 @@ export default function FunnelAdRealEstateEditor({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [guideHighlights, setGuideHighlights] = useState<GuideHighlightMap>({});
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.min(Math.max(e.clientX, 400), window.innerWidth - 320);
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     const handleFocusIn = (e: FocusEvent) => {
@@ -622,7 +642,7 @@ export default function FunnelAdRealEstateEditor({
       title: "Your Project Studio",
       label: "Step 1 — Branding",
       description: "This is where you define the project identity — project name, logo, hero visuals, residences, and more. Each tab on the left controls a critical part of your lead generation funnel.",
-      proTip: "Start with the Project tab to set your developer branding. High-fidelity logos build instant trust with luxury property buyers.",
+      proTip: "Start with the Project Identity tab to set your developer branding. High-fidelity logos build instant trust with luxury property buyers.",
       icon: ShieldCheck,
       color: "indigo",
       position: "left-12 top-[140px]",
@@ -633,7 +653,7 @@ export default function FunnelAdRealEstateEditor({
       id: 'tabs',
       title: "Lead Generation Tabs",
       label: "Step 2 — Navigate",
-      description: "Switch between sections: Project Identity, Majestic Hero, Residences, Personas, Social Proof, Project Site, and Lead Capture. Each controls a specific conversion touchpoint.",
+      description: "Switch between sections: Project Identity, Property Hero, Residences, Project Location, and Lead Capture. Each controls a specific conversion touchpoint.",
       proTip: "Focus on the Residences tab — add high-res renders and clear pricing. That's what stops the scroll.",
       icon: Zap,
       color: "amber",
@@ -719,9 +739,7 @@ export default function FunnelAdRealEstateEditor({
     const items = [
       { id: 'store', label: 'Project Name', met: draftContent.storeName.trim().length > 0 },
       { id: 'store', label: 'Contact Number', met: draftContent.whatsappNumber.trim().length > 0 },
-      { id: 'categories', label: 'Buyer Personas', met: categoriesData.categories.length > 0 },
       { id: 'products', label: 'Residence Listings', met: productsData.products.length > 0 },
-      { id: 'testimonials', label: 'Client Reviews', met: testimonialsData.testimonials.length > 0 },
     ];
 
     const metItems = items.filter(i => i.met);
@@ -748,9 +766,9 @@ export default function FunnelAdRealEstateEditor({
           logoUrl={draftContent.logoUrl}
           readiness={readiness}
           counts={{
-            collections: categoriesData.categories.length,
+            collections: 0,
             products: productsData.products.length,
-            reviews: testimonialsData.testimonials.length,
+            reviews: 0,
           }}
           isWizard={editorMode === 'wizard'}
           onChangeStoreName={(value) => handleStoreUpdate('storeName', value)}
@@ -758,12 +776,14 @@ export default function FunnelAdRealEstateEditor({
           onChangeLogo={(value) => handleStoreUpdate('logoUrl', value)}
           onJumpTo={(tab) => setActiveTab(tab)}
           panelLabel="Developer Profile"
-          nameLabel="Developer / Brand Name"
-          namePlaceholder="e.g. Aurelia Residences"
+          nameLabel="Construction Company Name"
+          namePlaceholder="e.g. Aurelia Group"
+          hideLogo={true}
+          whatsappLabel="Lead Capture Number"
+          whatsappHint="Concierge requests, visitor callbacks, and lead inquiries will route directly to this WhatsApp number."
+          inventorySectionLabel="Active Project Assets"
           inventoryLabels={{
-            collections: 'Personas',
             products: 'Residences',
-            reviews: 'Social Proof',
           }}
         />
       );
@@ -777,6 +797,12 @@ export default function FunnelAdRealEstateEditor({
           onChange={(updates) => {
             handleSectionUpdate('content', (data) => {
               Object.assign(data as HeroData, updates);
+            });
+          }}
+          locationAddress={locationData.experienceCenterAddress}
+          onChangeLocationAddress={(val) => {
+            handleSectionUpdate('location', (data) => {
+              (data as LocationData).experienceCenterAddress = val;
             });
           }}
         />
@@ -800,6 +826,21 @@ export default function FunnelAdRealEstateEditor({
           data={productsData}
           onAddCustomProduct={handleAddCustomProduct}
           onRemove={handleRemoveProduct}
+          onUpdate={handleUpdateProduct}
+          heroData={heroData}
+          onChangeHero={(updates) => {
+            handleSectionUpdate('content', (data) => {
+              Object.assign(data as HeroData, updates);
+            });
+          }}
+        />
+      );
+    }
+
+    if (currentTab === 'layouts') {
+      return (
+        <RealEstateLayoutsPanel
+          data={productsData}
           onUpdate={handleUpdateProduct}
         />
       );
@@ -1040,11 +1081,11 @@ export default function FunnelAdRealEstateEditor({
                 {/* Arrow */}
                 <div style={arrowStyle} />
 
-                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col max-h-[85vh]">
                   {/* Accent bar */}
-                  <div className={`h-1 ${c.bg}`} />
+                  <div className={`h-1 shrink-0 ${c.bg}`} />
 
-                  <div className="p-6">
+                  <div className="p-6 overflow-y-auto overflow-x-hidden">
                     {/* Step badge + count */}
                     <div className="flex items-center justify-between mb-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${c.bgLight} ${c.text}`}>
@@ -1383,14 +1424,24 @@ export default function FunnelAdRealEstateEditor({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -240, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full w-full lg:w-[660px] shrink-0 snap-center flex-col relative z-40 border-r border-slate-200 bg-white shadow-xl"
+              style={{ '--desktop-width': sidebarWidth ? `${sidebarWidth}px` : (activeTab === 'layouts' ? '900px' : '660px') } as React.CSSProperties}
+              className={`flex h-full w-full lg:w-[var(--desktop-width)] shrink-0 snap-center flex-col relative z-40 border-r border-slate-200 bg-white shadow-xl ${!isResizing ? 'transition-[width] duration-300' : ''}`}
             >
+              {/* Resizer Handle */}
+              <div 
+                className="hidden lg:block absolute top-0 right-[-4px] bottom-0 w-[8px] cursor-col-resize z-50 hover:bg-orange-500/20 active:bg-orange-500/40 transition-colors"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setIsResizing(true);
+                }}
+              />
+              
               {/* ✅ FIX #10: Professional Two-Column Sidebar Layout */}
               <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                 {/* Navigation Column */}
                 <div id="tour-sidebar" className="flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
                   <EditorSidebar
-                    sections={draftContent.sections}
+                    sections={draftContent.sections.filter(s => s.id !== 'testimonials' && s.id !== 'categories')}
                     activeTab={activeTab}
                     onChangeTab={setActiveTab}
                     onReorderSections={handleReorderSections}
@@ -1398,12 +1449,13 @@ export default function FunnelAdRealEstateEditor({
                     storeLabel="Project Identity"
                     sectionLabels={{
                       content: { label: 'Property Hero', icon: Building2 },
-                      categories: { label: 'Buyer Personas' },
                       products: { label: 'Residences', icon: Building2 },
-                      testimonials: { label: 'Social Proof' },
                       location: { label: 'Project Location' },
                       whatsapp: { label: 'Lead Capture' },
                     }}
+                    extraTabs={[
+                      { id: 'layouts', label: 'Layout Config', icon: LayoutList }
+                    ]}
                   />
                 </div>
                 

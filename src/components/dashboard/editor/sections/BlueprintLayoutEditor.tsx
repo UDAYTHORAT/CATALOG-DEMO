@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Move, Maximize2, GripVertical, ZoomIn, ZoomOut, RotateCw, Lock, Unlock } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -89,6 +90,8 @@ interface BlueprintLayoutEditorProps {
   onUpdateRoom: (roomIndex: number, updates: { x: number; y: number; w: number; h: number }) => void;
   selectedRoomId?: string;
   onSelectRoom?: (roomId: string) => void;
+  onAddRoom?: (preset: { name: string; type: string; area: string; label: string; w: number; h: number }) => void;
+  onDeleteRoom?: (roomId: string) => void;
 }
 
 function getFallbackCoords(index: number, totalRooms: number) {
@@ -140,9 +143,13 @@ export default function BlueprintLayoutEditor({
   onUpdateRoom,
   selectedRoomId,
   onSelectRoom,
+  onAddRoom,
+  onDeleteRoom,
 }: BlueprintLayoutEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isCssRotated, setIsCssRotated] = useState(false);
   const [hoveredRoom, setHoveredRoom] = useState<string | null>(null);
   const [dragState, setDragState] = useState<{
     type: 'move' | 'resize';
@@ -180,19 +187,26 @@ export default function BlueprintLayoutEditor({
       e.preventDefault();
       const { dx, dy } = pxToPercent(e.clientX - dragState.startMouseX, e.clientY - dragState.startMouseY);
       
+      let adjustedDx = dx;
+      let adjustedDy = dy;
+      if (isCssRotated) {
+        adjustedDx = dy;
+        adjustedDy = -dx;
+      }
+      
       setDragState(prev => {
         if (!prev) return null;
         if (prev.type === 'move') {
           return {
             ...prev,
-            currentX: clamp(Math.round(prev.startX + dx), 0, 100 - prev.startW),
-            currentY: clamp(Math.round(prev.startY + dy), 0, 100 - prev.startH),
+            currentX: clamp(Math.round(prev.startX + adjustedDx), 0, 100 - prev.startW),
+            currentY: clamp(Math.round(prev.startY + adjustedDy), 0, 100 - prev.startH),
           };
         } else {
           return {
             ...prev,
-            currentW: clamp(Math.round(prev.startW + dx), 8, 100 - prev.startX),
-            currentH: clamp(Math.round(prev.startH + dy), 8, 100 - prev.startY),
+            currentW: clamp(Math.round(prev.startW + adjustedDx), 2, 100 - prev.startX),
+            currentH: clamp(Math.round(prev.startH + adjustedDy), 2, 100 - prev.startY),
           };
         }
       });
@@ -220,19 +234,26 @@ export default function BlueprintLayoutEditor({
       const t = e.touches[0];
       const { dx, dy } = pxToPercent(t.clientX - dragState.startMouseX, t.clientY - dragState.startMouseY);
       
+      let adjustedDx = dx;
+      let adjustedDy = dy;
+      if (isCssRotated) {
+        adjustedDx = dy;
+        adjustedDy = -dx;
+      }
+      
       setDragState(prev => {
         if (!prev) return null;
         if (prev.type === 'move') {
           return {
             ...prev,
-            currentX: clamp(Math.round(prev.startX + dx), 0, 100 - prev.startW),
-            currentY: clamp(Math.round(prev.startY + dy), 0, 100 - prev.startH),
+            currentX: clamp(Math.round(prev.startX + adjustedDx), 0, 100 - prev.startW),
+            currentY: clamp(Math.round(prev.startY + adjustedDy), 0, 100 - prev.startH),
           };
         } else {
           return {
             ...prev,
-            currentW: clamp(Math.round(prev.startW + dx), 8, 100 - prev.startX),
-            currentH: clamp(Math.round(prev.startH + dy), 8, 100 - prev.startY),
+            currentW: clamp(Math.round(prev.startW + adjustedDx), 2, 100 - prev.startX),
+            currentH: clamp(Math.round(prev.startH + adjustedDy), 2, 100 - prev.startY),
           };
         }
       });
@@ -293,32 +314,115 @@ export default function BlueprintLayoutEditor({
     onUpdateRoom(idx, { x: clampedX, y: clampedY, w: newW, h: newH });
   };
 
-  return (
-    <div className="space-y-3">
-      {/* Header with zoom controls */}
-      <div className="flex items-center justify-between">
+  const toggleFullscreen = async () => {
+    if (!isFullscreen) {
+      setIsFullscreen(true);
+      try {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+        if (screen.orientation && screen.orientation.lock) {
+          try {
+            await screen.orientation.lock('landscape');
+          } catch(e) {
+            if (window.innerHeight > window.innerWidth) setIsCssRotated(true);
+          }
+        } else {
+          if (window.innerHeight > window.innerWidth) setIsCssRotated(true);
+        }
+      } catch (err) {
+        console.warn('Fullscreen/Orientation API not supported', err);
+        if (window.innerHeight > window.innerWidth) setIsCssRotated(true);
+      }
+    } else {
+      setIsFullscreen(false);
+      setIsCssRotated(false);
+      try {
+        if (document.exitFullscreen && document.fullscreenElement) {
+          await document.exitFullscreen();
+        }
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch(e) {}
+    };
+  }, []);
+
+  const containerStyle = isCssRotated ? {
+    transform: 'rotate(-90deg)',
+    transformOrigin: 'center center',
+    width: '100vh',
+    height: '100vw',
+    position: 'fixed' as const,
+    top: '50%',
+    left: '50%',
+    marginTop: '-50vw',
+    marginLeft: '-50vh',
+  } : {};
+
+  const content = (
+    <div className={isFullscreen ? "fixed inset-0 z-[999999] bg-slate-900 overflow-hidden" : "space-y-3"}>
+      <div 
+        className={isFullscreen ? "flex flex-col h-full w-full p-4 sm:p-8 space-y-4" : ""}
+        style={containerStyle}
+      >
+        {/* Header with zoom controls */}
+        <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-slate-100 flex items-center justify-center">
-            <Move size={12} className="text-slate-500" />
+          <div className={`h-5 w-5 rounded flex items-center justify-center ${isFullscreen ? 'bg-slate-800' : 'bg-slate-100'}`}>
+            <Move size={12} className={isFullscreen ? "text-slate-400" : "text-slate-500"} />
           </div>
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Blueprint Layout</p>
+          <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${isFullscreen ? 'text-slate-300' : 'text-slate-400'}`}>
+            Blueprint Layout {isFullscreen && <span className="ml-2 text-emerald-400 opacity-80 font-medium">(Rotate device for best experience)</span>}
+          </p>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setZoom(z => Math.max(0.6, z - 0.2))} className="h-6 w-6 rounded flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Zoom out">
+          <button onClick={() => setZoom(z => Math.max(0.6, z - 0.2))} className={`h-6 w-6 rounded flex items-center justify-center transition-colors ${isFullscreen ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-400 hover:bg-slate-100'}`} title="Zoom out">
             <ZoomOut size={12} />
           </button>
           <span className="text-[9px] font-bold text-slate-300 w-8 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom(z => Math.min(2, z + 0.2))} className="h-6 w-6 rounded flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Zoom in">
+          <button onClick={() => setZoom(z => Math.min(2, z + 0.2))} className={`h-6 w-6 rounded flex items-center justify-center transition-colors ${isFullscreen ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-400 hover:bg-slate-100'}`} title="Zoom in">
             <ZoomIn size={12} />
           </button>
           {zoom !== 1 && (
-            <button onClick={() => setZoom(1)} className="text-[8px] font-bold text-indigo-500 hover:text-indigo-700 ml-1">Reset</button>
+            <button onClick={() => setZoom(1)} className="text-[8px] font-bold text-indigo-500 hover:text-indigo-700 mx-1">Reset</button>
           )}
+          
+          {/* Delete Button (Fullscreen only) */}
+          {isFullscreen && selectedRoomId && onDeleteRoom && (
+            <>
+              <div className={`w-px h-4 mx-1 ${isFullscreen ? 'bg-slate-800' : 'bg-slate-200'}`} />
+              <button onClick={() => onDeleteRoom(selectedRoomId)} className="h-6 px-2 rounded flex items-center gap-1.5 transition-colors bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" title="Delete Room">
+                <span className="text-[9px] font-bold uppercase tracking-wider">Delete</span>
+              </button>
+            </>
+          )}
+
+          <div className={`w-px h-4 mx-1 ${isFullscreen ? 'bg-slate-800' : 'bg-slate-200'}`} />
+          <button onClick={toggleFullscreen} className={`h-6 px-2 rounded flex items-center gap-1.5 transition-colors ${isFullscreen ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
+            <Maximize2 size={10} />
+            <span className="text-[9px] font-bold uppercase tracking-wider">{isFullscreen ? 'Exit' : 'Focus'}</span>
+          </button>
         </div>
       </div>
 
+
+
       {/* Zoomable Canvas */}
-      <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 overflow-auto" style={{ maxHeight: zoom > 1 ? '400px' : 'none' }}>
+      <div className={`rounded-2xl border-2 overflow-auto transition-all ${isFullscreen ? 'flex-1 border-slate-700 bg-slate-800 shadow-2xl' : 'border-slate-200 bg-slate-50'}`} style={{ maxHeight: isFullscreen ? 'none' : (zoom > 1 ? '400px' : 'none') }}>
         <div
           ref={containerRef}
           className="relative aspect-[16/10] select-none origin-top-left"
@@ -370,20 +474,28 @@ export default function BlueprintLayoutEditor({
             const isVertical = (room.h || 10) > (room.w || 10) * 1.25;
             const needsRotation = isVertical && (room.w || 10) < 22;
             const availableSpace = needsRotation ? (room.h || 10) : (room.w || 10);
+            const availableHeight = needsRotation ? (room.w || 10) : (room.h || 10);
             const labelLength = label.length;
             const charWidthFactor = 0.46; // Sattoshi font letter spacing factor
 
-            let fontSize = 9;
-            const requiredSpace = labelLength * fontSize * charWidthFactor;
-            if (requiredSpace > availableSpace) {
-              fontSize = Math.max(5.5, (availableSpace / (labelLength * charWidthFactor)));
-            }
+            // Dynamically scale font size according to the block size
+            let fontSize = (availableSpace / (labelLength * charWidthFactor)) * 0.75; // Fill ~75% of width
+            fontSize = Math.min(fontSize, availableHeight * 0.45); // Max 45% of height
+            
+            // Final boundaries (minimum readable, maximum tasteful size)
+            fontSize = Math.max(6.5, Math.min(18, fontSize));
 
             // Cap for extremely tight bounds
-            if ((room.w || 10) < 9 && !needsRotation) fontSize = 5.5;
-            if ((room.h || 10) < 9 && needsRotation) fontSize = 5.5;
+            if ((room.w || 10) < 5 && !needsRotation) fontSize = 6.5;
+            if ((room.h || 10) < 5 && needsRotation) fontSize = 6.5;
 
             const rotateStyle = needsRotation ? { writingMode: 'vertical-rl' as const, transform: 'rotate(180deg)' } : {};
+
+            // Dynamically assign base z-index strictly by inverse area. 
+            // A smaller room will ALWAYS have a higher z-index than a larger room, even if the larger room is selected.
+            const area = (room.w || 10) * (room.h || 10);
+            const baseZ = 100000 - Math.floor(area) * 10;
+            const dynamicZIndex = baseZ + (isDragging ? 5 : isSelected ? 3 : isHovered ? 1 : 0);
 
             return (
               <div
@@ -394,7 +506,7 @@ export default function BlueprintLayoutEditor({
                   top: `${isDragging ? dragState.currentY : room.y}%`,
                   width: `${isDragging ? dragState.currentW : room.w}%`,
                   height: `${isDragging ? dragState.currentH : room.h}%`,
-                  zIndex: isSelected ? 20 : isHovered ? 10 : 0,
+                  zIndex: dynamicZIndex,
                   pointerEvents: room.locked && !isSelected ? 'none' : 'auto'
                 }}
                 onMouseEnter={() => setHoveredRoom(room.id)}
@@ -402,7 +514,7 @@ export default function BlueprintLayoutEditor({
               >
                 {/* Room body */}
                 <div
-                  className="absolute inset-0 rounded-lg flex flex-col items-center justify-center cursor-grab active:cursor-grabbing transition-colors duration-150 overflow-hidden"
+                  className="absolute inset-0 rounded-lg flex flex-col items-center justify-center cursor-grab active:cursor-grabbing transition-colors duration-150"
                   style={{
                     border: `2px ${isBalcony ? 'dashed' : 'solid'} ${isSelected ? colors.border : isDragging ? colors.border : `${colors.border}40`}`,
                     background: isSelected ? colors.bgSelected : colors.bg,
@@ -429,7 +541,7 @@ export default function BlueprintLayoutEditor({
 
                   {/* Smart dynamic auto-fit & rotating label */}
                   <span
-                    className="font-black uppercase tracking-[0.08em] leading-none text-center pointer-events-none max-w-full block whitespace-nowrap select-none"
+                    className="font-black uppercase tracking-[0.08em] leading-none text-center pointer-events-none block whitespace-nowrap select-none"
                     style={{
                       fontSize: `${fontSize}px`,
                       color: isSelected ? colors.text : `${colors.text}90`,
@@ -518,6 +630,42 @@ export default function BlueprintLayoutEditor({
           })}
         </div>
       )}
+
+      {/* Quick Add Palette (Below Canvas) */}
+      {onAddRoom && (
+        <div className={`flex flex-wrap items-center gap-1.5 pt-3 mt-3 border-t ${isFullscreen ? 'border-slate-800' : 'border-slate-200'}`}>
+          <span className={`text-[9px] font-bold uppercase tracking-wider mr-1 ${isFullscreen ? 'text-slate-500' : 'text-slate-400'}`}>Add Room:</span>
+          {[
+            { name: 'Living Room', area: '320 sqft', type: 'living', label: 'Living', w: 40, h: 30 },
+            { name: 'Kitchen', area: '140 sqft', type: 'kitchen', label: 'Kitchen', w: 25, h: 20 },
+            { name: 'Bedroom', area: '200 sqft', type: 'bedroom', label: 'Bedroom', w: 25, h: 25 },
+            { name: 'Bathroom', area: '45 sqft', type: 'bathroom', label: 'Bath', w: 10, h: 10 },
+            { name: 'Balcony', area: '60 sqft', type: 'balcony', label: 'Balcony', w: 40, h: 10 },
+            { name: 'Entrance', area: '40 sqft', type: 'entrance', label: 'Entrance', w: 15, h: 15 },
+            { name: 'Pooja Room', area: '25 sqft', type: 'pooja', label: 'Pooja', w: 10, h: 10 },
+            { name: 'Utility', area: '40 sqft', type: 'utility', label: 'Utility', w: 10, h: 15 },
+          ].map((p) => (
+            <button
+              key={p.type}
+              onClick={() => onAddRoom(p)}
+              className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide transition-colors border ${
+                isFullscreen 
+                  ? 'text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800' 
+                  : 'text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100 bg-white shadow-sm'
+              }`}
+            >
+              + {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+      </div>
     </div>
   );
+
+  if (isFullscreen && typeof document !== 'undefined') {
+    return createPortal(content, document.body);
+  }
+
+  return content;
 }

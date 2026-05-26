@@ -64,6 +64,16 @@ const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; gui
     reProTip: 'Use high-resolution renders or site photos. Mention specific highlights like "Sky Deck" or "Italian Marble" to drive inquiries.',
     guide: '👶 Here is what to do:\n• Type the Product Name so people know what it is.\n• Put the Price so they know how much it costs.\n• Add a Picture so they can see it.'
   },
+  {
+    id: 'layouts',
+    label: 'Layout Config',
+    reLabel: 'Layout Config',
+    hint: 'Configure the spatial blueprints for your store.',
+    reHint: 'Configure the 2D floor plans for each residence to give buyers a true sense of scale.',
+    proTip: 'Keep proportions realistic.',
+    reProTip: 'Design precise 2D floor plans. Use the mobile tilt or desktop focus mode to carefully position rooms.',
+    guide: '👶 Configure the spatial layout.'
+  },
   { 
     id: 'testimonials', 
     label: 'Customer Reviews', 
@@ -201,6 +211,14 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       proTip: "Even if you are online-only, mentioning your base city or factory location helps establish authenticity.",
       targetId: "tour-location-fields"
     }
+  ],
+  layouts: [
+    { 
+      title: "Design Floor Plans", 
+      description: "Map out the exact layout of your residences so buyers can visualize the space.", 
+      proTip: "Use the Focus Mode to get a massive full-screen canvas for precise drag-and-drop arrangements.",
+      targetId: "tour-layouts"
+    }
   ]
 };
 
@@ -210,14 +228,22 @@ export default function WizardMode({
 }: WizardProps) {
   const [stepIdx, setStepIdx] = useState(0);
   const isRealEstate = funnel.story_mode_data?.[0]?.templateId === 'funnelad-elite-real-estate';
-  const activeTabRaw = WIZARD_FLOW[stepIdx];
+  
+  const effectiveFlow = WIZARD_FLOW.filter(tab => {
+    if (isRealEstate) {
+      return tab.id !== 'categories' && tab.id !== 'testimonials';
+    }
+    return tab.id !== 'layouts';
+  });
+
+  const activeTabRaw = effectiveFlow[stepIdx] || effectiveFlow[0];
   const activeTab = {
     ...activeTabRaw,
     label: (isRealEstate && activeTabRaw.reLabel) ? activeTabRaw.reLabel : activeTabRaw.label,
     hint: (isRealEstate && activeTabRaw.reHint) ? activeTabRaw.reHint : activeTabRaw.hint,
     proTip: (isRealEstate && activeTabRaw.reProTip) ? activeTabRaw.reProTip : activeTabRaw.proTip,
   };
-  const isLast = stepIdx === WIZARD_FLOW.length - 1;
+  const isLast = stepIdx === effectiveFlow.length - 1;
 
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState(1);
@@ -244,9 +270,13 @@ export default function WizardMode({
     };
   }, []);
 
-  const currentTourSteps = TAB_TOURS[activeTab.id] || [
+  const rawTourSteps = TAB_TOURS[activeTab.id] || [
     { title: "Fill Details", description: "Follow the fields to complete this step.", proTip: "Keep it simple." }
   ];
+
+  const currentTourSteps = (isRealEstate && activeTab.id === 'store') 
+    ? rawTourSteps.filter(step => step.targetId !== 'tour-store-logo')
+    : rawTourSteps;
 
   // Auto-start tour when tab changes, ONLY if not completed
   useEffect(() => {
@@ -422,9 +452,9 @@ export default function WizardMode({
                 style={cardStyle}
               >
                 <div style={arrowStyle} />
-                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden">
-                  <div className={`h-1 ${c.bg}`} />
-                  <div className="p-6">
+                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col max-h-[85vh]">
+                  <div className={`h-1 shrink-0 ${c.bg}`} />
+                  <div className="p-6 overflow-y-auto overflow-x-hidden">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${c.bgLight} ${c.text}`}>
                         <HelpCircle size={10} />
@@ -529,7 +559,7 @@ export default function WizardMode({
 
       <div id="wizard-mobile-scroll-layout" className="flex flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory lg:overflow-hidden lg:flex-row w-full scrollbar-none scroll-smooth">
         {/* Sidebar */}
-        <div className="flex h-full w-full lg:w-[660px] shrink-0 snap-center flex-col border-r border-slate-200 bg-white shadow-xl relative z-40 lg:z-auto">
+        <div className={`flex h-full w-full ${activeTab.id === 'layouts' ? 'lg:w-[900px]' : 'lg:w-[660px]'} shrink-0 snap-center flex-col border-r border-slate-200 bg-white shadow-xl relative z-40 lg:z-auto transition-all duration-300`}>
           <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
             {/* Nav Column */}
             <div className={`flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50 ${isKeyboardOpen ? 'hidden md:flex' : ''}`}>
@@ -537,16 +567,16 @@ export default function WizardMode({
                 {/* Progress bar */}
                 <div className="mb-5">
                   <div className="flex gap-1 mb-2">
-                    {WIZARD_FLOW.map((_, i) => (
+                    {effectiveFlow.map((_, i) => (
                       <div key={i} className={`h-1.5 rounded-full flex-1 transition-all duration-500 ${i <= stepIdx ? 'bg-slate-900' : 'bg-slate-200'}`} />
                     ))}
                   </div>
-                  <p className="text-[10px] font-bold text-slate-400">Step {stepIdx + 1} of {WIZARD_FLOW.length}</p>
+                  <p className="text-[10px] font-bold text-slate-400">Step {stepIdx + 1} of {effectiveFlow.length}</p>
                 </div>
 
                 {/* Step buttons */}
                 <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-none snap-x">
-                  {WIZARD_FLOW.map((tab, i) => {
+                  {effectiveFlow.map((tab, i) => {
                     const isActive = i === stepIdx;
                     const isDone = i < stepIdx;
                     return (

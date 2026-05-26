@@ -15,10 +15,14 @@ export default React.memo(function StorePanel({
   onChangeWhatsApp,
   onChangeLogo,
   onJumpTo,
+  inventoryLabels,
+  hideLogo = false,
+  whatsappLabel,
+  whatsappHint,
+  inventorySectionLabel,
   panelLabel,
   nameLabel,
   namePlaceholder,
-  inventoryLabels,
 }: {
   storeName: string;
   whatsappNumber: string;
@@ -34,6 +38,10 @@ export default React.memo(function StorePanel({
   nameLabel?: string;
   namePlaceholder?: string;
   inventoryLabels?: { collections?: string; products?: string; reviews?: string };
+  hideLogo?: boolean;
+  whatsappLabel?: string;
+  whatsappHint?: string;
+  inventorySectionLabel?: string;
 }) {
   const { score, missingItems } = readiness;
 
@@ -66,12 +74,14 @@ export default React.memo(function StorePanel({
         <div className="absolute top-0 h-1.5 w-full bg-slate-900" />
         <div className="p-6">
           <div className="flex flex-col items-center gap-6 text-center">
-            <div id="tour-store-logo" className="relative group">
-              <div className="absolute -inset-2 rounded-3xl bg-slate-100 opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 shadow-inner">
-                <ImageUpload defaultImage={logoUrl} onUploadComplete={onChangeLogo} />
+            {!hideLogo && (
+              <div id="tour-store-logo" className="relative group shrink-0">
+                <div className="absolute -inset-2 rounded-3xl bg-slate-100 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 shadow-inner">
+                  <ImageUpload defaultImage={logoUrl} onUploadComplete={onChangeLogo} />
+                </div>
               </div>
-            </div>
+            )}
             
             <div className="w-full space-y-5 text-left">
               <div id="tour-store-name">
@@ -86,7 +96,7 @@ export default React.memo(function StorePanel({
               </div>
               
               <div id="tour-store-whatsapp">
-                <Field label="WhatsApp Lead Capture">
+                <Field label={whatsappLabel || "WhatsApp Lead Capture"}>
                 <div className="flex gap-2">
                   <div className="relative w-32 shrink-0">
                     <select
@@ -120,7 +130,7 @@ export default React.memo(function StorePanel({
                   </div>
                 </div>
                 <p className="mt-2 text-[10px] font-medium text-slate-400">
-                  Leads will be sent to this number. Includes country code.
+                  {whatsappHint || "Leads will be sent to this number. Includes country code."}
                 </p>
               </Field>
               </div>
@@ -187,7 +197,9 @@ export default React.memo(function StorePanel({
 
           {/* Quick Status */}
           <div>
-            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Current Inventory</p>
+            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+              {inventorySectionLabel || "Current Inventory"}
+            </p>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: inventoryLabels?.collections || 'Collections', value: counts.collections, icon: LayoutGrid, tab: 'categories' as TabId, color: 'bg-blue-50 text-blue-600' },

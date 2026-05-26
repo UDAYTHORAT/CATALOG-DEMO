@@ -23,12 +23,16 @@ export default React.memo(function RealEstateHeroPanel({
   data,
   onChange,
   hideCtaSection,
+  locationAddress,
+  onChangeLocationAddress,
 }: {
   data: HeroData;
   onChange: (updates: Partial<HeroData>) => void;
   hideCtaSection?: boolean;
+  locationAddress?: string;
+  onChangeLocationAddress?: (value: string) => void;
 }) {
-  const trustBadges = data.trustBadges || [];
+
 
   return (
     <div className="space-y-8">
@@ -39,6 +43,15 @@ export default React.memo(function RealEstateHeroPanel({
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Property Identity</p>
           <div className="space-y-5">
+            <Field label="Property Location / Address">
+              <input
+                value={locationAddress || ''}
+                onChange={(e) => onChangeLocationAddress?.(e.target.value)}
+                className={inputClass}
+                placeholder="e.g. Worli Sea Face · Mumbai"
+              />
+            </Field>
+
             <Field label="Property Name">
               <div className="relative">
                 <textarea
@@ -82,64 +95,31 @@ export default React.memo(function RealEstateHeroPanel({
               onUploadComplete={(url) => onChange({ heroImage: url })}
             />
           </Field>
-          <div className="mt-4">
-            <Field label="Image Badge">
-              <input
-                value={data.heroBadge || ''}
-                onChange={(e) => onChange({ heroBadge: e.target.value })}
-                className={inputClass}
-                placeholder="e.g. Superstructure Complete"
-              />
-            </Field>
-            <p className="mt-1 text-[9px] font-medium text-slate-400">Shown as a tag over the hero image</p>
-          </div>
         </div>
 
-        {/* ── Section 3: Key Details ── */}
+        {/* ── Section 3: Hero Action Bar ── */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Key Details</p>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Starting Price">
-              <input
-                value={data.startingPrice || ''}
-                onChange={(e) => onChange({ startingPrice: e.target.value })}
-                className={inputClass}
-                placeholder="e.g. ₹ 6.2 Cr"
-              />
-            </Field>
-            <Field label="Property Status">
-              <input
-                value={data.status || ''}
-                onChange={(e) => onChange({ status: e.target.value })}
-                className={inputClass}
-                placeholder="e.g. Ready to Move"
-              />
-            </Field>
-            <Field label="Ownership Type">
-              <input
-                value={data.ownership || ''}
-                onChange={(e) => onChange({ ownership: e.target.value })}
-                className={inputClass}
-                placeholder="e.g. Freehold"
-              />
-            </Field>
-            <Field label="Possession Timeline">
-              <input
-                value={data.possession || ''}
-                onChange={(e) => onChange({ possession: e.target.value })}
-                className={inputClass}
-                placeholder="e.g. Q4 2025"
-              />
-            </Field>
-          </div>
-          <p className="mt-2 text-[9px] font-medium text-slate-400">Displayed in the property details panel on the landing page</p>
-        </div>
-
-        {/* ── Section 5: CTA ── */}
-        {!hideCtaSection && (
-          <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
-            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Call to Action</p>
-            <div className="grid grid-cols-1 gap-5">
+          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hero Bottom Action Bar</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Property Status">
+                <input
+                  value={data.status || ''}
+                  onChange={(e) => onChange({ status: e.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. Ready to Move"
+                />
+              </Field>
+              <Field label="Starting Price">
+                <input
+                  value={data.startingPrice || ''}
+                  onChange={(e) => onChange({ startingPrice: e.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. ₹ 6.2 Cr"
+                />
+              </Field>
+            </div>
+            {!hideCtaSection && (
               <Field label="CTA Button Text">
                 <input
                   value={data.heroCtaText}
@@ -148,17 +128,43 @@ export default React.memo(function RealEstateHeroPanel({
                   placeholder="e.g. Explore Residences"
                 />
               </Field>
-              <Field label="CTA Subtext">
-                <input
-                  value={data.heroCtaSubtext}
-                  onChange={(e) => onChange({ heroCtaSubtext: e.target.value })}
-                  className={inputClass}
-                  placeholder="e.g. Get floor plan on WhatsApp"
-                />
-              </Field>
-            </div>
+            )}
           </div>
-        )}
+          <p className="mt-2 text-[9px] font-medium text-slate-400">Displayed in the bottom action bar overlay on the hero section</p>
+        </div>
+
+        {/* ── Section 4: Emotional Storytelling ── */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Emotional Storytelling</p>
+          <div className="space-y-5">
+            <Field label="Section Title">
+              <input
+                value={data.emotionalTitle || ''}
+                onChange={(e) => onChange({ emotionalTitle: e.target.value })}
+                className={inputClass}
+                placeholder="e.g. Wake up above the skyline."
+              />
+            </Field>
+
+            <Field label="Section Body">
+              <div className="relative">
+                <textarea
+                  value={data.emotionalBody || ''}
+                  onChange={(e) => onChange({ emotionalBody: e.target.value })}
+                  rows={3}
+                  maxLength={250}
+                  className={`${inputClass} resize-none leading-relaxed pb-8`}
+                  placeholder="e.g. Private decks. Morning light. Quiet elevation above the city..."
+                />
+                <div className="absolute bottom-2.5 right-3 text-[10px] font-bold text-slate-400">
+                  {(data.emotionalBody || '').length}/250
+                </div>
+              </div>
+            </Field>
+          </div>
+        </div>
+
+        {/* Ownership Specifications moved to Residences section */}
       </div>
     </div>
   );

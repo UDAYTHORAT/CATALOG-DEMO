@@ -1,5 +1,5 @@
 export type SectionId = 'content' | 'categories' | 'products' | 'testimonials' | 'location' | 'whatsapp';
-export type TabId = 'store' | SectionId;
+export type TabId = 'store' | 'layouts' | SectionId;
 export type PreviewMode = 'mobile' | 'tablet' | 'desktop';
 
 export interface CategoryItem {
@@ -33,6 +33,16 @@ export interface ProductItem {
   material?: string;
   finish?: string;
   rooms?: any[];
+  compassAngle?: number;
+  sunSide?: 'top' | 'top-right' | 'right' | 'bottom-right' | 'bottom' | 'bottom-left' | 'left' | 'top-left';
+  automotive?: string;
+  spaceCtaText?: string;
+  facing?: string;
+  specifications?: { label: string; value: string }[];
+  propertyDetailsTitle?: string;
+  ownershipLabel?: string;
+  deliveryLabel?: string;
+  automotiveLabel?: string;
 }
 
 export interface TestimonialItem {
@@ -56,6 +66,11 @@ export interface HeroData {
   possession?: string;
   startingPrice?: string;
   status?: string;
+  automotive?: string;
+  spaceCtaText?: string;
+  emotionalTitle?: string;
+  emotionalBody?: string;
+  emotionalImage?: string;
 }
 
 export interface CategoriesData {

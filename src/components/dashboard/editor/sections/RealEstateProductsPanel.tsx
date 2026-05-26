@@ -9,108 +9,9 @@ import {
   LayoutList, X, Ruler, MapPin,
   Lock, Unlock
 } from 'lucide-react';
-import { Field, IconButton, PanelTitle, subtleInputClass } from '../ui';
-import type { ProductItem, ProductsData } from '../types';
+import { Field, IconButton, PanelTitle, subtleInputClass, inputClass } from '../ui';
+import type { ProductItem, ProductsData, HeroData } from '../types';
 import { ImageUpload } from '@/components/dashboard/ImageUpload';
-import BlueprintLayoutEditor from './BlueprintLayoutEditor';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ROOM EDITOR — Ultra-minimal: just name + area
-// ═══════════════════════════════════════════════════════════════════════════
-
-function RoomEditor({
-  room,
-  index,
-  onUpdate,
-  onRemove,
-  isSelected,
-  onSelect,
-}: {
-  room: any;
-  index: number;
-  onUpdate: (updates: any) => void;
-  onRemove: () => void;
-  isSelected?: boolean;
-  onSelect?: () => void;
-}) {
-  const [showMore, setShowMore] = useState(false);
-
-  return (
-    <div
-      className={`group rounded-lg border transition-all ${
-        isSelected ? 'border-indigo-300 bg-indigo-50/30' : 'border-slate-100 bg-white hover:border-slate-200'
-      }`}
-      onClick={onSelect}
-    >
-      {/* Single row: Name + Area + Delete */}
-      <div className="flex items-center gap-2 px-3 py-2">
-        <input
-          value={room.name || ''}
-          onChange={(e) => onUpdate({ name: e.target.value })}
-          onClick={(e) => e.stopPropagation()}
-          className="flex-1 min-w-0 border-0 bg-transparent p-0 text-[12px] font-semibold text-slate-800 outline-none focus:ring-0 placeholder:text-slate-300 truncate"
-          placeholder="Room name"
-        />
-        <input
-          value={room.area || ''}
-          onChange={(e) => onUpdate({ area: e.target.value })}
-          onClick={(e) => e.stopPropagation()}
-          className="w-[72px] shrink-0 border-0 bg-transparent p-0 text-[11px] text-slate-400 outline-none focus:ring-0 placeholder:text-slate-300 text-right"
-          placeholder="sqft"
-        />
-        <button
-          onClick={(e) => { e.stopPropagation(); onUpdate({ locked: !room.locked }); }}
-          className={`h-6 w-6 shrink-0 flex items-center justify-center rounded transition-colors ${room.locked ? 'text-amber-500 bg-amber-50' : 'text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100'}`}
-          title={room.locked ? 'Unlock position' : 'Lock position'}
-        >
-          {room.locked ? <Lock size={11} /> : <Unlock size={11} />}
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); setShowMore(!showMore); }}
-          className={`h-6 w-6 shrink-0 flex items-center justify-center rounded transition-colors ${showMore ? 'bg-slate-800 text-white' : 'text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100'}`}
-        >
-          {showMore ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onRemove(); }}
-          className="h-6 w-6 shrink-0 flex items-center justify-center rounded text-slate-200 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <Trash2 size={11} />
-        </button>
-      </div>
-
-      {/* Expandable: image, features, atmosphere (rarely needed) */}
-      {showMore && (
-        <div className="px-3 pb-3 space-y-2 border-t border-slate-50 animate-in fade-in duration-200">
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            <Field label="Blueprint Label">
-              <input value={room.label || ''} onChange={(e) => onUpdate({ label: e.target.value })} className={`${subtleInputClass} text-[11px]`} placeholder="Living" />
-            </Field>
-            <Field label="Vibe">
-              <input value={room.atmosphere || ''} onChange={(e) => onUpdate({ atmosphere: e.target.value })} className={`${subtleInputClass} text-[11px]`} placeholder="Sea-facing" />
-            </Field>
-          </div>
-          <Field label="Room Image">
-            <ImageUpload defaultImage={room.img || room.images?.[0]} onUploadComplete={(url) => onUpdate({ img: url, images: [url] })} />
-          </Field>
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Features</p>
-              <button onClick={() => onUpdate({ details: [...(room.details || []), ''] })} className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-wider">+ Add</button>
-            </div>
-            {(room.details || []).map((d: string, i: number) => (
-              <div key={i} className="flex items-center gap-1.5">
-                <input value={d} onChange={(e) => { const nd = [...(room.details || [])]; nd[i] = e.target.value; onUpdate({ details: nd }); }} className={`${subtleInputClass} flex-1 text-[10px]`} placeholder="Feature" />
-                <button onClick={() => onUpdate({ details: (room.details || []).filter((_: any, j: number) => j !== i) })} className="h-5 w-5 flex items-center justify-center rounded text-slate-300 hover:text-rose-500"><X size={10} /></button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // MAIN PANEL
 // ═══════════════════════════════════════════════════════════════════════════
@@ -120,52 +21,23 @@ export default React.memo(function RealEstateProductsPanel({
   onAddCustomProduct,
   onUpdate,
   onRemove,
+  heroData,
+  onChangeHero,
 }: {
   data: ProductsData;
   onAddCustomProduct: () => void;
   onUpdate: (index: number, updates: Partial<ProductItem>) => void;
   onRemove: (id: string) => void;
+  heroData?: HeroData;
+  onChangeHero?: (updates: Partial<HeroData>) => void;
 }) {
   const products = data.products;
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(() => {
     if (products.length > 0) return { [products[0].id]: true };
     return {};
   });
-  const [selectedRoomIds, setSelectedRoomIds] = useState<Record<string, string>>({});
-
   const toggleExpand = (id: string) => {
     setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleAddRoom = (productIndex: number) => {
-    const product = products[productIndex];
-    const rooms = product.rooms || [];
-    const newRoom = {
-      id: `room-${Date.now()}`,
-      name: 'New Room',
-      area: '200 sqft',
-      atmosphere: 'Peaceful space',
-      note: 'A beautifully designed space.',
-      details: ['Premium finish', 'Natural light'],
-      img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-      images: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80'],
-      label: 'Room',
-      direction: { x: 0, y: 0, scale: 1 },
-    };
-    onUpdate(productIndex, { rooms: [...rooms, newRoom] } as any);
-  };
-
-  const handleUpdateRoom = (productIndex: number, roomIndex: number, updates: any) => {
-    const product = products[productIndex];
-    const rooms = [...(product.rooms || [])];
-    rooms[roomIndex] = { ...rooms[roomIndex], ...updates };
-    onUpdate(productIndex, { rooms } as any);
-  };
-
-  const handleRemoveRoom = (productIndex: number, roomIndex: number) => {
-    const product = products[productIndex];
-    const rooms = (product.rooms || []).filter((_: any, i: number) => i !== roomIndex);
-    onUpdate(productIndex, { rooms } as any);
   };
 
   return (
@@ -219,8 +91,6 @@ export default React.memo(function RealEstateProductsPanel({
                       <span className="text-[10px] font-bold text-emerald-500 tracking-wider">{product.priceLabel}</span>
                       <span className="text-[10px] text-slate-300">•</span>
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{product.dimensions || '—'}</span>
-                      <span className="text-[10px] text-slate-300">•</span>
-                      <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">{rooms.length} rooms</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -291,7 +161,7 @@ export default React.memo(function RealEstateProductsPanel({
                         <Zap size={14} className="text-amber-500 fill-amber-500/20" />
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/60">Conversion Hooks</p>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         <Field label="Urgency Badge">
                           <input
                             value={product.urgency}
@@ -300,85 +170,87 @@ export default React.memo(function RealEstateProductsPanel({
                             placeholder="3 Units Remaining"
                           />
                         </Field>
-                        <Field label="Possession">
+                      </div>
+                    </div>
+                    {/* Section 3: Property Details (Inline WYSIWYG) */}
+                    <div className="relative overflow-hidden bg-[#1C1917] rounded-[2rem] p-6 shadow-xl mt-4">
+                      {/* Abstract decorative element */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#9A7B44] opacity-10 rounded-bl-full blur-2xl pointer-events-none" />
+                      
+                      <div className="relative z-10 flex items-center mb-6">
+                        <input
+                          value={product.propertyDetailsTitle || ''}
+                          onChange={(e) => onUpdate(index, { propertyDetailsTitle: e.target.value })}
+                          className="text-[10px] tracking-[0.25em] uppercase font-bold text-white/60 bg-transparent border-none p-0 w-full placeholder:text-white/30 outline-none focus:outline-none focus:ring-0"
+                          placeholder="PROPERTY DETAILS"
+                        />
+                      </div>
+                      
+                      <div className="flex flex-col gap-5 relative z-10">
+                        {/* Spec 1 */}
+                        <div className="flex items-end justify-between border-b border-white/10 pb-3 gap-4">
                           <input
-                            value={product.delivery}
+                            value={product.ownershipLabel || ''}
+                            onChange={(e) => onUpdate(index, { ownershipLabel: e.target.value })}
+                            className="text-[11px] tracking-wider uppercase text-white/50 font-medium bg-transparent border-none p-0 w-1/3 placeholder:text-white/20 outline-none focus:outline-none focus:ring-0"
+                            placeholder="Tenure"
+                          />
+                          <input
+                            value={product.ownership || ''}
+                            onChange={(e) => onUpdate(index, { ownership: e.target.value })}
+                            className="text-sm font-serif tracking-wide text-white/90 bg-transparent border-none p-0 w-2/3 text-right placeholder:text-white/30 outline-none focus:outline-none focus:ring-0"
+                            placeholder="Freehold Estate"
+                          />
+                        </div>
+
+                        {/* Spec 2 */}
+                        <div className="flex items-end justify-between border-b border-white/10 pb-3 gap-4">
+                          <input
+                            value={product.deliveryLabel || ''}
+                            onChange={(e) => onUpdate(index, { deliveryLabel: e.target.value })}
+                            className="text-[11px] tracking-wider uppercase text-white/50 font-medium bg-transparent border-none p-0 w-1/3 placeholder:text-white/20 outline-none focus:outline-none focus:ring-0"
+                            placeholder="Possession"
+                          />
+                          <input
+                            value={product.delivery || ''}
                             onChange={(e) => onUpdate(index, { delivery: e.target.value })}
-                            className={`${subtleInputClass} bg-white border-amber-100/50`}
-                            placeholder="Possession: Q4 2025"
+                            className="text-sm font-serif tracking-wide text-white/90 bg-transparent border-none p-0 w-2/3 text-right placeholder:text-white/30 outline-none focus:outline-none focus:ring-0"
+                            placeholder="Ready to Move"
                           />
-                        </Field>
+                        </div>
+
+                        {/* Spec 3 */}
+                        <div className="flex items-end justify-between border-b border-white/10 pb-3 gap-4">
+                          <input
+                            value={product.automotiveLabel || ''}
+                            onChange={(e) => onUpdate(index, { automotiveLabel: e.target.value })}
+                            className="text-[11px] tracking-wider uppercase text-white/50 font-medium bg-transparent border-none p-0 w-1/3 placeholder:text-white/20 outline-none focus:outline-none focus:ring-0"
+                            placeholder="Parking"
+                          />
+                          <input
+                            value={product.automotive || ''}
+                            onChange={(e) => onUpdate(index, { automotive: e.target.value })}
+                            className="text-sm font-serif tracking-wide text-white/90 bg-transparent border-none p-0 w-2/3 text-right placeholder:text-white/30 outline-none focus:outline-none focus:ring-0"
+                            placeholder="3 Dedicated Spaces"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Inline CTA Editor */}
+                      <div className="mt-8 pt-4 border-t border-white/10 relative z-10 flex flex-col gap-2">
+                        <span className="text-[9px] tracking-widest uppercase text-white/40 font-bold">Inquiry Button</span>
+                        <div className="flex items-center gap-3 w-full bg-black/40 rounded-xl px-4 py-3 border border-white/5">
+                          <input
+                            value={product.spaceCtaText || ''}
+                            onChange={(e) => onUpdate(index, { spaceCtaText: e.target.value })}
+                            className="text-xs tracking-[0.2em] uppercase font-bold text-white bg-transparent border-none p-0 w-full placeholder:text-white/30 outline-none focus:outline-none focus:ring-0"
+                            placeholder="DISCUSS THIS SPACE"
+                          />
+                          <span className="text-[#9A7B44]">→</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Section 3: Rooms */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <DoorOpen size={14} className="text-indigo-500" />
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/60">Rooms & Spaces</p>
-                        </div>
-                        <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-wider">{rooms.length} rooms</span>
-                      </div>
-
-                      {/* Interactive Blueprint Layout Editor */}
-                      {rooms.length > 0 && (
-                        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/20 p-4">
-                          <BlueprintLayoutEditor
-                            rooms={rooms}
-                            selectedRoomId={selectedRoomIds[product.id]}
-                            onSelectRoom={(roomId) => setSelectedRoomIds(prev => ({ ...prev, [product.id]: roomId }))}
-                            onUpdateRoom={(roomIndex, coords) => handleUpdateRoom(index, roomIndex, coords)}
-                          />
-                        </div>
-                      )}
-
-                      <div className="space-y-1.5">
-                        {rooms.map((room: any, rIdx: number) => (
-                          <RoomEditor
-                            key={room.id || rIdx}
-                            room={room}
-                            index={rIdx}
-                            onUpdate={(updates) => handleUpdateRoom(index, rIdx, updates)}
-                            onRemove={() => handleRemoveRoom(index, rIdx)}
-                            isSelected={selectedRoomIds[product.id] === room.id}
-                            onSelect={() => setSelectedRoomIds(prev => ({ ...prev, [product.id]: room.id }))}
-                          />
-                        ))}
-                      </div>
-
-                      {/* Quick-add — clean text-only chips */}
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        <span className="text-[9px] text-slate-300 font-bold uppercase tracking-wider mr-0.5">Add:</span>
-                        {[
-                          { name: 'Living Room', area: '320 sqft', type: 'living', label: 'Living', w: 56, h: 44 },
-                          { name: 'Kitchen', area: '140 sqft', type: 'kitchen', label: 'Kitchen', w: 36, h: 36 },
-                          { name: 'Bedroom', area: '200 sqft', type: 'bedroom', label: 'Bedroom', w: 34, h: 34 },
-                          { name: 'Bathroom', area: '45 sqft', type: 'bathroom', label: 'Bath', w: 14, h: 16 },
-                          { name: 'Balcony', area: '60 sqft', type: 'balcony', label: 'Balcony', w: 22, h: 10 },
-                          { name: 'Entrance', area: '40 sqft', type: 'entrance', label: 'Entrance', w: 15, h: 12 },
-                        ].map((p) => (
-                          <button
-                            key={p.type}
-                            onClick={() => {
-                              const newRoom = {
-                                id: `${p.type}-${Date.now()}`,
-                                name: p.name, type: p.type, area: p.area,
-                                atmosphere: '', note: '', details: [],
-                                img: '', images: [],
-                                label: p.label, w: p.w, h: p.h,
-                                direction: { x: 0, y: 0, scale: 1 },
-                              };
-                              const currentRooms = products[index].rooms || [];
-                              onUpdate(index, { rooms: [...currentRooms, newRoom] } as any);
-                            }}
-                            className="px-2 py-0.5 rounded text-[10px] font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                          >
-                            + {p.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
@@ -386,6 +258,7 @@ export default React.memo(function RealEstateProductsPanel({
           })
         )}
       </div>
+
     </div>
   );
 });
