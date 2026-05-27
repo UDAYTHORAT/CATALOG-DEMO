@@ -159,7 +159,11 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-lg">{t.icon}</span>
                 <div className="flex items-center gap-1">
-                  <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                  <h3 
+                    className="text-base font-bold text-slate-900 transition-colors"
+                    onMouseEnter={(e) => { e.currentTarget.style.color = t.accentColor; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = ''; }}
+                  >
                     {t.name}
                   </h3>
                   <button 
