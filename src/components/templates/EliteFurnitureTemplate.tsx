@@ -765,28 +765,28 @@ export default React.memo(function EliteFurnitureTemplate({
                   <span className="text-[9px] font-bold tracking-[0.25em] text-[#D47A5A] uppercase mb-2 block">
                     Proven Track Record
                   </span>
-                  <h3 className="font-serif text-[1.8rem] md:text-[2.5rem] tracking-tight text-[#1C1B1A] mb-2 leading-none">
+                  <h3 className={`font-serif ${isMobileMode ? 'text-[1.8rem]' : 'text-[1.8rem] md:text-[2.5rem]'} tracking-tight text-[#1C1B1A] mb-2 leading-none`}>
                     Installed In Real Homes
                   </h3>
-                  <p className="text-[12px] md:text-[14px] text-[#6B665F] font-light max-w-md mx-auto">
+                  <p className={`${isMobileMode ? 'text-[12px]' : 'text-[12px] md:text-[14px]'} text-[#6B665F] font-light max-w-md mx-auto`}>
                     Real deliveries across Mumbai, Bangalore, Pune & Dubai residences.
                   </p>
                 </div>
                 
-                  <div 
-                    ref={testimonialsScrollRef}
-                    className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto md:overflow-x-visible pb-8 snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0 no-scrollbar"
+                <div 
+                  ref={testimonialsScrollRef}
+                  className={`flex ${isMobileMode ? '' : 'md:grid md:grid-cols-3'} gap-6 overflow-x-auto ${isMobileMode ? '' : 'md:overflow-x-visible'} pb-8 snap-x snap-mandatory px-4 ${isMobileMode ? '' : 'md:px-0'} -mx-4 ${isMobileMode ? '' : 'md:mx-0'} no-scrollbar`}
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   onClick={(event) => handleEdit('testimonials', event)}
                 >
                   {TESTIMONIALS.map((t: Testimonial, i: number) => (
                     <div
                       key={i}
-                      className="snap-center shrink-0 w-[170px] sm:w-[260px] md:w-auto bg-white rounded-[1.25rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden flex flex-col group hover:shadow-[0_45px_90px_rgba(0,0,0,0.07)] transition-all duration-500"
+                      className={`snap-center shrink-0 w-[280px] ${isMobileMode ? '' : 'md:w-auto'} bg-white rounded-[1.5rem] ${isMobileMode ? '' : 'md:rounded-[2.5rem]'} shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden flex flex-col group hover:shadow-[0_45px_90px_rgba(0,0,0,0.07)] transition-all duration-500`}
                       onClick={(event) => handleEdit('testimonials', event)}
                     >
                       {/* Image part */}
-                      <div className="relative w-full h-[110px] sm:h-[180px] md:h-[260px] overflow-hidden bg-[#F7F5F0]">
+                      <div className={`relative w-full ${isMobileMode ? 'h-[180px]' : 'h-[180px] md:h-[260px]'} overflow-hidden bg-[#F7F5F0]`}>
                         <img 
                           src={t.image || [
                             'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
@@ -798,36 +798,36 @@ export default React.memo(function EliteFurnitureTemplate({
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                         
-                        <Quote strokeWidth={1} className="absolute -top-2 -right-2 w-10 h-10 md:w-14 md:h-14 text-white/10" />
+                        <Quote strokeWidth={1} className={`absolute -top-2 -right-2 ${isMobileMode ? 'w-10 h-10' : 'w-10 h-10 md:w-14 md:h-14'} text-white/10`} />
                       </div>
 
                       {/* Content details */}
-                      <div className="p-3 md:p-6 flex flex-col justify-between bg-white flex-1">
+                      <div className={`${isMobileMode ? 'p-4' : 'p-4 md:p-6'} flex flex-col justify-between bg-white flex-1`}>
                         <div>
-                          <div className="flex items-center gap-0.5 mb-1.5 md:mb-2">
+                          <div className={`flex items-center gap-0.5 ${isMobileMode ? 'mb-1.5' : 'mb-1.5 md:mb-2'}`}>
                             {[...Array(5)].map((_, idx) => (
-                              <Star key={idx} strokeWidth={1.5} className="w-2.5 h-2.5 md:w-3 md:h-3 fill-[#D47A5A] text-[#D47A5A]" />
+                              <Star key={idx} strokeWidth={1.5} className={`${isMobileMode ? 'w-3 h-3' : 'w-2.5 h-2.5 md:w-3 md:h-3'} fill-[#D47A5A] text-[#D47A5A]`} />
                             ))}
                           </div>
-                          <p className="text-[9px] md:text-[13px] text-[#1C1B1A] leading-relaxed mb-2 md:mb-3 font-light italic">
+                          <p className={`${isMobileMode ? 'text-[11px]' : 'text-[11px] md:text-[13px]'} text-[#1C1B1A] leading-relaxed ${isMobileMode ? 'mb-2' : 'mb-2 md:mb-3'} font-light italic`}>
                             &ldquo;{t.text}&rdquo;
                           </p>
                         </div>
 
-                        <div className="space-y-2 md:space-y-3">
-                          <p className="text-[7.5px] md:text-[9px] font-black uppercase tracking-[0.15em] text-[#8C8881]">
+                        <div className={`${isMobileMode ? 'space-y-2' : 'space-y-2 md:space-y-3'}`}>
+                          <p className={`${isMobileMode ? 'text-[8px]' : 'text-[8px] md:text-[9px]'} font-black uppercase tracking-[0.15em] text-[#8C8881]`}>
                             — {t.name} &middot; <span className="text-[#D47A5A]">{t.city}</span>
                           </p>
                           
                           {(t.detail1 || t.detail2) && (
-                            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-black/5 md:pt-2">
+                            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-black/5">
                               {t.detail1 && (
-                                <span className="inline-flex items-center text-[7px] md:text-[8.5px] font-bold text-[#6D7A68] bg-[#F1F5F0] px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full">
+                                <span className={`inline-flex items-center ${isMobileMode ? 'text-[7.5px] px-2 py-0.5' : 'text-[7.5px] md:text-[8.5px] px-2 py-0.5 md:px-2.5 md:py-1'} font-bold text-[#6D7A68] bg-[#F1F5F0] rounded-full`}>
                                   ✔ {t.detail1}
                                 </span>
                               )}
                               {t.detail2 && (
-                                <span className="inline-flex items-center text-[7px] md:text-[8.5px] font-bold text-[#8C8881] bg-[#F7F5F0] px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full">
+                                <span className={`inline-flex items-center ${isMobileMode ? 'text-[7.5px] px-2 py-0.5' : 'text-[7.5px] md:text-[8.5px] px-2 py-0.5 md:px-2.5 md:py-1'} font-bold text-[#8C8881] bg-[#F7F5F0] rounded-full`}>
                                   ✔ {t.detail2}
                                 </span>
                               )}
@@ -1160,11 +1160,19 @@ export default React.memo(function EliteFurnitureTemplate({
 
           {/* ========== 4. PRODUCT DETAILS ========== */}
           {step === "details" && selectedProduct && (
-            <motion.section key="details" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full pb-32 w-full max-w-4xl mx-auto">
+            <motion.section 
+              key="details" 
+              custom={direction} 
+              variants={pageVariants} 
+              initial="initial" 
+              animate="in" 
+              exit="out" 
+              className={`w-full mx-auto ${isMobileMode ? 'min-h-full pb-32 max-w-4xl' : 'md:h-[calc(100vh-40px)] md:max-w-6xl md:flex md:gap-8 md:items-stretch md:overflow-hidden md:pt-24 md:pb-8'}`}
+            >
               {/* Premium Image Gallery */}
-              <div className="w-full bg-[#F7F5F0] relative group">
+              <div className={`w-full bg-[#F7F5F0] relative group shrink-0 ${isMobileMode ? '' : 'md:w-[55%] md:h-full md:bg-transparent md:flex md:flex-col md:gap-4'}`}>
                 <div 
-                  className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar" 
+                  className={`flex overflow-x-auto snap-x snap-mandatory no-scrollbar ${isMobileMode ? '' : 'md:h-[94%] md:rounded-[2.5rem] md:overflow-hidden'}`} 
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   onScroll={(e) => {
                     const container = e.currentTarget;
@@ -1172,21 +1180,21 @@ export default React.memo(function EliteFurnitureTemplate({
                     setActiveImageIndex(index);
                   }}
                 >
-                  <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square md:aspect-auto md:h-[65vh] relative bg-[#EBE6DC]">
+                  <div className={`w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square relative bg-[#EBE6DC] ${isMobileMode ? '' : 'md:aspect-auto md:h-full md:w-full'}`}>
                     <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
                   </div>
                   {selectedProduct.image2 && (
-                    <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square md:aspect-auto md:h-[65vh] relative bg-[#EBE6DC]">
+                    <div className={`w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square relative bg-[#EBE6DC] ${isMobileMode ? '' : 'md:aspect-auto md:h-full md:w-full'}`}>
                       <img src={selectedProduct.image2} alt={`${selectedProduct.name} alternate view`} className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
                 {/* Subtle bottom gradient for image to content transition */}
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                {isMobileMode && <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />}
                 
                 {/* Premium Indicator Pills */}
                 {selectedProduct.image2 && (
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
+                  <div className={`absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10 ${isMobileMode ? '' : 'md:relative md:bottom-0 md:mt-2'}`}>
                     <div className={`transition-all duration-300 ${activeImageIndex === 0 ? 'w-5 bg-[#1C1B1A]' : 'w-1.5 bg-black/20'} h-1.5 rounded-full`} />
                     <div className={`transition-all duration-300 ${activeImageIndex === 1 ? 'w-5 bg-[#1C1B1A]' : 'w-1.5 bg-black/20'} h-1.5 rounded-full`} />
                   </div>
@@ -1194,7 +1202,7 @@ export default React.memo(function EliteFurnitureTemplate({
               </div>
 
               {/* Premium Details Downside */}
-              <div className="px-5 pt-4 pb-12 bg-white relative z-10">
+              <div className={`px-5 pt-4 pb-12 bg-white relative z-10 ${isMobileMode ? '' : 'md:w-[45%] md:h-full md:overflow-y-auto md:bg-transparent md:pb-24 md:pr-4 md:pl-2 no-scrollbar'}`}>
                 <motion.div variants={fadeUp} className="max-w-3xl mx-auto">
                   <div className="flex flex-col mb-6">
                     <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -1284,7 +1292,7 @@ export default React.memo(function EliteFurnitureTemplate({
                     </div>
                   </div>
 
-                  <div className="sticky bottom-4 z-50">
+                  <div className={`sticky bottom-4 z-50 ${isMobileMode ? '' : 'md:relative md:bottom-auto md:z-10'}`}>
                     <button
                       onClick={() => {
                         setAvailabilityProduct(selectedProduct);
@@ -1325,9 +1333,10 @@ export default React.memo(function EliteFurnitureTemplate({
                     </div>
                   )}
                 </motion.div>
+                {!isMobileMode && <div className="mt-12"><BottomCTA /></div>}
               </div>
 
-              <BottomCTA />
+              {isMobileMode && <BottomCTA />}
             </motion.section>
           )}
         </AnimatePresence>
