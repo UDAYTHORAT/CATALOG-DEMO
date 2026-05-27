@@ -321,9 +321,10 @@ export default function BlueprintLayoutEditor({
         if (document.documentElement.requestFullscreen) {
           await document.documentElement.requestFullscreen();
         }
-        if (screen.orientation && screen.orientation.lock) {
+        const orientation = (screen as any).orientation;
+        if (orientation && orientation.lock) {
           try {
-            await screen.orientation.lock('landscape');
+            await orientation.lock('landscape');
           } catch(e) {
             if (window.innerHeight > window.innerWidth) setIsCssRotated(true);
           }
@@ -341,8 +342,9 @@ export default function BlueprintLayoutEditor({
         if (document.exitFullscreen && document.fullscreenElement) {
           await document.exitFullscreen();
         }
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
+        const orientation = (screen as any).orientation;
+        if (orientation && orientation.unlock) {
+          orientation.unlock();
         }
       } catch (err) {
         console.warn(err);
@@ -354,8 +356,9 @@ export default function BlueprintLayoutEditor({
   useEffect(() => {
     return () => {
       try {
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
+        const orientation = (screen as any).orientation;
+        if (orientation && orientation.unlock) {
+          orientation.unlock();
         }
       } catch(e) {}
     };

@@ -56,6 +56,12 @@ const defaultHeroData: HeroData = {
   subTagline: 'Solid Wood Furniture at Factory Prices. Handcrafted in Jodhpur, delivered directly to your home.',
   heroCtaText: 'Find Your Perfect Furniture',
   heroCtaSubtext: 'No browsing. Just pick & chat',
+  trustBarTop1: '1200+ Homes',
+  trustBarBottom1: 'Delivered',
+  trustBarTop2: '4.9★',
+  trustBarBottom2: 'Client Rating',
+  trustBarTop3: 'Factory Direct',
+  trustBarBottom3: 'Pricing',
 };
 
 const defaultRealEstateHeroData: HeroData = {
@@ -125,7 +131,7 @@ const defaultProducts: ProductsData = {
       savingsLabel: 'Save 31%',
       image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Only 2 frames ready',
-      delivery: 'Delivery: 7-10 Days',
+      delivery: '7-10 Days',
       rating: 4.8,
     },
     {
@@ -137,7 +143,7 @@ const defaultProducts: ProductsData = {
       savingsLabel: 'Save 28%',
       image: 'https://images.unsplash.com/photo-1519961655809-34fa156820ff?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Selling fast',
-      delivery: 'Delivery: 5-7 Days',
+      delivery: '5-7 Days',
       rating: 4.9,
     },
     {
@@ -149,7 +155,7 @@ const defaultProducts: ProductsData = {
       savingsLabel: 'Save 31%',
       image: 'https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?auto=format&fit=crop&w=1200&q=80',
       urgency: 'Limited Stock',
-      delivery: 'Delivery: 5-7 Days',
+      delivery: '5-7 Days',
       rating: 4.7,
     },
   ],
@@ -220,29 +226,29 @@ const defaultRealEstateProducts: ProductsData = {
       ],
       rooms: [
         // Base Rooms (Drawn First)
-        { id: 'deck', type: 'balcony', name: 'Large Balcony', area: '450 sqft', img: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=1200&q=80', details: ['Clear views', 'Space for outdoor dining'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'BALCONY (WEST ↑)' },
+        { id: 'deck', type: 'balcony', name: 'Large Balcony', area: '450 sqft', img: '', details: ['Clear views', 'Space for outdoor dining'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'BALCONY (WEST ↑)' },
         
-        { id: 'living', type: 'living', name: 'Main Living Room', area: '650 sqft', img: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80', details: ['High ceiling', 'Wide city views'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 55, h: 25, label: 'LIVING ROOM' },
-        { id: 'dining', type: 'dining', name: 'Family Dining Area', area: '320 sqft', img: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=1200&q=80', details: ['Space for big table', 'Bright lighting'], direction: {x:0,y:0,scale:1}, x: 60, y: 20, w: 35, h: 25, label: 'DINING AREA' },
+        { id: 'living', type: 'living', name: 'Main Living Room', area: '650 sqft', img: '', details: ['High ceiling', 'Wide city views'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 55, h: 25, label: 'LIVING ROOM' },
+        { id: 'dining', type: 'dining', name: 'Family Dining Area', area: '320 sqft', img: '', details: ['Space for big table', 'Bright lighting'], direction: {x:0,y:0,scale:1}, x: 60, y: 20, w: 35, h: 25, label: 'DINING AREA' },
         
         // Connectors & Kitchen
-        { id: 'entrance', type: 'entrance', name: 'Entrance Foyer', area: '150 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Private entry', 'Welcoming design'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 25, h: 15, label: '↓ ENTRANCE' },
-        { id: 'kitchen', type: 'kitchen', name: 'Open Kitchen', area: '350 sqft', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80', details: ['Breakfast counter', 'Easy flow to dining'], direction: {x:0,y:0,scale:1}, x: 30, y: 45, w: 65, h: 15, label: 'KITCHEN' },
+        { id: 'entrance', type: 'entrance', name: 'Entrance Foyer', area: '150 sqft', img: '', details: ['Private entry', 'Welcoming design'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 25, h: 15, label: '↓ ENTRANCE' },
+        { id: 'kitchen', type: 'kitchen', name: 'Open Kitchen', area: '350 sqft', img: '', details: ['Breakfast counter', 'Easy flow to dining'], direction: {x:0,y:0,scale:1}, x: 30, y: 45, w: 65, h: 15, label: 'KITCHEN' },
         
-        { id: 'corridor', type: 'corridor', name: 'Main Corridor', area: '200 sqft', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80', details: ['Bright hallway', 'Connecting all bedrooms'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'CORRIDOR' },
+        { id: 'corridor', type: 'corridor', name: 'Main Corridor', area: '200 sqft', img: '', details: ['Bright hallway', 'Connecting all bedrooms'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'CORRIDOR' },
         
         // Private Wing (Bedrooms)
-        { id: 'bed2', type: 'bedroom', name: 'Kids / Guest Bedroom', area: '280 sqft', img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=80', details: ['Study corner', 'Attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
-        { id: 'master', type: 'bedroom', name: 'Master Bedroom', area: '450 sqft', img: 'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80', details: ['Large windows', 'Big walk-in closet'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 40, h: 25, label: 'MASTER BEDROOM' },
-        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '280 sqft', img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80', details: ['Great city views', 'Comfortable seating space'], direction: {x:0,y:0,scale:1}, x: 70, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
+        { id: 'bed2', type: 'bedroom', name: 'Kids / Guest Bedroom', area: '280 sqft', img: '', details: ['Study corner', 'Attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
+        { id: 'master', type: 'bedroom', name: 'Master Bedroom', area: '450 sqft', img: '', details: ['Large windows', 'Big walk-in closet'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 40, h: 25, label: 'MASTER BEDROOM' },
+        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '280 sqft', img: '', details: ['Great city views', 'Comfortable seating space'], direction: {x:0,y:0,scale:1}, x: 70, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
         
         // Overlapping Sub-Rooms (Carved out, visually receded small boxes)
-        { id: 'utility', type: 'utility', name: 'Utility Area', area: '60 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Washing machine space'], direction: {x:0,y:0,scale:1}, x: 80, y: 45, w: 15, h: 10, label: 'UTILITY' },
-        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Guest toilet'], direction: {x:0,y:0,scale:1}, x: 80, y: 60, w: 15, h: 10, label: 'POWDER' },
-        { id: 'mbath', type: 'bathroom', name: 'Master Bathroom', area: '80 sqft', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', details: ['Two washbasins', 'Spacious shower'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 15, h: 10, label: 'MASTER BATH' },
-        { id: 'mcloset', type: 'corridor', name: 'Walk-in Closet', area: '60 sqft', img: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=1200&q=80', details: ['Bright lighting', 'Lots of space'], direction: {x:0,y:0,scale:1}, x: 55, y: 80, w: 15, h: 10, label: 'CLOSET' },
-        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
-        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 85, y: 85, w: 10, h: 10, label: 'BATH' }
+        { id: 'utility', type: 'utility', name: 'Utility Area', area: '60 sqft', img: '', details: ['Washing machine space'], direction: {x:0,y:0,scale:1}, x: 80, y: 45, w: 15, h: 10, label: 'UTILITY' },
+        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: '', details: ['Guest toilet'], direction: {x:0,y:0,scale:1}, x: 80, y: 60, w: 15, h: 10, label: 'POWDER' },
+        { id: 'mbath', type: 'bathroom', name: 'Master Bathroom', area: '80 sqft', img: '', details: ['Two washbasins', 'Spacious shower'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 15, h: 10, label: 'MASTER BATH' },
+        { id: 'mcloset', type: 'corridor', name: 'Walk-in Closet', area: '60 sqft', img: '', details: ['Bright lighting', 'Lots of space'], direction: {x:0,y:0,scale:1}, x: 55, y: 80, w: 15, h: 10, label: 'CLOSET' },
+        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: '', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
+        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '45 sqft', img: '', details: ['Inside the bedroom'], direction: {x:0,y:0,scale:1}, x: 85, y: 85, w: 10, h: 10, label: 'BATH' }
       ]
     },
     {
@@ -266,40 +272,40 @@ const defaultRealEstateProducts: ProductsData = {
       ],
       rooms: [
         // 1. The Sky Garden (West Light Experience)
-        { id: 'deck', type: 'balcony', name: 'Terrace Garden', area: '600 sqft', img: 'https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=1200&q=80', details: ['Plants and greenery', 'Water feature'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'TERRACE (WEST ↑)' },
+        { id: 'deck', type: 'balcony', name: 'Terrace Garden', area: '600 sqft', img: '', details: ['Plants and greenery', 'Water feature'], direction: {x:0,y:0,scale:1}, x: 5, y: 5, w: 90, h: 15, label: 'TERRACE (WEST ↑)' },
 
         // 2. The Grand Social Axis
-        { id: 'living', type: 'living', name: 'Main Living Room', area: '800 sqft', img: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80', details: ['Huge seating area', 'TV and media setup'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 40, h: 25, label: 'LIVING ROOM' },
-        { id: 'dining', type: 'dining', name: 'Large Dining Area', area: '450 sqft', img: 'https://images.unsplash.com/photo-1559599189-fe84dea4eb79?auto=format&fit=crop&w=1200&q=80', details: ['Space for 8 people', 'Beautiful lighting'], direction: {x:0,y:0,scale:1}, x: 45, y: 20, w: 25, h: 25, label: 'DINING AREA' },
-        { id: 'kitchen', type: 'kitchen', name: 'Spacious Kitchen', area: '450 sqft', img: 'https://images.unsplash.com/photo-1556909211-ed127c556b6a?auto=format&fit=crop&w=1200&q=80', details: ['Open counter design', 'Lots of storage cabinets'], direction: {x:0,y:0,scale:1}, x: 70, y: 20, w: 25, h: 25, label: 'KITCHEN' },
+        { id: 'living', type: 'living', name: 'Main Living Room', area: '800 sqft', img: '', details: ['Huge seating area', 'TV and media setup'], direction: {x:0,y:0,scale:1}, x: 5, y: 20, w: 40, h: 25, label: 'LIVING ROOM' },
+        { id: 'dining', type: 'dining', name: 'Large Dining Area', area: '450 sqft', img: '', details: ['Space for 8 people', 'Beautiful lighting'], direction: {x:0,y:0,scale:1}, x: 45, y: 20, w: 25, h: 25, label: 'DINING AREA' },
+        { id: 'kitchen', type: 'kitchen', name: 'Spacious Kitchen', area: '450 sqft', img: '', details: ['Open counter design', 'Lots of storage cabinets'], direction: {x:0,y:0,scale:1}, x: 70, y: 20, w: 25, h: 25, label: 'KITCHEN' },
 
         // 3. Arrival Sequence & Service
-        { id: 'bed4', type: 'bedroom', name: 'Guest Bedroom', area: '350 sqft', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80', details: ['Close to the main door', 'Very private'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 30, h: 15, label: 'GUEST BEDROOM' },
-        { id: 'niche', type: 'corridor', name: 'Display Area', area: '150 sqft', img: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=1200&q=80', details: ['Wooden divider', 'Space for artwork'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 15, label: 'DISPLAY' },
-        { id: 'entrance', type: 'entrance', name: 'Main Entrance Lobby', area: '300 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Wide entry', 'Hidden ceiling lights'], direction: {x:0,y:0,scale:1}, x: 45, y: 45, w: 25, h: 15, label: '↓ MAIN ENTRANCE' },
-        { id: 'spine', type: 'corridor', name: 'Service Corridor', area: '250 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Hidden doors', 'Separate staff path'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 25, h: 15, label: 'SERVICE PATH' },
+        { id: 'bed4', type: 'bedroom', name: 'Guest Bedroom', area: '350 sqft', img: '', details: ['Close to the main door', 'Very private'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 30, h: 15, label: 'GUEST BEDROOM' },
+        { id: 'niche', type: 'corridor', name: 'Display Area', area: '150 sqft', img: '', details: ['Wooden divider', 'Space for artwork'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 15, label: 'DISPLAY' },
+        { id: 'entrance', type: 'entrance', name: 'Main Entrance Lobby', area: '300 sqft', img: '', details: ['Wide entry', 'Hidden ceiling lights'], direction: {x:0,y:0,scale:1}, x: 45, y: 45, w: 25, h: 15, label: '↓ MAIN ENTRANCE' },
+        { id: 'spine', type: 'corridor', name: 'Service Corridor', area: '250 sqft', img: '', details: ['Hidden doors', 'Separate staff path'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 25, h: 15, label: 'SERVICE PATH' },
 
         // 4. Circulation
-        { id: 'corridor', type: 'corridor', name: 'Glass Corridor', area: '400 sqft', img: 'https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&fit=crop&w=1200&q=80', details: ['Glass walls on one side', 'Very bright'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'MAIN CORRIDOR' },
+        { id: 'corridor', type: 'corridor', name: 'Glass Corridor', area: '400 sqft', img: '', details: ['Glass walls on one side', 'Very bright'], direction: {x:0,y:0,scale:1}, x: 5, y: 60, w: 90, h: 10, label: 'MAIN CORRIDOR' },
 
         // 5. Private Suites
-        { id: 'bed2', type: 'bedroom', name: 'Second Master Bedroom', area: '400 sqft', img: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=80', details: ['Great outside views', 'Large attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
-        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '400 sqft', img: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80', details: ['Premium styling', 'Very spacious'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
-        { id: 'master', type: 'bedroom', name: 'Grand Master Bedroom', area: '750 sqft', img: 'https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?auto=format&fit=crop&w=1200&q=80', details: ['Reading corner', 'Biggest room in house'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 40, h: 25, label: 'GRAND MASTER' },
+        { id: 'bed2', type: 'bedroom', name: 'Second Master Bedroom', area: '400 sqft', img: '', details: ['Great outside views', 'Large attached bathroom'], direction: {x:0,y:0,scale:1}, x: 5, y: 70, w: 25, h: 25, label: 'BEDROOM 2' },
+        { id: 'bed3', type: 'bedroom', name: 'Third Bedroom', area: '400 sqft', img: '', details: ['Premium styling', 'Very spacious'], direction: {x:0,y:0,scale:1}, x: 30, y: 70, w: 25, h: 25, label: 'BEDROOM 3' },
+        { id: 'master', type: 'bedroom', name: 'Grand Master Bedroom', area: '750 sqft', img: '', details: ['Reading corner', 'Biggest room in house'], direction: {x:0,y:0,scale:1}, x: 55, y: 70, w: 40, h: 25, label: 'GRAND MASTER' },
 
         // Overlapping Sub-Rooms (Carved out, receding)
-        { id: 'mcloset', type: 'corridor', name: 'Large Walk-in Closet', area: '150 sqft', img: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=1200&q=80', details: ['Island storage in middle', 'Dressing table area'], direction: {x:0,y:0,scale:1}, x: 80, y: 70, w: 15, h: 10, label: 'CLOSET' },
-        { id: 'mbath', type: 'bathroom', name: 'Luxury Master Bathroom', area: '180 sqft', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80', details: ['Big bathtub', 'Double shower space'], direction: {x:0,y:0,scale:1}, x: 80, y: 80, w: 15, h: 15, label: 'MASTER BATH' },
+        { id: 'mcloset', type: 'corridor', name: 'Large Walk-in Closet', area: '150 sqft', img: '', details: ['Island storage in middle', 'Dressing table area'], direction: {x:0,y:0,scale:1}, x: 80, y: 70, w: 15, h: 10, label: 'CLOSET' },
+        { id: 'mbath', type: 'bathroom', name: 'Luxury Master Bathroom', area: '180 sqft', img: '', details: ['Big bathtub', 'Double shower space'], direction: {x:0,y:0,scale:1}, x: 80, y: 80, w: 15, h: 15, label: 'MASTER BATH' },
         
-        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Hidden door design'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 5, label: 'POWDER' },
+        { id: 'powder', type: 'bathroom', name: 'Powder Room', area: '40 sqft', img: '', details: ['Hidden door design'], direction: {x:0,y:0,scale:1}, x: 35, y: 45, w: 10, h: 5, label: 'POWDER' },
         
-        { id: 'bath4', type: 'bathroom', name: 'Guest Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Easy access from room'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 10, h: 10, label: 'BATH' },
+        { id: 'bath4', type: 'bathroom', name: 'Guest Bathroom', area: '60 sqft', img: '', details: ['Easy access from room'], direction: {x:0,y:0,scale:1}, x: 5, y: 45, w: 10, h: 10, label: 'BATH' },
         
-        { id: 'staff', type: 'bedroom', name: 'Maid Room', area: '80 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Separate back door entry'], direction: {x:0,y:0,scale:1}, x: 85, y: 45, w: 10, h: 10, label: 'MAID' },
-        { id: 'utility', type: 'utility', name: 'Utility & Laundry', area: '80 sqft', img: 'https://images.unsplash.com/photo-1582736125026-b8a9246109e2?auto=format&fit=crop&w=1200&q=80', details: ['Washing machine setup'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 15, h: 10, label: 'UTILITY' },
+        { id: 'staff', type: 'bedroom', name: 'Maid Room', area: '80 sqft', img: '', details: ['Separate back door entry'], direction: {x:0,y:0,scale:1}, x: 85, y: 45, w: 10, h: 10, label: 'MAID' },
+        { id: 'utility', type: 'utility', name: 'Utility & Laundry', area: '80 sqft', img: '', details: ['Washing machine setup'], direction: {x:0,y:0,scale:1}, x: 70, y: 45, w: 15, h: 10, label: 'UTILITY' },
 
-        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
-        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 30, y: 85, w: 10, h: 10, label: 'BATH' }
+        { id: 'bath2', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: '', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 5, y: 85, w: 10, h: 10, label: 'BATH' },
+        { id: 'bath3', type: 'bathroom', name: 'Attached Bathroom', area: '60 sqft', img: '', details: ['Glass shower area'], direction: {x:0,y:0,scale:1}, x: 30, y: 85, w: 10, h: 10, label: 'BATH' }
       ]
     }
   ],
@@ -314,22 +320,31 @@ const defaultTestimonials: TestimonialsData = {
       id: 't1',
       name: 'Rahul S.',
       city: 'Mumbai',
-      text: 'Saved Rs 35k compared to local retail stores. The Sheesham wood feels extremely premium.',
+      text: 'Looks even better in person.',
       rating: 5,
+      image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+      detail1: 'Delivered in 9 Days',
+      detail2: 'Custom walnut finish',
     },
     {
       id: 't2',
       name: 'Priya K.',
       city: 'Bangalore',
-      text: 'Loved the fact that they sent me photos straight from their Jodhpur factory before shipping. 10/10.',
+      text: 'Exactly what we wanted.',
       rating: 5,
+      image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?auto=format&fit=crop&w=800&q=80',
+      detail1: 'Delivered in 11 Days',
+      detail2: 'Solid Sheesham Wood',
     },
     {
       id: 't3',
       name: 'Ananya M.',
       city: 'Delhi',
-      text: 'Incredible design and flawless finish. The buying experience over WhatsApp was so simple.',
+      text: 'Flawless quality & finish.',
       rating: 5,
+      image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80',
+      detail1: 'Delivered in 7 Days',
+      detail2: 'Teak wood & bouclé fabric',
     },
   ],
 };
@@ -422,8 +437,10 @@ export const createInitialContent = (funnel: Funnel): Content => {
   const defaults = createDefaultSections(templateId);
   const isRealEstate = templateId === REAL_ESTATE_TEMPLATE_ID;
 
+  let content: Content;
+
   if (saved && Array.isArray(saved.sections)) {
-    const content = sanitizeLegacyText(saved) as Content;
+    content = sanitizeLegacyText(saved) as Content;
     
     // Ensure all default sections exist for existing funnels
     defaults.forEach((defSection) => {
@@ -431,18 +448,28 @@ export const createInitialContent = (funnel: Funnel): Content => {
         content.sections.push(structuredClone(defSection));
       }
     });
-    
-    return content;
+  } else {
+    content = {
+      storeName: isRealEstate ? 'Aurelia Residences' : 'Urban Living',
+      logoUrl: isRealEstate
+        ? 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=300&q=80'
+        : '',
+      whatsappNumber: '919876543210',
+      sections: defaults,
+    };
   }
 
-  return {
-    storeName: isRealEstate ? 'Aurelia Residences' : 'Urban Living',
-    logoUrl: isRealEstate
-      ? 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=300&q=80'
-      : 'https://images.unsplash.com/photo-1618220179428-22790b46a0eb?auto=format&fit=crop&w=300&q=80',
-    whatsappNumber: '919876543210',
-    sections: defaults,
-  };
+  // Clean up product delivery field to remove redundant prefix
+  const productsSection = content.sections.find((s) => s.id === 'products');
+  if (productsSection?.data?.products && Array.isArray(productsSection.data.products)) {
+    productsSection.data.products.forEach((prod: any) => {
+      if (prod && typeof prod.delivery === 'string') {
+        prod.delivery = prod.delivery.replace(/^delivery:\s*/i, '');
+      }
+    });
+  }
+
+  return content;
 };
 
 export const getSectionData = <T,>(content: Content, id: SectionId, fallback: T): T => {

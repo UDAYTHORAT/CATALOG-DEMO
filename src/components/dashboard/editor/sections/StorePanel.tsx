@@ -65,6 +65,16 @@ export default React.memo(function StorePanel({
     return () => clearTimeout(timer);
   }, [localNumber, countryCode, onChangeWhatsApp]);
 
+  // Sync with parent prop if it changes externally (e.g. during reset)
+  React.useEffect(() => {
+    if (countryCode + localNumber !== whatsappNumber) {
+      const commonCodes = ['91', '1', '44', '971', '65', '61', '966', '20'];
+      const code = commonCodes.find(c => whatsappNumber.startsWith(c)) || '';
+      setCountryCode(code || '91');
+      setLocalNumber(whatsappNumber.startsWith(code) ? whatsappNumber.slice(code.length) : whatsappNumber);
+    }
+  }, [whatsappNumber]);
+
   return (
     <div className="space-y-8">
       <PanelTitle icon={Settings} label={panelLabel || "Store Profile"} meta="General Settings" />

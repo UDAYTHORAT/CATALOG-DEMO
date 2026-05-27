@@ -286,11 +286,13 @@ export default function EliteRealEstateTemplate({
       if (!messageOverride) {
         if (product) {
           message = (content.whatsappData.productInquiryText || message)
-            .replace('{product_name}', product.name)
-            .replace('{store_name}', content.baseContent.storeName);
+            .replaceAll('{product_name}', product.name)
+            .replaceAll('{category}', selectedPersona?.label || 'General Inquiry')
+            .replaceAll('{store_name}', content.baseContent.storeName || "SAUNTER");
         } else {
           message = (content.whatsappData.welcomeMessage || message)
-            .replace('{store_name}', content.baseContent.storeName);
+            .replaceAll('{category}', selectedPersona?.label || 'General Inquiry')
+            .replaceAll('{store_name}', content.baseContent.storeName || "SAUNTER");
         }
       }
 
@@ -1106,8 +1108,9 @@ function Tour({
 
   if (!room) return null;
 
-  const allImages: string[] = room.images?.length ? room.images : (room.img ? [room.img] : [residence.image]);
-  const img = allImages[imgIdx] || allImages[0] || residence.image;
+  const allImages: string[] = room.images?.length ? room.images : (room.img ? [room.img] : []);
+  const img = allImages[imgIdx] || allImages[0] || '';
+  const hasImage = Boolean(img);
 
   const roomIndex = rooms.findIndex((r: any) => r.id === activeId);
   const goNext = () => { if (roomIndex < rooms.length - 1) setActiveId(rooms[roomIndex + 1].id); };
@@ -1163,7 +1166,16 @@ function Tour({
                 dragElastic={0.2}
                 onDragEnd={onDragEnd}
               >
-                <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
+                {hasImage ? (
+                  <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
+                ) : (
+                  <div className="w-full h-full bg-[#EFEFEF] flex flex-col items-center justify-center pointer-events-none border-r border-[#E0DCD0]">
+                    <div className="w-16 h-16 border border-dashed border-[#C4C0B6] rounded-xl flex items-center justify-center mb-4 bg-white/50">
+                      <span className="text-[#A39F93] text-2xl font-light">+</span>
+                    </div>
+                    <p className="text-[#878378] font-serif tracking-widest text-xs uppercase">Add image for {room.name}</p>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.7) 100%)' }} />
@@ -1351,7 +1363,16 @@ function Tour({
                 dragElastic={0.2}
                 onDragEnd={onDragEnd}
               >
-                <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
+                {hasImage ? (
+                  <img src={img} alt={room.name} className="w-full h-full object-cover pointer-events-none" />
+                ) : (
+                  <div className="w-full h-full bg-[#EFEFEF] flex flex-col items-center justify-center pointer-events-none">
+                    <div className="w-16 h-16 border border-dashed border-[#C4C0B6] rounded-xl flex items-center justify-center mb-4 bg-white/50">
+                      <span className="text-[#A39F93] text-2xl font-light">+</span>
+                    </div>
+                    <p className="text-[#878378] font-serif tracking-widest text-xs uppercase">Add image for {room.name}</p>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.8) 100%)' }} />

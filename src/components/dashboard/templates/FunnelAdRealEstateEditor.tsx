@@ -18,11 +18,13 @@ import {
   PanelLeftOpen,
   Redo2,
   Rocket,
+  RotateCcw,
   Save,
   Smartphone,
   Tablet,
   Undo2,
   ExternalLink,
+  GripVertical,
   X,
   HelpCircle,
   ChevronRight,
@@ -34,6 +36,7 @@ import {
   Clock,
   ArrowRight,
   LayoutList,
+  AlertTriangle,
 } from 'lucide-react';
 import { useEditorHistory } from '@/components/dashboard/editor/hooks/useEditorHistory';
 import type { Funnel } from '@/app/actions/funnels';
@@ -93,6 +96,7 @@ export default function FunnelAdRealEstateEditor({
     push: pushHistory,
     undo,
     redo,
+    reset,
     canUndo,
     canRedo,
   } = useEditorHistory(initialContent);
@@ -117,6 +121,12 @@ export default function FunnelAdRealEstateEditor({
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   useEffect(() => {
     if (!isResizing) return;
@@ -157,7 +167,25 @@ export default function FunnelAdRealEstateEditor({
     if (saved === 'advanced' || saved === 'wizard') {
       setEditorMode(saved as 'advanced' | 'wizard');
     }
-  }, [funnel.id]);
+
+    // Restore active tab
+    const savedTab = localStorage.getItem(`editor_tab_${funnel.id}`);
+    if (savedTab) {
+      setActiveTab(savedTab as TabId);
+    }
+
+    // Restore draft from localStorage
+    const savedDraft = localStorage.getItem(`funnel_draft_${funnel.id}`);
+    if (savedDraft) {
+      try {
+        const parsed = JSON.parse(savedDraft) as Content;
+        setLiveContent(parsed);
+        reset(parsed);
+      } catch (e) {
+        console.error('Failed to parse draft from localStorage:', e);
+      }
+    }
+  }, [funnel.id, reset]);
 
   const saveSuccessTimer = useRef<NodeJS.Timeout | null>(null);
   const copyTimer = useRef<NodeJS.Timeout | null>(null);
@@ -173,11 +201,51 @@ export default function FunnelAdRealEstateEditor({
     setLiveContent(draftContent);
   }, [draftContent]);
 
-  // ✅ Auto-show onboarding whenever entering Advanced mode
+  // Persist active tab changes
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem(`editor_tab_${funnel.id}`, activeTab);
+    }
+  }, [activeTab, funnel.id, isHydrated]);
+
+  // Instantly save draft to localStorage as user edits
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem(`funnel_draft_${funnel.id}`, JSON.stringify(liveContent));
+    }
+  }, [liveContent, funnel.id, isHydrated]);
+
+  // Restore and persist scroll position of editor panel
+  useEffect(() => {
+    const container = document.getElementById('tour-tabs');
+    if (!container) return;
+
+    const savedScroll = localStorage.getItem(`editor_scroll_${funnel.id}_${activeTab}`);
+    if (savedScroll) {
+      container.scrollTop = parseInt(savedScroll, 10);
+    }
+
+    const handleScroll = () => {
+      localStorage.setItem(`editor_scroll_${funnel.id}_${activeTab}`, container.scrollTop.toString());
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [activeTab, funnel.id, isHydrated]);
+
+  // ✅ Auto-show onboarding whenever entering Advanced mode, but only once
   useEffect(() => {
     if (editorMode === 'advanced') {
-      const timer = setTimeout(() => setShowOnboarding(true), 800);
-      return () => clearTimeout(timer);
+      const shown = localStorage.getItem(`guide_shown_${funnel.id}`);
+      if (!shown) {
+        const timer = setTimeout(() => {
+          setShowOnboarding(true);
+          localStorage.setItem(`guide_shown_${funnel.id}`, 'true');
+        }, 800);
+        return () => clearTimeout(timer);
+      }
     }
   }, [funnel.id, editorMode]);
 
@@ -476,6 +544,58 @@ export default function FunnelAdRealEstateEditor({
     []
   );
 
+  const handleResetSection = useCallback((sectionId: SectionId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Reset Section Settings',
+      message: 'Are you sure you want to reset this section to its default state? All your changes in this section will be lost.',
+      onConfirm: () => {
+        updateContent((draft) => {
+          const fallback = defaultSections.find((item) => item.id === sectionId);
+          if (!fallback) return;
+          const index = draft.sections.findIndex((item) => item.id === sectionId);
+          if (index !== -1) {
+            draft.sections[index] = structuredClone(fallback);
+          } else {
+            draft.sections.push(structuredClone(fallback));
+          }
+        });
+        setConfirmModal(null);
+      }
+    });
+  }, [defaultSections, updateContent]);
+
+  const handleResetAll = useCallback(() => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Reset Entire Funnel',
+      message: 'Are you sure you want to completely reset the entire funnel to the default template? ALL your changes will be lost.',
+      onConfirm: () => {
+        const resetContent = {
+          sections: structuredClone(defaultSections),
+          storeName: 'Aurelia Residences',
+          whatsappNumber: '919876543210',
+          logoUrl: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=300&q=80',
+        };
+        updateContent((draft) => {
+          draft.sections = resetContent.sections;
+          draft.storeName = resetContent.storeName;
+          draft.whatsappNumber = resetContent.whatsappNumber;
+          draft.logoUrl = resetContent.logoUrl;
+        });
+        // Clear persisted values
+        localStorage.removeItem(`funnel_draft_${funnel.id}`);
+        localStorage.removeItem(`wizard_step_${funnel.id}`);
+        localStorage.removeItem(`editor_tab_${funnel.id}`);
+        localStorage.removeItem(`guide_shown_${funnel.id}`);
+        
+        // Reset editor history to the default values
+        reset(resetContent);
+        setConfirmModal(null);
+      }
+    });
+  }, [defaultSections, updateContent, funnel.id, reset]);
+
   // ✅ FIX #4: Proper undo/redo handlers that integrate with change tracking
   const handleUndo = useCallback(() => {
     undo();
@@ -737,8 +857,8 @@ export default function FunnelAdRealEstateEditor({
 
   const readiness = useMemo(() => {
     const items = [
-      { id: 'store', label: 'Project Name', met: draftContent.storeName.trim().length > 0 },
-      { id: 'store', label: 'Contact Number', met: draftContent.whatsappNumber.trim().length > 0 },
+      { id: 'store', label: 'Project Name', met: liveContent.storeName.trim().length > 0 },
+      { id: 'store', label: 'Contact Number', met: liveContent.whatsappNumber.trim().length > 0 },
       { id: 'products', label: 'Residence Listings', met: productsData.products.length > 0 },
     ];
 
@@ -749,8 +869,8 @@ export default function FunnelAdRealEstateEditor({
     return { score, missingItems };
   }, [
     categoriesData.categories.length,
-    draftContent.storeName,
-    draftContent.whatsappNumber,
+    liveContent.storeName,
+    liveContent.whatsappNumber,
     productsData.products.length,
     testimonialsData.testimonials.length,
   ]);
@@ -761,9 +881,9 @@ export default function FunnelAdRealEstateEditor({
     if (currentTab === 'store') {
       return (
         <StorePanel
-          storeName={draftContent.storeName}
-          whatsappNumber={draftContent.whatsappNumber}
-          logoUrl={draftContent.logoUrl}
+          storeName={liveContent.storeName}
+          whatsappNumber={liveContent.whatsappNumber}
+          logoUrl={liveContent.logoUrl}
           readiness={readiness}
           counts={{
             collections: 0,
@@ -975,15 +1095,26 @@ export default function FunnelAdRealEstateEditor({
   // ===================== WIZARD MODE =====================
   if (editorMode === 'wizard') {
     return (
-      <WizardMode
-        content={liveContent}
-        funnel={funnel}
-        products={productsData.products}
-        panelRenderer={getPanelContent}
-        onFinish={() => void handleWizardFinish()}
-        onSwitchToAdvanced={() => handleChooseMode('advanced')}
-        onReorderSections={handleReorderSections}
-      />
+      <>
+        <WizardMode
+          content={liveContent}
+          funnel={funnel}
+          products={productsData.products}
+          panelRenderer={getPanelContent}
+          onFinish={() => void handleWizardFinish()}
+          onSwitchToAdvanced={() => handleChooseMode('advanced')}
+          onReorderSections={handleReorderSections}
+          onResetSection={handleResetSection}
+          onResetAll={handleResetAll}
+        />
+        <ConfirmModal
+          isOpen={!!confirmModal?.isOpen}
+          title={confirmModal?.title || ''}
+          message={confirmModal?.message || ''}
+          onConfirm={confirmModal?.onConfirm || (() => {})}
+          onCancel={() => setConfirmModal(null)}
+        />
+      </>
     );
   }
 
@@ -1218,7 +1349,10 @@ export default function FunnelAdRealEstateEditor({
             </button>
 
             <button
-              onClick={() => setShowOnboarding(true)}
+              onClick={() => {
+                localStorage.removeItem(`guide_shown_${funnel.id}`);
+                setShowOnboarding(true);
+              }}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all ${
                 isDarkMode 
                   ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white border border-white/5' 
@@ -1227,6 +1361,19 @@ export default function FunnelAdRealEstateEditor({
             >
               <HelpCircle size={14} strokeWidth={2.5} />
               Guide
+            </button>
+
+            <button
+              onClick={handleResetAll}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all ${
+                isDarkMode 
+                  ? 'bg-red-900/30 text-red-400 hover:bg-red-800/40 hover:text-red-300 border border-red-500/20' 
+                  : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100'
+              }`}
+              title="Reset Entire Funnel"
+            >
+              <RotateCcw size={14} strokeWidth={2.5} />
+              Reset All
             </button>
 
           </div>
@@ -1429,12 +1576,16 @@ export default function FunnelAdRealEstateEditor({
             >
               {/* Resizer Handle */}
               <div 
-                className="hidden lg:block absolute top-0 right-[-4px] bottom-0 w-[8px] cursor-col-resize z-50 hover:bg-orange-500/20 active:bg-orange-500/40 transition-colors"
+                className={`hidden lg:flex absolute top-0 right-[-10px] bottom-0 w-[20px] cursor-col-resize z-50 flex-col items-center justify-center group transition-colors ${isResizing ? 'bg-orange-500/10' : 'hover:bg-orange-500/10'}`}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   setIsResizing(true);
                 }}
-              />
+              >
+                <div className={`flex items-center justify-center h-8 w-4 rounded-full bg-white border shadow-sm transition-all ${isResizing ? 'border-orange-500 text-orange-500 scale-110 shadow-md' : 'border-slate-200 text-slate-400 group-hover:border-orange-400 group-hover:text-orange-400'}`}>
+                  <GripVertical size={12} strokeWidth={2.5} />
+                </div>
+              </div>
               
               {/* ✅ FIX #10: Professional Two-Column Sidebar Layout */}
               <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
@@ -1470,6 +1621,18 @@ export default function FunnelAdRealEstateEditor({
                       transition={{ duration: 0.2 }}
                     >
                       {getPanelContent()}
+                      
+                      {activeTab !== 'layouts' && activeTab !== 'store' && (
+                        <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
+                          <button
+                            onClick={() => handleResetSection(activeTab as SectionId)}
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                          >
+                            <RotateCcw size={14} />
+                            Reset this section
+                          </button>
+                        </div>
+                      )}
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -1651,6 +1814,80 @@ export default function FunnelAdRealEstateEditor({
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={!!confirmModal?.isOpen}
+        title={confirmModal?.title || ''}
+        message={confirmModal?.message || ''}
+        onConfirm={confirmModal?.onConfirm || (() => {})}
+        onCancel={() => setConfirmModal(null)}
+      />
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIRM MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
+interface ConfirmModalProps {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }: ConfirmModalProps) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onCancel}
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: 'spring', duration: 0.4 }}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 text-left"
+          >
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-rose-500" />
+
+            <div className="flex gap-4 items-start mt-2">
+              <div className="p-3 rounded-2xl bg-rose-50 text-rose-500 shrink-0">
+                <AlertTriangle size={24} className="animate-pulse" />
+              </div>
+              <div className="flex-1 space-y-1">
+                <h3 className="text-base font-black text-slate-900 tracking-tight">{title}</h3>
+                <p className="text-xs font-semibold text-slate-500 leading-relaxed">{message}</p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 border border-slate-200/50"
+              >
+                No, Keep Changes
+              </button>
+              <button
+                type="button"
+                onClick={onConfirm}
+                className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/10 hover:shadow-rose-600/20 hover:scale-[1.02] transition-all active:scale-95"
+              >
+                Yes, Reset
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

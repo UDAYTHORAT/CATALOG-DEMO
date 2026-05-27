@@ -125,8 +125,9 @@ export default React.memo(function WhatsAppPanel({
               <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-4 shadow-sm relative">
                 <p className="text-[11px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                   {(data.welcomeMessage || 'Hi {store_name}, I’m planning to buy furniture...')
-                    .replace('{store_name}', storeName || 'Store Identity')
-                    .replace('Urban Living', storeName || 'Store Identity')}
+                    .replaceAll('{store_name}', storeName || 'Store Identity')
+                    .replaceAll('{category}', 'SOFA')
+                    .replaceAll('Urban Living', storeName || 'Store Identity')}
                 </p>
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-40">
                   <CheckCheck size={12} className="text-blue-600" />
@@ -139,9 +140,10 @@ export default React.memo(function WhatsAppPanel({
               <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-4 shadow-sm relative">
                 <p className="text-[11px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                   {(data.productInquiryText || '')
-                    .replace('{product_name}', 'Royal Oak Sofa')
-                    .replace('{store_name}', storeName || 'Store Identity')
-                    .replace('Urban Living', storeName || 'Store Identity')}
+                    .replaceAll('{product_name}', 'Royal Oak Sofa')
+                    .replaceAll('{store_name}', storeName || 'Store Identity')
+                    .replaceAll('{category}', 'SOFA')
+                    .replaceAll('Urban Living', storeName || 'Store Identity')}
                 </p>
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-40">
                   <CheckCheck size={12} className="text-blue-600" />

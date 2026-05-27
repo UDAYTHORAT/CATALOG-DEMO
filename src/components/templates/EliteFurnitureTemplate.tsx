@@ -1,9 +1,9 @@
 'use client';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { 
   ChevronLeft, ArrowRight, MessageCircle, MessageSquare,
   Star, MapPin, Quote, ExternalLink, Package,
-  CheckCircle2, ShieldCheck, Truck, X
+  CheckCircle2, ShieldCheck, Truck, X, Play
 } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { createLead } from '@/app/actions/leads';
@@ -55,6 +55,9 @@ type Testimonial = {
   city: string;
   text: string;
   rating: number;
+  image?: string;
+  detail1?: string;
+  detail2?: string;
 };
 
 type FunnelContent = {
@@ -146,6 +149,7 @@ export default React.memo(function EliteFurnitureTemplate({
   const [availabilityProduct, setAvailabilityProduct] = useState<Product | null>(null);
   const cityRef = React.useRef<HTMLInputElement>(null);
   const pincodeRef = React.useRef<HTMLInputElement>(null);
+  const testimonialsScrollRef = useRef<HTMLDivElement>(null);
 
   // Extract content from funnel story_mode_data or use defaults
   const isMobileMode = previewMode === 'mobile';
@@ -185,9 +189,16 @@ export default React.memo(function EliteFurnitureTemplate({
       return '';
     };
 
-    const defaultLogo = "/images/furniture-logo.png";
+    const defaultLogo = "/images/furniture-logo-default.png";
     const defaultMap = "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80";
     const defaultProductImage = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80";
+    const defaultWhatsAppData = {
+      title: 'Get Best Price Instantly',
+      subTitle: 'Chat directly with factory & save more',
+      ctaText: 'Chat Directly with Factory',
+      welcomeMessage: 'Hi {store_name},\n\nI’m planning to buy furniture.\n\nHere’s what I’m looking for:\n• Requirement: {category}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode',
+      productInquiryText: 'Hi {store_name},\n\nI’m interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city',
+    };
 
     const baseCategories = (base.categories && base.categories.length > 0) ? base.categories : [
       { id: "sofas", label: "Luxury Sofas", tagline: "Lounges & Recliners", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80" },
@@ -196,15 +207,15 @@ export default React.memo(function EliteFurnitureTemplate({
     ];
 
     const baseProducts = (propProducts && propProducts.length > 0) ? propProducts : (base.products && base.products.length > 0) ? base.products : [
-      { id: 'p1', category_id: 'sofas', name: 'Modo Sheesham L-Shape', priceLabel: 'Rs 45,000', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80', image2: 'https://images.unsplash.com/photo-1550254478-ead40cc54513?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Only 2 frames ready', delivery: 'Delivery: 7-10 Days' },
-      { id: 'p2', category_id: 'sofas', name: 'Velvet Royal Chesterfield', priceLabel: 'Rs 58,500', image: 'https://images.unsplash.com/photo-1519961655809-34fa156820ff?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'Selling fast', delivery: 'Delivery: 5-7 Days' },
-      { id: 'p3', category_id: 'sofas', name: 'Scandinavian 3-Seater', priceLabel: 'Rs 24,000', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80', rating: 4.7, urgency: 'Limited Stock', delivery: 'Delivery: 5-7 Days' },
-      { id: 'p4', category_id: 'beds', name: 'Grand King Upholstered', priceLabel: 'Rs 38,000', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Direct from Factory', delivery: 'Delivery: 10-12 Days' },
-      { id: 'p5', category_id: 'beds', name: 'Storage Queen Bed', priceLabel: 'Rs 32,500', image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'Most Popular', delivery: 'Delivery: 7-10 Days' },
-      { id: 'p6', category_id: 'beds', name: 'Rustic Sheesham Original', priceLabel: 'Rs 28,000', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80', rating: 4.7, urgency: 'Jodhpur Special', delivery: 'Delivery: 12-15 Days' },
-      { id: 'p7', category_id: 'dining', name: 'Marble Top 6-Seater', priceLabel: 'Rs 65,000', image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80', rating: 4.9, urgency: 'Premium Finish', delivery: 'Delivery: 10-12 Days' },
-      { id: 'p8', category_id: 'dining', name: 'Compact Walnut 4-Seater', priceLabel: 'Rs 22,500', image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Space Saver', delivery: 'Delivery: 5-7 Days' },
-      { id: 'p9', category_id: 'dining', name: 'Grand 8-Seater Banquet', priceLabel: 'Rs 85,000', image: 'https://images.unsplash.com/photo-1600566752355-324864f7b49e?auto=format&fit=crop&w=800&q=80', rating: 5.0, urgency: 'Exclusive Design', delivery: 'Delivery: 15-20 Days' },
+      { id: 'p1', category_id: 'sofas', name: 'Modo Sheesham L-Shape', priceLabel: 'Rs 45,000', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80', image2: 'https://images.unsplash.com/photo-1550254478-ead40cc54513?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Only 2 frames ready', delivery: '7-10 Days' },
+      { id: 'p2', category_id: 'sofas', name: 'Velvet Royal Chesterfield', priceLabel: 'Rs 58,500', image: 'https://images.unsplash.com/photo-1519961655809-34fa156820ff?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'Selling fast', delivery: '5-7 Days' },
+      { id: 'p3', category_id: 'sofas', name: 'Scandinavian 3-Seater', priceLabel: 'Rs 24,000', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80', rating: 4.7, urgency: 'Limited Stock', delivery: '5-7 Days' },
+      { id: 'p4', category_id: 'beds', name: 'Grand King Upholstered', priceLabel: 'Rs 38,000', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Direct from Factory', delivery: '10-12 Days' },
+      { id: 'p5', category_id: 'beds', name: 'Storage Queen Bed', priceLabel: 'Rs 32,500', image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'Most Popular', delivery: '7-10 Days' },
+      { id: 'p6', category_id: 'beds', name: 'Rustic Sheesham Original', priceLabel: 'Rs 28,000', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80', rating: 4.7, urgency: 'Jodhpur Special', delivery: '12-15 Days' },
+      { id: 'p7', category_id: 'dining', name: 'Marble Top 6-Seater', priceLabel: 'Rs 65,000', image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1200&q=80', rating: 4.9, urgency: 'Premium Finish', delivery: '10-12 Days' },
+      { id: 'p8', category_id: 'dining', name: 'Compact Walnut 4-Seater', priceLabel: 'Rs 22,500', image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Space Saver', delivery: '5-7 Days' },
+      { id: 'p9', category_id: 'dining', name: 'Grand 8-Seater Banquet', priceLabel: 'Rs 85,000', image: 'https://images.unsplash.com/photo-1600566752355-324864f7b49e?auto=format&fit=crop&w=800&q=80', rating: 5.0, urgency: 'Exclusive Design', delivery: '15-20 Days' },
     ];
 
     return {
@@ -216,6 +227,12 @@ export default React.memo(function EliteFurnitureTemplate({
       announcementText: base.announcementText || "Factory Direct Sale: Extra 10% Off via WhatsApp",
       heroCtaText: base.heroCtaText || "Find Your Perfect Furniture",
       heroCtaSubtext: base.heroCtaSubtext || "No browsing. Just pick & chat",
+      trustBarTop1: base.trustBarTop1,
+      trustBarBottom1: base.trustBarBottom1,
+      trustBarTop2: base.trustBarTop2,
+      trustBarBottom2: base.trustBarBottom2,
+      trustBarTop3: base.trustBarTop3,
+      trustBarBottom3: base.trustBarBottom3,
       experienceCenterName: base.experienceCenterName || "Urban Living Studio",
       experienceCenterAddress: base.experienceCenterAddress || "Plot 42, Sector 43, Golf Course Road, Gurgaon",
       mapImage: normalizeImage(base.mapImage, defaultMap),
@@ -238,18 +255,19 @@ export default React.memo(function EliteFurnitureTemplate({
           finish: product.finish || storyData.finish,
         };
       }),
-      testimonials: base.testimonials || [
+      testimonials: (base.testimonials || [
         { id: "t1", name: "Rahul S.", city: "Mumbai", text: "Saved Rs 35k compared to local retail stores. The Sheesham wood feels extremely premium.", rating: 5 },
         { id: "t2", name: "Priya K.", city: "Bangalore", text: "Loved the fact that they sent me photos straight from their Jodhpur factory before shipping. 10/10.", rating: 5 },
         { id: "t3", name: "Ananya M.", city: "Delhi", text: "Incredible design and flawless finish. The buying experience over WhatsApp was so simple.", rating: 5 },
-      ],
+      ]).slice(0, 3),
       categoriesStepTitle: base.categoriesStepTitle || "What are you looking for?",
       categoriesStepSubTitle: base.categoriesStepSubTitle || "Select a category to view our factory-direct collections.",
       bottomCtaTitle: base.bottomCtaTitle || "Need help?",
       bottomCtaSubTitle: base.bottomCtaSubTitle || "Chat directly with factory",
       preTitle: base.preTitle || "Select Your Style",
       title: base.title || "",
-      subTitle: base.subTitle || "Top 3 handpicked options for you. Tap any product to get factory-direct pricing on WhatsApp."
+      subTitle: base.subTitle || "Top 3 handpicked options for you. Tap any product to get factory-direct pricing on WhatsApp.",
+      whatsapp: base.whatsapp || defaultWhatsAppData
     };
   }, [funnel, store, propProducts]);
 
@@ -264,6 +282,39 @@ export default React.memo(function EliteFurnitureTemplate({
     [content.mapLink, content.experienceCenterAddress]
   );
 
+  // Auto-slide testimonials
+  useEffect(() => {
+    if (TESTIMONIALS.length <= 1 || step !== 'landing') return;
+    const container = testimonialsScrollRef.current;
+    if (!container) return;
+
+    let currentIndex = 0;
+    const cardWidth = 280 + 16; // card width + gap
+    const totalCards = TESTIMONIALS.length;
+
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % totalCards;
+      const scrollTarget = currentIndex === 0 ? 0 : currentIndex * cardWidth;
+      container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+    }, 3500);
+
+    // Pause auto-scroll on user interaction
+    let resumeTimeout: ReturnType<typeof setTimeout> | null = null;
+    const handleInteraction = () => {
+      clearInterval(interval);
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+    };
+    container.addEventListener('pointerdown', handleInteraction);
+    container.addEventListener('wheel', handleInteraction, { passive: true });
+
+    return () => {
+      clearInterval(interval);
+      if (resumeTimeout) clearTimeout(resumeTimeout);
+      container.removeEventListener('pointerdown', handleInteraction);
+      container.removeEventListener('wheel', handleInteraction);
+    };
+  }, [TESTIMONIALS.length, step]);
+
   const navigate = (newStep: Step, dir = 1) => {
     setDirection(dir);
     setStep(newStep);
@@ -275,7 +326,7 @@ export default React.memo(function EliteFurnitureTemplate({
     }
   };
 
-  const handleWhatsAppCTA = async (intent_type: string, product: Product | null = null, selectedCategoryOverride?: Category | null) => {
+  const handleWhatsAppCTA = async (intent_type: string, product: Product | null = null, selectedCategoryOverride?: Category | null, locationText?: string) => {
     const num = content.whatsappNumber?.replace(/\D/g, '') || '';
     if (!num) { alert('WhatsApp number not configured.'); return; }
     
@@ -286,15 +337,6 @@ export default React.memo(function EliteFurnitureTemplate({
 
     const whatsappSettings = (content as any).whatsapp;
     
-    if (product && whatsappSettings?.productInquiryText) {
-      let message = whatsappSettings.productInquiryText
-        .replace('{product_name}', product.name)
-        .replace('{category}', categoryToUse?.label || 'Furniture');
-      
-      window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, "_blank");
-      return;
-    }
-
     if (intent_type === "custom_request_cta") {
       const customMessage = `Hi ${content.storeName},\n\nI couldn't find exactly what I was looking for.\n\nHere is what I need:\n"${customRequestText}"\n\nPlease let me know if you have something similar or can arrange this for me.`;
       window.open(`https://wa.me/${num}?text=${encodeURIComponent(customMessage)}`, "_blank");
@@ -304,22 +346,29 @@ export default React.memo(function EliteFurnitureTemplate({
     }
 
     let message = `Hi ${content.storeName},\n\n`;
+    
     if (intent_type === "landing_hero_cta" || intent_type === "persistent_bottom_help_cta" || intent_type === "bottom_cta_help") {
       if (whatsappSettings?.welcomeMessage) {
         message = whatsappSettings.welcomeMessage
-          .replace('{category}', categoryToUse?.label || 'Furniture')
-          .replace('{store_name}', content.storeName);
+          .replaceAll('{category}', categoryToUse?.label || 'Furniture')
+          .replaceAll('{store_name}', content.storeName || 'Store');
       } else {
         message += `I'm planning to buy furniture.\n\nHere's what I'm looking for:\n• Requirement: ${categoryToUse?.label || 'Furniture'}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode`;
       }
     } else if (intent_type === "product_inquiry_cta" || product) {
       if (whatsappSettings?.productInquiryText) {
         message = whatsappSettings.productInquiryText
-          .replace('{product_name}', product?.name || 'Product')
-          .replace('{store_name}', content.storeName);
+          .replaceAll('{product_name}', product?.name || 'Product')
+          .replaceAll('{category}', categoryToUse?.label || 'Furniture')
+          .replaceAll('{store_name}', content.storeName || 'Store');
+          
+        if (locationText) {
+          message += `\n\nLocation: ${locationText}`;
+        }
       } else {
         message += `I'm interested in getting an exact quote & photos for:\n`;
         if (product) message += `*Product:* ${product.name} (Starting from ${product.priceLabel})\n`;
+        if (locationText) message += `\nLocation: ${locationText}\n`;
         message += `\n*Please let me know:* \n1. Exact price for my required size\n2. Fabric/Wood customization options\n3. Delivery time to my pincode`;
       }
     } else if (intent_type === "explore_more_cta") {
@@ -358,6 +407,27 @@ export default React.memo(function EliteFurnitureTemplate({
     
     return filtered.slice(0, 3); // Force limit to top 3
   }, [activeCategory, content.products]);
+
+  const nextProduct = useMemo(() => {
+    if (!selectedProductId) return null;
+    const list = recommendedProducts.length > 0 ? recommendedProducts : (content.products || []);
+    if (list.length <= 1) return null;
+    const currentIndex = list.findIndex((p: Product) => p.id === selectedProductId);
+    if (currentIndex === -1) return null;
+    const nextIndex = (currentIndex + 1) % list.length;
+    return list[nextIndex];
+  }, [selectedProductId, recommendedProducts, content.products]);
+
+  const handleNextProductClick = useCallback((nextProd: Product) => {
+    setSelectedProductId(nextProd.id);
+    setActiveImageIndex(0);
+    if (!isPreview) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const container = document.getElementById('mobile-scroll-container');
+      if (container) container.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [isPreview]);
 
   const handleBack = () => {
     if (step === "details") navigate("recommendations", -1);
@@ -531,9 +601,8 @@ export default React.memo(function EliteFurnitureTemplate({
                   const city = cityRef.current?.value || '';
                   const pincode = pincodeRef.current?.value || '';
                   setIsAvailabilityOpen(false);
-                  const num = content.whatsappNumber?.replace(/\D/g, '') || '';
-                  const message = `Hi ${content.storeName},\n\nI'm interested in getting an exact quote & photos for:\nProduct: ${availabilityProduct?.name} (Starting from ${availabilityProduct?.priceLabel})\n\nLocation: ${city} - ${pincode}\n\nPlease let me know:\n1. Exact price for my required size\n2. Fabric/Wood customization options\n3. Delivery time to my pincode`;
-                  window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, "_blank");
+                  const locationStr = [city, pincode].filter(Boolean).join(' - ');
+                  handleWhatsAppCTA("product_inquiry_cta", availabilityProduct, null, locationStr);
                 }}
                 className="w-full py-4 rounded-xl bg-[#25D366] text-white font-black uppercase tracking-[0.15em] text-[12px] flex items-center justify-center gap-3 transition-all hover:bg-[#20BD5A] active:scale-[0.98]"
               >
@@ -542,9 +611,7 @@ export default React.memo(function EliteFurnitureTemplate({
               <button
                 onClick={() => {
                   setIsAvailabilityOpen(false);
-                  const num = content.whatsappNumber?.replace(/\D/g, '') || '';
-                  const message = `Hi ${content.storeName},\n\nI'm interested in getting an exact quote & photos for:\nProduct: ${availabilityProduct?.name} (Starting from ${availabilityProduct?.priceLabel})\n\nPlease let me know:\n1. Exact price for my required size\n2. Fabric/Wood customization options\n3. Delivery time to my pincode`;
-                  window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, "_blank");
+                  handleWhatsAppCTA("product_inquiry_cta", availabilityProduct, null);
                 }}
                 className="w-full py-2 text-[11px] font-bold uppercase tracking-wider text-[#8C8881] hover:text-[#1C1B1A] transition-colors"
               >
@@ -593,7 +660,7 @@ export default React.memo(function EliteFurnitureTemplate({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -20, opacity: 0 }}
             transition={springConfig}
-            className={`${isPreview ? (isMobileMode ? 'absolute top-8' : 'absolute top-2') : 'fixed top-4 md:top-8'} w-full z-40 flex justify-between items-center px-5 pt-2 pb-2 pointer-events-none`}
+            className={`${isPreview ? (isMobileMode ? 'absolute top-8' : 'absolute top-2') : 'fixed top-4 md:top-8'} w-full max-w-5xl mx-auto left-0 right-0 z-40 flex justify-between items-center px-5 pt-2 pb-2 pointer-events-none`}
           >
             <button
               onClick={handleBack}
@@ -606,7 +673,7 @@ export default React.memo(function EliteFurnitureTemplate({
               <div className="h-8 w-8 rounded-full bg-white border border-black/5 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
                 <img src={content.logoUrl} alt={content.storeName} className="w-full h-full object-cover" />
               </div>
-              <h1 className="font-serif text-[1.1rem] tracking-tight text-[#1C1B1A] select-none font-medium leading-none">{content.storeName}.</h1>
+              <h1 className="font-serif text-[1.1rem] tracking-tight text-[#1C1B1A] select-none font-medium leading-none">{content.storeName ? content.storeName.trim().replace(/\.+$/, '') : ''}.</h1>
             </div>
 
             <div className="w-10 shrink-0" />
@@ -619,7 +686,7 @@ export default React.memo(function EliteFurnitureTemplate({
 
           {/* ========== 1. LANDING PAGE ========== */}
           {step === "landing" && (
-            <motion.section key="landing" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="flex min-h-full flex-col items-center px-5 pt-8 pb-32 w-full max-w-7xl mx-auto">
+            <motion.section key="landing" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="flex min-h-full flex-col items-center px-5 pt-8 pb-32 w-full max-w-4xl mx-auto">
               
               <motion.div variants={fadeUp} className="relative mb-6 flex justify-center">
                 <div className="absolute inset-0 bg-[#D47A5A]/5 rounded-full blur-2xl scale-150 pointer-events-none" />
@@ -633,7 +700,7 @@ export default React.memo(function EliteFurnitureTemplate({
                 onClick={(event) => handleEdit('content', event)}
                 className={`font-serif ${isMobileMode ? 'text-[2.75rem]' : 'text-[2.75rem] md:text-[4rem]'} tracking-tighter text-[#1C1B1A] mb-3 font-normal leading-none text-center cursor-pointer`}
               >
-                {content.storeName}.
+                {content.storeName ? content.storeName.trim().replace(/\.+$/, '') : ''}.
               </motion.h1>
 
               <motion.p
@@ -641,41 +708,28 @@ export default React.memo(function EliteFurnitureTemplate({
                 onClick={(event) => handleEdit('content', event)}
                 className={`text-center text-[#6B665F] ${isMobileMode ? 'text-[14px]' : 'text-[14px] md:text-[18px]'} leading-relaxed mb-12 font-light px-2 max-w-2xl cursor-pointer`}
               >
-                <strong className="font-medium text-[#1C1B1A]">{content.tagline}.</strong><br/>
+                <strong className="font-medium text-[#1C1B1A]">{content.tagline ? content.tagline.trim().replace(/\.+$/, '') : ''}.</strong><br/>
                 {content.subTagline}
               </motion.p>
 
-              {/* TESTIMONIALS */}
-              <motion.div
+              {/* QUICK TRUST BAR */}
+              <motion.div 
                 variants={fadeUp}
-                onClick={(event) => handleEdit('testimonials', event)}
-                className="w-full mb-12 relative max-w-4xl cursor-pointer"
+                className="w-full max-w-2xl px-4 py-4 rounded-3xl bg-[#F7F5F0] border border-[#EBE6DC] flex flex-wrap items-center justify-around gap-4 mb-16 text-center shadow-sm"
               >
-                <div className="flex items-center justify-center gap-4 mb-6">
-                  <div className="h-[1px] w-8 bg-black/5" />
-                  <h3 className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#8C8881]">Loved by 1000+ Homes</h3>
-                  <div className="h-[1px] w-8 bg-black/5" />
+                <div className="flex flex-col items-center">
+                  <span className="text-[13px] md:text-[15px] font-serif font-medium text-[#1C1B1A]">{content.trustBarTop1 || '1200+ Homes'}</span>
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#8C8881]">{content.trustBarBottom1 || 'Delivered'}</span>
                 </div>
-                
-                <div
-                  className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory px-1 -mx-1 no-scrollbar"
-                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                  onClick={(event) => handleEdit('testimonials', event)}
-                >
-                  {TESTIMONIALS.map((t: Testimonial, i: number) => (
-                    <div
-                      key={i}
-                      className="snap-center shrink-0 w-[280px] bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-white/60 relative overflow-hidden"
-                      onClick={(event) => handleEdit('testimonials', event)}
-                    >
-                      <Quote strokeWidth={1} className="absolute -top-3 -right-3 w-16 h-16 text-[#F7F5F0] opacity-80" />
-                      <div className="flex items-center gap-1 mb-4 relative z-10">
-                        {[...Array(5)].map((_, idx) => <Star key={idx} strokeWidth={1.5} className="w-3.5 h-3.5 fill-[#D47A5A] text-[#D47A5A]" />)}
-                      </div>
-                      <p className="text-[14px] text-[#1C1B1A] leading-relaxed mb-5 relative z-10 font-light">&quot;{t.text}&quot;</p>
-                      <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8C8881] relative z-10">— {t.name}, <span className="text-[#D47A5A]">{t.city}</span></p>
-                    </div>
-                  ))}
+                <div className="h-6 w-px bg-[#EBE6DC] hidden sm:block" />
+                <div className="flex flex-col items-center">
+                  <span className="text-[13px] md:text-[15px] font-serif font-medium text-[#1C1B1A]">{content.trustBarTop2 || '4.9★'}</span>
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#8C8881]">{content.trustBarBottom2 || 'Client Rating'}</span>
+                </div>
+                <div className="h-6 w-px bg-[#EBE6DC] hidden sm:block" />
+                <div className="flex flex-col items-center">
+                  <span className="text-[13px] md:text-[15px] font-serif font-medium text-[#1C1B1A]">{content.trustBarTop3 || 'Factory Direct'}</span>
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#8C8881]">{content.trustBarBottom3 || 'Pricing'}</span>
                 </div>
               </motion.div>
 
@@ -699,6 +753,108 @@ export default React.memo(function EliteFurnitureTemplate({
                 <p className="text-center text-[10px] font-medium text-[#8C8881] mt-4 tracking-wide">
                   {content.heroCtaSubtext}
                 </p>
+              </motion.div>
+
+              {/* TESTIMONIALS (INSTALLED IN REAL HOMES SHOWCASE) */}
+              <motion.div
+                variants={fadeUp}
+                onClick={(event) => handleEdit('testimonials', event)}
+                className="w-full mb-16 relative max-w-5xl cursor-pointer"
+              >
+                <div className="text-center mb-8 px-4">
+                  <span className="text-[9px] font-bold tracking-[0.25em] text-[#D47A5A] uppercase mb-2 block">
+                    Proven Track Record
+                  </span>
+                  <h3 className="font-serif text-[1.8rem] md:text-[2.5rem] tracking-tight text-[#1C1B1A] mb-2 leading-none">
+                    Installed In Real Homes
+                  </h3>
+                  <p className="text-[12px] md:text-[14px] text-[#6B665F] font-light max-w-md mx-auto">
+                    Real deliveries across Mumbai, Bangalore, Pune & Dubai residences.
+                  </p>
+                </div>
+                
+                  <div 
+                    ref={testimonialsScrollRef}
+                    className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto md:overflow-x-visible pb-8 snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0 no-scrollbar"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  onClick={(event) => handleEdit('testimonials', event)}
+                >
+                  {TESTIMONIALS.map((t: Testimonial, i: number) => (
+                    <div
+                      key={i}
+                      className="snap-center shrink-0 w-[170px] sm:w-[260px] md:w-auto bg-white rounded-[1.25rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden flex flex-col group hover:shadow-[0_45px_90px_rgba(0,0,0,0.07)] transition-all duration-500"
+                      onClick={(event) => handleEdit('testimonials', event)}
+                    >
+                      {/* Image part */}
+                      <div className="relative w-full h-[110px] sm:h-[180px] md:h-[260px] overflow-hidden bg-[#F7F5F0]">
+                        <img 
+                          src={t.image || [
+                            'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1505693314120-0d443867891c?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80'
+                          ][i % 3]} 
+                          alt={t.name} 
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.25,1,0.35,1] group-hover:scale-105" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                        
+                        <Quote strokeWidth={1} className="absolute -top-2 -right-2 w-10 h-10 md:w-14 md:h-14 text-white/10" />
+                      </div>
+
+                      {/* Content details */}
+                      <div className="p-3 md:p-6 flex flex-col justify-between bg-white flex-1">
+                        <div>
+                          <div className="flex items-center gap-0.5 mb-1.5 md:mb-2">
+                            {[...Array(5)].map((_, idx) => (
+                              <Star key={idx} strokeWidth={1.5} className="w-2.5 h-2.5 md:w-3 md:h-3 fill-[#D47A5A] text-[#D47A5A]" />
+                            ))}
+                          </div>
+                          <p className="text-[9px] md:text-[13px] text-[#1C1B1A] leading-relaxed mb-2 md:mb-3 font-light italic">
+                            &ldquo;{t.text}&rdquo;
+                          </p>
+                        </div>
+
+                        <div className="space-y-2 md:space-y-3">
+                          <p className="text-[7.5px] md:text-[9px] font-black uppercase tracking-[0.15em] text-[#8C8881]">
+                            — {t.name} &middot; <span className="text-[#D47A5A]">{t.city}</span>
+                          </p>
+                          
+                          {(t.detail1 || t.detail2) && (
+                            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-black/5 md:pt-2">
+                              {t.detail1 && (
+                                <span className="inline-flex items-center text-[7px] md:text-[8.5px] font-bold text-[#6D7A68] bg-[#F1F5F0] px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full">
+                                  ✔ {t.detail1}
+                                </span>
+                              )}
+                              {t.detail2 && (
+                                <span className="inline-flex items-center text-[7px] md:text-[8.5px] font-bold text-[#8C8881] bg-[#F7F5F0] px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full">
+                                  ✔ {t.detail2}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Delivered Across India Chips */}
+                <div className="mt-8 flex flex-col items-center gap-3">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#8C8881]">
+                    Delivered Across Residences In
+                  </span>
+                  <div className="flex flex-wrap justify-center gap-2 max-w-xl px-4">
+                    {['Mumbai', 'Pune', 'Bangalore', 'Hyderabad', 'Delhi', 'Dubai'].map((city) => (
+                      <span 
+                        key={city} 
+                        className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-[#1C1B1A] bg-white border border-black/5 rounded-full shadow-sm"
+                      >
+                        {city}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
 
               {/* MAP SECTION */}
@@ -758,7 +914,7 @@ export default React.memo(function EliteFurnitureTemplate({
 
           {/* ========== 2. CATEGORIES SELECTION ========== */}
           {step === "categories" && (
-            <motion.section key="categories" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full px-5 pt-20 pb-32 w-full max-w-7xl mx-auto">
+            <motion.section key="categories" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full px-5 pt-20 pb-32 w-full max-w-5xl mx-auto">
               <motion.div variants={fadeUp} className="mb-8 cursor-pointer" onClick={() => handleEdit('categories')}>
                 <h2 className="font-serif text-[2.75rem] md:text-[4rem] leading-[0.9] tracking-tighter text-[#1C1B1A] mb-3">
                   {content.categoriesStepTitle?.includes('?') ? (
@@ -775,7 +931,7 @@ export default React.memo(function EliteFurnitureTemplate({
                 <p className="text-[14px] md:text-[18px] font-light text-[#6B665F] tracking-wide">{content.categoriesStepSubTitle}</p>
               </motion.div>
 
-              <div className={`flex flex-col ${previewMode === 'mobile' ? '' : 'md:grid md:grid-cols-3'} gap-6 md:gap-8`}>
+              <div className={`flex flex-col ${previewMode === 'mobile' ? '' : `md:grid ${content.categories?.length === 1 ? 'md:grid-cols-1 md:max-w-md md:mx-auto' : content.categories?.length === 2 ? 'md:grid-cols-2 md:max-w-3xl md:mx-auto' : 'md:grid-cols-3'}`} gap-6 md:gap-8`}>
                 {(content.categories || []).map((cat: Category) => (
                   <motion.button
                     key={cat.id} variants={fadeUp}
@@ -788,7 +944,7 @@ export default React.memo(function EliteFurnitureTemplate({
                       setActiveCategory(cat);
                       navigate("recommendations", 1);
                     }}
-                    className={`group relative w-full h-[220px] ${previewMode === 'mobile' ? '' : 'md:h-[450px]'} rounded-[2.5rem] ${previewMode === 'mobile' ? '' : 'md:rounded-[3.5rem]'} overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] active:scale-[0.97] transition-all text-left border border-white/60`}
+                    className={`group relative w-full h-[220px] ${previewMode === 'mobile' ? '' : 'md:h-[320px] lg:h-[380px]'} rounded-[2.5rem] ${previewMode === 'mobile' ? '' : 'md:rounded-[3.5rem]'} overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] active:scale-[0.97] transition-all text-left border border-white/60`}
                   >
                     <img src={cat.image} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.25,1,0.35,1] group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-r from-[#1C1B1A]/80 via-[#1C1B1A]/40 to-transparent" />
@@ -815,7 +971,7 @@ export default React.memo(function EliteFurnitureTemplate({
 
           {/* ========== 3. RECOMMENDATIONS ========== */}
           {step === "recommendations" && (
-            <motion.section key="recommendations" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full px-4 pt-20 pb-32 w-full max-w-7xl mx-auto">
+            <motion.section key="recommendations" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full px-4 pt-20 pb-32 w-full max-w-4xl mx-auto">
               <motion.div variants={fadeUp} className="mb-8 px-2 cursor-pointer" onClick={() => handleEdit('products')}>
                 <span className="text-[9px] font-bold tracking-[0.25em] text-[#D47A5A] uppercase mb-2 block">{content.preTitle}</span>
                 <h2 className={`font-serif ${isMobileMode ? 'text-[2.5rem]' : 'text-[2.5rem] md:text-[3.5rem]'} leading-[0.9] tracking-tighter text-[#1C1B1A] mb-3`}>
@@ -890,7 +1046,7 @@ export default React.memo(function EliteFurnitureTemplate({
                             <div className="h-8 w-px bg-black/10 shrink-0" />
                             <div className="flex flex-col min-w-0 flex-1">
                               <span className="text-[9px] font-bold uppercase tracking-widest text-[#8C8881] mb-1">Shipping</span>
-                              <span className="text-[10px] sm:text-[11px] lg:text-[12px] font-bold text-[#D47A5A] uppercase tracking-wider leading-none">{product.delivery}</span>
+                              <span className="text-[10px] sm:text-[11px] lg:text-[12px] font-bold text-[#D47A5A] uppercase tracking-wider leading-none">{product.delivery?.replace(/^delivery:\s*/i, '')}</span>
                             </div>
                           </div>
                         </div>
@@ -1004,7 +1160,7 @@ export default React.memo(function EliteFurnitureTemplate({
 
           {/* ========== 4. PRODUCT DETAILS ========== */}
           {step === "details" && selectedProduct && (
-            <motion.section key="details" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full pb-32 w-full max-w-7xl mx-auto">
+            <motion.section key="details" custom={direction} variants={pageVariants} initial="initial" animate="in" exit="out" className="min-h-full pb-32 w-full max-w-4xl mx-auto">
               {/* Premium Image Gallery */}
               <div className="w-full bg-[#F7F5F0] relative group">
                 <div 
@@ -1016,11 +1172,11 @@ export default React.memo(function EliteFurnitureTemplate({
                     setActiveImageIndex(index);
                   }}
                 >
-                  <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square relative">
+                  <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square md:aspect-auto md:h-[65vh] relative bg-[#EBE6DC]">
                     <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
                   </div>
                   {selectedProduct.image2 && (
-                    <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square relative">
+                    <div className="w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square md:aspect-auto md:h-[65vh] relative bg-[#EBE6DC]">
                       <img src={selectedProduct.image2} alt={`${selectedProduct.name} alternate view`} className="w-full h-full object-cover" />
                     </div>
                   )}
@@ -1064,10 +1220,10 @@ export default React.memo(function EliteFurnitureTemplate({
                       <p className="text-[1.35rem] sm:text-[1.75rem] font-bold tracking-tighter text-[#1C1B1A] leading-none whitespace-nowrap">{selectedProduct.priceLabel}</p>
                     </div>
                     <div className="bg-gradient-to-b from-[#FDFCFB] to-[#F7F5F0] p-4 sm:p-5 rounded-[1.25rem] border border-[#EAE8E3] flex-1 min-w-0 flex flex-col justify-center shadow-sm">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C8881] mb-1.5">Est. Delivery</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C8881] mb-1.5">Delivery</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <Truck strokeWidth={2} className="w-3.5 h-3.5 text-[#D47A5A] shrink-0" />
-                        <p className="text-[1rem] sm:text-[1.25rem] font-bold tracking-tight text-[#D47A5A] uppercase w-full leading-none">{selectedProduct.delivery}</p>
+                        <p className="text-[1rem] sm:text-[1.25rem] font-bold tracking-tight text-[#D47A5A] uppercase w-full leading-none">{selectedProduct.delivery?.replace(/^delivery:\s*/i, '')}</p>
                       </div>
                     </div>
                   </div>
@@ -1147,6 +1303,27 @@ export default React.memo(function EliteFurnitureTemplate({
                       </p>
                     </div>
                   </div>
+
+                  {nextProduct && (
+                    <div className="mt-8 border-t border-black/5 pt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C8881] mb-3">View Next Design</p>
+                      <button
+                        onClick={() => handleNextProductClick(nextProduct)}
+                        className="w-full p-4 rounded-2xl bg-[#F7F5F0] border border-black/5 hover:border-black/10 transition-all flex items-center justify-between group text-left"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img src={nextProduct.image} alt={nextProduct.name} className="w-12 h-12 rounded-xl object-cover shrink-0 border border-black/5" />
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-[#1C1B1A] truncate">{nextProduct.name}</p>
+                            <p className="text-[11px] font-medium text-[#D47A5A] mt-0.5">{nextProduct.priceLabel}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#D47A5A] group-hover:translate-x-1 transition-transform shrink-0">
+                          Next <ArrowRight size={14} />
+                        </div>
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               </div>
 
@@ -1155,6 +1332,8 @@ export default React.memo(function EliteFurnitureTemplate({
           )}
         </AnimatePresence>
       </main>
+
+
       <style dangerouslySetInnerHTML={{ __html: `
         @font-face {
           font-family: 'Satoshi';

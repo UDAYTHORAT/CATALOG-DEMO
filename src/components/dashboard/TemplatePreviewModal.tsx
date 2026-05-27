@@ -38,7 +38,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
         image2: 'https://images.unsplash.com/photo-1550226844-27ceaa53967c?auto=format&fit=crop&w=800&q=80',
         rating: 4.8, 
         urgency: 'Only 2 frames ready', 
-        delivery: 'Delivery: 7-10 Days',
+        delivery: '7-10 Days',
         dimensions: '210 x 145 x 85 cm',
         material: 'Solid Sheesham Wood',
         finish: 'Natural Honey Finish'
@@ -52,7 +52,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
         image2: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80',
         rating: 4.9, 
         urgency: 'Selling fast', 
-        delivery: 'Delivery: 5-7 Days',
+        delivery: '5-7 Days',
         dimensions: '225 x 95 x 75 cm',
         material: 'Teak Wood & Velvet',
         finish: 'Dark Walnut Finish'
@@ -66,7 +66,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
         image2: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
         rating: 4.8, 
         urgency: 'Direct from Factory', 
-        delivery: 'Delivery: 10-12 Days',
+        delivery: '10-12 Days',
         dimensions: '190 x 210 x 115 cm',
         material: 'Engineered Wood & Fabric',
         finish: 'Upholstered Finish'
@@ -80,7 +80,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
         image2: 'https://images.unsplash.com/photo-1617806118233-18e1db208fa0?auto=format&fit=crop&w=800&q=80',
         rating: 4.9, 
         urgency: 'Premium Finish', 
-        delivery: 'Delivery: 10-12 Days',
+        delivery: '10-12 Days',
         dimensions: '180 x 90 x 75 cm',
         material: 'Marble & Teak Wood',
         finish: 'Mirror Gloss Finish'
@@ -93,7 +93,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
         image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&w=800&q=80',
         rating: 4.8, 
         urgency: 'Space Saver', 
-        delivery: 'Delivery: 5-7 Days',
+        delivery: '5-7 Days',
         dimensions: '120 x 80 x 75 cm',
         material: 'Solid Walnut Wood',
         finish: 'Matte Oil Finish'

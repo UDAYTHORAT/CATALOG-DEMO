@@ -41,6 +41,7 @@ export interface ProductItem {
   specifications?: { label: string; value: string }[];
   propertyDetailsTitle?: string;
   ownershipLabel?: string;
+  ownership?: string;
   deliveryLabel?: string;
   automotiveLabel?: string;
 }
@@ -51,6 +52,9 @@ export interface TestimonialItem {
   city: string;
   text: string;
   rating: number;
+  image?: string;
+  detail1?: string;
+  detail2?: string;
 }
 
 export interface HeroData {
@@ -58,6 +62,12 @@ export interface HeroData {
   subTagline: string;
   heroCtaText: string;
   heroCtaSubtext: string;
+  trustBarTop1?: string;
+  trustBarBottom1?: string;
+  trustBarTop2?: string;
+  trustBarBottom2?: string;
+  trustBarTop3?: string;
+  trustBarBottom3?: string;
   heroImage?: string;
   // Real estate specific fields
   trustBadges?: string[];

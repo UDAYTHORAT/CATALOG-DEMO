@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -17,6 +18,7 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
   const [preview, setPreview] = useState<string | null>(defaultImage || null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isMountedRef = useRef(false);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -29,6 +31,7 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
 
   useEffect(() => {
     isMountedRef.current = true;
+    setMounted(true);
     return () => {
       isMountedRef.current = false;
       if (progressIntervalRef.current) {
@@ -47,13 +50,17 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('Only image files are accepted');
+      const msg = 'Only image files are accepted';
+      setError(msg);
+      alert(msg);
       return;
     }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      setError('File must be under 5MB');
+      const msg = 'File must be under 5MB';
+      setError(msg);
+      alert(msg);
       return;
     }
 
@@ -124,7 +131,9 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
       }
       console.error('Error uploading image:', err);
       if (isMountedRef.current) {
-        setError('Upload failed. Please try again.');
+        const msg = 'Upload failed. Please try again.';
+        setError(msg);
+        alert(msg);
         setIsUploading(false);
         setUploadProgress(0);
       }
@@ -165,6 +174,35 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
 
   return (
     <div className="w-full">
+      {error && mounted && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed top-6 left-1/2 z-[99999] w-[calc(100%-32px)] max-w-sm bg-red-50 border-2 border-red-200 text-red-700 rounded-2xl p-4 shadow-2xl flex items-start gap-3 animate-in fade-in"
+          style={{
+            transform: 'translateX(-50%)',
+            animation: 'fadeInDown 0.3s ease-out forwards',
+          }}
+        >
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes fadeInDown {
+              from { opacity: 0; transform: translate(-50%, -10px); }
+              to { opacity: 1; transform: translate(-50%, 0); }
+            }
+          `}} />
+          <div className="flex-1">
+            <p className="text-xs font-black uppercase tracking-wider text-red-800">Upload Warning</p>
+            <p className="text-[11px] font-semibold text-red-600/90 mt-0.5">{error}</p>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setError(null)} 
+            className="text-[10px] font-black uppercase tracking-wider text-red-500 hover:text-red-700 bg-red-100/50 hover:bg-red-100 px-2 py-1 rounded-lg shrink-0"
+          >
+            Close
+          </button>
+        </div>,
+        document.body
+      )}
+
       {preview ? (
         <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-slate-100 group">
           <img 
@@ -195,6 +233,12 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
+          {error && (
+            <div className="absolute top-3 left-3 right-3 bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-red-100 text-center z-10">
+              {error}
+            </div>
+          )}
+
           <input
             ref={inputRef}
             type="file"
@@ -234,12 +278,6 @@ export function ImageUpload({ onUploadComplete, defaultImage }: ImageUploadProps
                   PNG, JPG up to 5MB
                 </span>
               </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="absolute bottom-3 left-3 right-3 bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-red-100 text-center">
-              {error}
             </div>
           )}
         </label>

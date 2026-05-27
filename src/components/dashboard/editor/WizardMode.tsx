@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight, ChevronLeft, CheckCircle2, Rocket, Info,
   Settings, Type, LayoutGrid, Package, MessageCircle, MapPin,
   ShieldCheck, Zap, Smartphone, Trophy, HelpCircle, Menu, X,
-  Eye, Edit2, ArrowRight
+  Eye, Edit2, ArrowRight, RotateCcw, GripVertical
 } from 'lucide-react';
 import type { Content, TabId, Section, SectionId } from './types';
 import type { Funnel } from '@/app/actions/funnels';
@@ -21,6 +21,8 @@ interface WizardProps {
   onSwitchToAdvanced: () => void;
   onFinish: () => void;
   onReorderSections: (sections: Section[]) => void;
+  onResetSection?: (sectionId: SectionId) => void;
+  onResetAll?: () => void;
 }
 
 // Wizard flow: same tabs as Advanced, minus WhatsApp
@@ -78,11 +80,11 @@ const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; gui
     id: 'testimonials', 
     label: 'Customer Reviews', 
     reLabel: 'Social Proof',
-    hint: 'Add real customer reviews. Social proof is the strongest trust signal for new buyers.',
+    hint: 'Add real installation photos and customer reviews. Visual proof is the ultimate trust signal for premium buyers.',
     reHint: 'Add real resident or investor reviews. Trust is the primary driver for high-value real estate decisions.',
-    proTip: 'Include the customer\'s city if possible. Local social proof feels much more authentic to new visitors.',
+    proTip: 'Upload high-quality photos of the product in the customer\'s home to build absolute authority.',
     reProTip: 'Highlight the speed of booking or the quality of service. Real human stories remove hesitation for large investments.',
-    guide: '👶 Here is what to do:\n• Put the Customer\'s Name.\n• Write their Review (what they liked).'
+    guide: '👑 How to build a luxury trust engine:\n• Add the Customer\'s Name and City.\n• Upload a real Installation Photo.\n• Add 2 strong details (e.g., "Delivered in 9 Days", "Solid Walnut Finish").'
   },
   { 
     id: 'location', 
@@ -198,10 +200,22 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
   ],
   testimonials: [
     { 
-      title: "Add Customer Reviews", 
-      description: "Paste what happy customers have said about your products. Real social proof is the strongest trust signal for new buyers.", 
-      proTip: "Include the customer's city if possible (e.g., 'Rahul from Mumbai'). Local social proof feels much more authentic.",
-      targetId: "tour-testimonials-list"
+      title: "Customer Name & City", 
+      description: "Add the customer's name and their city. Local social proof (e.g., 'Rahul S. from Mumbai') feels authentic and builds trust.", 
+      proTip: "Always include the city — buyers trust reviews from people in nearby locations.",
+      targetId: "tour-testimonials-name"
+    },
+    { 
+      title: "Write Their Review", 
+      description: "Paste what the customer said about your product. Keep it short and genuine — one or two sentences is perfect.", 
+      proTip: "Real quotes convert better than polished marketing copy. Use their exact words.",
+      targetId: "tour-testimonials-quote"
+    },
+    { 
+      title: "Upload Installation Photo", 
+      description: "Upload a real photo of your product installed in the customer's home. This is the single most powerful trust signal.", 
+      proTip: "A real room photo beats any studio shot. It proves your product looks great in actual homes.",
+      targetId: "tour-testimonials-photo"
     }
   ],
   location: [
@@ -225,8 +239,18 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
 export default function WizardMode({
   content, funnel, panelRenderer, products,
   onSwitchToAdvanced, onFinish, onReorderSections,
+  onResetSection, onResetAll,
 }: WizardProps) {
-  const [stepIdx, setStepIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`wizard_step_${funnel.id}`);
+      if (saved) {
+        const idx = parseInt(saved, 10);
+        if (!isNaN(idx)) return idx;
+      }
+    }
+    return 0;
+  });
   const isRealEstate = funnel.story_mode_data?.[0]?.templateId === 'funnelad-elite-real-estate';
   
   const effectiveFlow = WIZARD_FLOW.filter(tab => {
@@ -245,13 +269,85 @@ export default function WizardMode({
   };
   const isLast = stepIdx === effectiveFlow.length - 1;
 
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const shown = localStorage.getItem(`guide_shown_${funnel.id}`);
+      return !shown;
+    }
+    return true;
+  });
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
   const [fieldHighlight, setFieldHighlight] = useState<any>(null);
   const [completedTours, setCompletedTours] = useState<Set<string>>(new Set());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const stepsContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!stepsContainerRef.current) return;
+    const activeEl = stepsContainerRef.current.children[stepIdx] as HTMLElement;
+    if (activeEl) {
+      activeEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [stepIdx]);
+
+  useEffect(() => {
+    localStorage.setItem(`wizard_step_${funnel.id}`, stepIdx.toString());
+  }, [stepIdx, funnel.id]);
+
+  // Restore and persist scroll position of wizard editing panel
+  useEffect(() => {
+    const container = document.getElementById('wizard-tour-tabs');
+    if (!container) return;
+
+    const savedScroll = localStorage.getItem(`wizard_scroll_${funnel.id}_${activeTab.id}`);
+    if (savedScroll) {
+      container.scrollTop = parseInt(savedScroll, 10);
+    }
+
+    const handleScroll = () => {
+      localStorage.setItem(`wizard_scroll_${funnel.id}_${activeTab.id}`, container.scrollTop.toString());
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [activeTab.id, funnel.id]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.min(Math.max(e.clientX, 400), window.innerWidth - 320);
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     const handleFocusIn = (e: FocusEvent) => {
@@ -278,15 +374,21 @@ export default function WizardMode({
     ? rawTourSteps.filter(step => step.targetId !== 'tour-store-logo')
     : rawTourSteps;
 
-  // Auto-start tour when tab changes, ONLY if not completed
+  // Auto-start tour when tab changes, ONLY if not completed and haven't skipped/finished overall onboarding
   useEffect(() => {
+    const shown = localStorage.getItem(`guide_shown_${funnel.id}`);
+    if (shown) {
+      setShowOnboarding(false);
+      return;
+    }
+
     if (!completedTours.has(activeTab.id)) {
       setOnboardingStep(1);
       setShowOnboarding(true);
     } else {
       setShowOnboarding(false);
     }
-  }, [activeTab.id, completedTours]);
+  }, [activeTab.id, completedTours, funnel.id]);
 
   useEffect(() => {
     if (!showOnboarding) return;
@@ -341,6 +443,7 @@ export default function WizardMode({
       newSet.add(activeTab.id);
       return newSet;
     });
+    localStorage.setItem(`guide_shown_${funnel.id}`, 'true');
   };
 
   const handleNextTour = () => {
@@ -502,6 +605,16 @@ export default function WizardMode({
         
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-3">
+          {onResetAll && (
+            <button
+              onClick={onResetAll}
+              className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-rose-600 hover:bg-rose-100 transition-all active:scale-95 shadow-sm hover:shadow-md"
+              title="Reset Entire Funnel"
+            >
+              <RotateCcw size={14} strokeWidth={2.5} />
+              Reset All
+            </button>
+          )}
           <button onClick={onSwitchToAdvanced} className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
             Switch to Advanced →
           </button>
@@ -542,6 +655,18 @@ export default function WizardMode({
             >
               Switch to Advanced →
             </button>
+            {onResetAll && (
+              <button
+                onClick={() => {
+                  onResetAll();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-[10px] font-black uppercase tracking-wider text-rose-600 hover:bg-rose-100 transition-all active:scale-95"
+              >
+                <RotateCcw size={14} strokeWidth={2.5} />
+                Reset Entire Funnel
+              </button>
+            )}
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -559,7 +684,23 @@ export default function WizardMode({
 
       <div id="wizard-mobile-scroll-layout" className="flex flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory lg:overflow-hidden lg:flex-row w-full scrollbar-none scroll-smooth">
         {/* Sidebar */}
-        <div className={`flex h-full w-full ${activeTab.id === 'layouts' ? 'lg:w-[900px]' : 'lg:w-[660px]'} shrink-0 snap-center flex-col border-r border-slate-200 bg-white shadow-xl relative z-40 lg:z-auto transition-all duration-300`}>
+        <div 
+          className={`flex h-full w-full shrink-0 snap-center flex-col border-r border-slate-200 bg-white shadow-xl relative z-40 lg:z-auto transition-all ${isResizing ? 'duration-0' : 'duration-300'}`}
+          style={isDesktop ? { width: sidebarWidth ? `${sidebarWidth}px` : (activeTab.id === 'layouts' ? '900px' : '660px') } : undefined}
+        >
+          {/* Resizer Handle */}
+          <div
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 cursor-col-resize z-50 items-center justify-center group"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsResizing(true);
+            }}
+          >
+            <div className={`flex items-center justify-center h-8 w-4 rounded-full bg-white border shadow-sm transition-all ${isResizing ? 'border-indigo-500 text-indigo-500 scale-110 shadow-md' : 'border-slate-200 text-slate-400 group-hover:border-indigo-400 group-hover:text-indigo-400'}`}>
+              <GripVertical size={12} strokeWidth={2.5} />
+            </div>
+          </div>
+
           <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
             {/* Nav Column */}
             <div className={`flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50 ${isKeyboardOpen ? 'hidden md:flex' : ''}`}>
@@ -575,7 +716,7 @@ export default function WizardMode({
                 </div>
 
                 {/* Step buttons */}
-                <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-none snap-x">
+                <div ref={stepsContainerRef} className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-none snap-x">
                   {effectiveFlow.map((tab, i) => {
                     const isActive = i === stepIdx;
                     const isDone = i < stepIdx;
@@ -606,11 +747,12 @@ export default function WizardMode({
             </div>
 
             {/* Editing Column */}
-            <div className={`flex-1 overflow-y-auto bg-slate-50/30 p-4 md:p-6 pb-24 ${isKeyboardOpen ? 'pb-[50vh]' : ''}`}>
+            <div id="wizard-tour-tabs" className={`flex-1 overflow-y-auto bg-slate-50/30 p-4 md:p-6 pb-24 ${isKeyboardOpen ? 'pb-[50vh]' : ''}`}>
               {/* Wizard guidance banner */}
               <div className="relative flex flex-col gap-3 p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 mb-6 pr-14">
                 <button 
                   onClick={() => {
+                    localStorage.removeItem(`guide_shown_${funnel.id}`);
                     setOnboardingStep(1);
                     setShowOnboarding(true);
                   }}
@@ -645,6 +787,18 @@ export default function WizardMode({
                   transition={{ duration: 0.2 }}
                 >
                   {panelRenderer(activeTab.id)}
+                  
+                  {activeTab.id !== 'layouts' && activeTab.id !== 'store' && onResetSection && (
+                    <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
+                      <button
+                        onClick={() => onResetSection(activeTab.id as SectionId)}
+                        className="flex items-center gap-2 px-5 py-2.5 text-[10px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl border border-rose-100 transition-all active:scale-95 shadow-sm hover:shadow-md"
+                      >
+                        <RotateCcw size={14} strokeWidth={2.5} />
+                        Reset This Section
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

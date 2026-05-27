@@ -30,6 +30,11 @@ export function useEditorHistory(initialContent: Content) {
     setIndex((i) => (history.length > 0 ? Math.min(history.length - 1, i + 1) : i));
   }, [history.length]);
 
+  const reset = useCallback((newContent: Content) => {
+    setHistory([cloneContent(newContent)]);
+    setIndex(0);
+  }, []);
+
   const current = history[index] || initialContent;
 
   return {
@@ -41,6 +46,7 @@ export function useEditorHistory(initialContent: Content) {
     push,
     undo,
     redo,
+    reset,
     history,
   };
 }

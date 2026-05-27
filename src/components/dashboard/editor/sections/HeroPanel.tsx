@@ -58,6 +58,36 @@ export default React.memo(function HeroPanel({
           </div>
         </div>
 
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Trust Bar</p>
+          
+          <div className="space-y-3">
+            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Trust Metric 1</p>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={data.trustBarTop1 ?? ''} onChange={(e) => onChange({ trustBarTop1: e.target.value })} className={inputClass} placeholder="Metric (e.g. 1200+ Homes)" />
+                <input value={data.trustBarBottom1 ?? ''} onChange={(e) => onChange({ trustBarBottom1: e.target.value })} className={inputClass} placeholder="Label (e.g. Delivered)" />
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Trust Metric 2</p>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={data.trustBarTop2 ?? ''} onChange={(e) => onChange({ trustBarTop2: e.target.value })} className={inputClass} placeholder="Metric (e.g. 4.9★)" />
+                <input value={data.trustBarBottom2 ?? ''} onChange={(e) => onChange({ trustBarBottom2: e.target.value })} className={inputClass} placeholder="Label (e.g. Client Rating)" />
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Trust Metric 3</p>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={data.trustBarTop3 ?? ''} onChange={(e) => onChange({ trustBarTop3: e.target.value })} className={inputClass} placeholder="Metric (e.g. Factory Direct)" />
+                <input value={data.trustBarBottom3 ?? ''} onChange={(e) => onChange({ trustBarBottom3: e.target.value })} className={inputClass} placeholder="Label (e.g. Pricing)" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {!hideCtaSection && (
         <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Call to Action</p>

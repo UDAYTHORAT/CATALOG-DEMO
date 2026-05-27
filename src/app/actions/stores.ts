@@ -26,14 +26,13 @@ export async function getOrCreateStore(): Promise<Store | null> {
   }
 
   // 1. Check if store exists
-  const { data: store } = await supabase
+  const { data: stores } = await supabase
     .from('stores')
     .select('*')
-    .eq('user_id', user.id)
-    .single();
+    .eq('user_id', user.id);
 
-  if (store) {
-    return store;
+  if (stores && stores.length > 0) {
+    return stores[0];
   }
 
   // 2. If no store, create a default one
