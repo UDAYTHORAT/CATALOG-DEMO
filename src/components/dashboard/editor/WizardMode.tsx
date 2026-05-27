@@ -756,7 +756,7 @@ export default function WizardMode({
                     setOnboardingStep(1);
                     setShowOnboarding(true);
                   }}
-                  className="absolute top-4 right-4 flex items-center justify-center h-8 w-8 rounded-full bg-white shadow-sm border border-indigo-100 text-indigo-500 hover:bg-indigo-50 transition-all hover:scale-105 active:scale-95"
+                  className="absolute top-4 right-4 flex items-center justify-center h-8 w-8 rounded-full bg-white shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-indigo-200 text-indigo-500 hover:bg-indigo-50 transition-all hover:scale-110 active:scale-95 animate-pulse ring-4 ring-indigo-500/20"
                   title="Show Guide"
                 >
                   <HelpCircle size={16} />
