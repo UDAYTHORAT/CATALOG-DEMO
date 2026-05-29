@@ -379,7 +379,7 @@ const defaultLocation: LocationData = {
   experienceCenterName: 'Urban Living Studio',
   experienceCenterAddress: 'Plot 42, Sector 43, Golf Course Road, Gurgaon',
   mapImage: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80',
-  mapLink: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3506.119140935912!2d77.08581027549615!3d28.5060447757342!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d1945c5896ec1%3A0xc6a82708dd2b75a4!2sCyber%20City%2C%20Gurugram%2C%20Haryana!5e0!3m2!1sen!2sin!4v1709212000000!5m2!1sen!2sin',
+  mapLink: 'https://www.google.com/maps?q=Cyber%20City%2C%20Gurugram%2C%20Haryana&output=embed',
 };
 
 const defaultRealEstateLocation: LocationData = {
@@ -387,6 +387,12 @@ const defaultRealEstateLocation: LocationData = {
   experienceCenterAddress: 'Worli Sea Face · Mumbai',
   mapImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
   mapLink: 'https://www.google.com/maps?q=Baner%20Pune&output=embed',
+  connectivity: [
+    { label: "Highway", time: "3 min" },
+    { label: "Hospital", time: "5 min" },
+    { label: "Airport", time: "25 min" },
+    { label: "Metro", time: "8 min" },
+  ],
 };
 
 const defaultWhatsAppData: WhatsAppData = {
@@ -398,11 +404,36 @@ const defaultWhatsAppData: WhatsAppData = {
 };
 
 const defaultRealEstateWhatsAppData: WhatsAppData = {
-  title: 'Get Floor Plan Instantly',
-  subTitle: 'Luxury advisors reply within minutes',
-  ctaText: 'Get Floor Plan on WhatsApp',
-  welcomeMessage: 'Hi {store_name},\n\nI am interested in a luxury residence.\n\nPreference: {category}\n\nPlease share:\n1. Available units and pricing\n2. Floor plans and sizes\n3. Possession timeline',
-  productInquiryText: 'Hi {store_name},\n\nI want details for {product_name}.\n\nPlease share:\n1. Latest pricing and floor plan\n2. Availability and view options\n3. Site visit slots',
+  title: 'Chat',
+  subTitle: 'Visit',
+  ctaText: 'Explore',
+  welcomeMessage: 'Hi {company_name},\n\nI am interested in a luxury residence.\n\nPreference: {category}\n\nPlease share:\n1. Available units and pricing\n2. Floor plans and sizes\n3. Possession timeline',
+  productInquiryText: 'Hi {company_name},\n\nI want details for {residence}.\n\nPlease share:\n1. Latest pricing and floor plan\n2. Availability and view options\n3. Site visit slots',
+  conciergeOptions: [
+    { 
+      label: 'Explore Availability', 
+      action: 'explore current availability',
+      message: 'Hello {company_name},\n\nI would like to explore current availability for the {residence}.\n\nPlease share the next steps.' 
+    },
+    { 
+      label: 'Request Floorplans', 
+      action: 'request detailed floorplans',
+      message: 'Hello {company_name},\n\nI would like to request detailed floorplans for the {residence}.\n\nPlease share the next steps.' 
+    },
+    { 
+      label: 'Arrange Viewing', 
+      action: 'arrange a private viewing',
+      message: 'Hello {company_name},\n\nI would like to arrange a private viewing for the {residence}.\n\nPlease share the next steps.' 
+    },
+    { 
+      label: 'Investment Details', 
+      action: 'discuss investment details',
+      message: 'Hello {company_name},\n\nI would like to discuss investment details for the {residence}.\n\nPlease share the next steps.' 
+    },
+  ],
+  visitOptions: ['Morning Tour', 'Sunset Viewing', 'Weekend Visit'],
+  conciergeMessageTemplate: 'Hello {company_name},\n\nI would like to {intent} for the {residence}.\n\nPlease share the next steps.',
+  visitMessageTemplate: 'Hello {company_name},\n\nI would like to arrange a {tour_type} for the {residence}.\n\nPlease let me know your availability.',
 };
 
 export const createDefaultSections = (templateId?: string): Section[] => {

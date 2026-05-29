@@ -107,6 +107,7 @@ export interface LocationData {
   experienceCenterAddress: string;
   mapImage: string;
   mapLink: string;
+  connectivity?: { label: string; time: string }[];
 }
 
 export interface WhatsAppData {
@@ -115,6 +116,12 @@ export interface WhatsAppData {
   ctaText: string;
   welcomeMessage: string;
   productInquiryText: string;
+  conciergeOptions?: { label: string; action: string; message?: string }[];
+  visitOptions?: string[];
+  conciergeMessageTemplate?: string;
+  visitMessageTemplate?: string;
+  roomInquiryMessageTemplate?: string;
+  roomInquiryCtaText?: string;
 }
 
 export type Section =

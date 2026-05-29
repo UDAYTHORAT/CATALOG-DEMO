@@ -16,12 +16,14 @@ export default React.memo(function PreviewPane({
   products,
   previewMode,
   onEditSection,
+  activeSectionId,
 }: {
   funnel: Funnel;
   content: Content;
   products?: any[];
   previewMode: PreviewMode;
   onEditSection?: (sectionId: SectionId) => void;
+  activeSectionId?: string;
 }) {
   const templateId = funnel.story_mode_data?.[0]?.templateId as string | undefined;
   const TemplateComponent = templateId === 'funnelad-elite-real-estate'
@@ -49,6 +51,7 @@ export default React.memo(function PreviewPane({
             isPreview={true}
             previewMode={previewMode}
             onEditSection={onEditSection}
+            activeSectionId={activeSectionId}
           />
         </div>
       </div>

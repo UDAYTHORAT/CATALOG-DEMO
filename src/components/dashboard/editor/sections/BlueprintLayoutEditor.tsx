@@ -636,7 +636,7 @@ export default function BlueprintLayoutEditor({
 
       {/* Quick Add Palette (Below Canvas) */}
       {onAddRoom && (
-        <div className={`flex flex-wrap items-center gap-1.5 pt-3 mt-3 border-t ${isFullscreen ? 'border-slate-800' : 'border-slate-200'}`}>
+        <div id="tour-layouts-add" className={`flex flex-wrap items-center gap-1.5 pt-3 mt-3 border-t ${isFullscreen ? 'border-slate-800' : 'border-slate-200'}`}>
           <span className={`text-[9px] font-bold uppercase tracking-wider mr-1 ${isFullscreen ? 'text-slate-500' : 'text-slate-400'}`}>Add Room:</span>
           {[
             { name: 'Living Room', area: '320 sqft', type: 'living', label: 'Living', w: 40, h: 30 },

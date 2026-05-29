@@ -34,7 +34,7 @@ const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; gui
     hint: 'Set your store name, WhatsApp number, and logo. This is the foundation of your funnel.',
     reHint: 'Set your project name, contact number, and branding. This is the foundation of your lead funnel.',
     proTip: 'Use a clean, high-resolution logo. A professional identity builds instant trust with your customers.',
-    reProTip: 'Use a premium project logo. High-fidelity branding builds instant trust with luxury property buyers.',
+    reProTip: 'Consistent developer branding and an active contact number build instant trust with luxury property buyers.',
     guide: '👶 Here is what to fill in:\n• **Logo**: Click or drag a picture here (PNG/JPG up to 5MB).\n• **Business Name**: Type your shop\'s name here (e.g., Urban Living).\n• **WhatsApp Lead Capture**: Put your number with country code (+91). This is where you get leads!'
   },
   { 
@@ -96,26 +96,42 @@ const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; gui
     reProTip: 'Include a Google Maps link. 80% of buyers will look at the location context before inquiring.',
     guide: '👶 Here is what to do:\n• Type your Address (where your shop is).\n• Add a Map Link so they can get directions.'
   },
+  {
+    id: 'whatsapp',
+    label: 'Sales Automation',
+    reLabel: 'Lead Capture',
+    hint: 'Configure automated WhatsApp messaging to capture intent instantly.',
+    reHint: 'Configure the luxury concierge chat options and site visit requests.',
+    proTip: 'Pre-filled messages make it effortless for buyers to contact you.',
+    reProTip: 'Offer a variety of distinct options (like "Arrange Viewing") to qualify buyers immediately.',
+    guide: 'Configure your WhatsApp buttons and automated replies here.'
+  }
 ];
 
-const TAB_TOURS: Record<string, { title: string; description: string; proTip: string; targetId?: string; fallbackId?: string }[]> = {
+const TAB_TOURS: Record<string, { title: string; description: string; proTip: string; dos?: string[]; donts?: string[]; targetId?: string; fallbackId?: string }[]> = {
   store: [
     { 
       title: "Click or drag image (PNG, JPG)", 
       description: "Add logo here.", 
       proTip: "Use a high-resolution logo with a transparent background for the best look.",
+      dos: ["Use a clear, transparent PNG.", "Ensure your logo is readable on mobile."],
+      donts: ["Don't use low-quality JPEGs.", "Avoid small text inside the logo."],
       targetId: "tour-store-logo"
     },
     { 
       title: "Business Name", 
       description: "Here add the name of the business.", 
       proTip: "Make it memorable and consistent with your brand.",
+      dos: ["Use your exact registered brand name.", "Keep it under 3 words if possible."],
+      donts: ["Don't use generic names like 'Furniture Store'.", "Don't add 'Inc' or 'LLC' if not needed."],
       targetId: "tour-store-name"
     },
     { 
       title: "WhatsApp Lead Capture", 
       description: "Add WhatsApp no here.", 
       proTip: "Double check this number! If it is wrong, customers cannot reach you.",
+      dos: ["Use an active WhatsApp Business number.", "Ensure you have someone monitoring it."],
+      donts: ["Don't use personal numbers if possible.", "Don't add spaces or hyphens."],
       targetId: "tour-store-whatsapp"
     }
   ],
@@ -124,12 +140,16 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Write a Headline", 
       description: "Write a big, bold sentence that grabs attention immediately. This is the first text visitors see. Explain your main benefit in one line.", 
       proTip: "Focus on emotion and benefit (e.g., 'Transform Your Living Space with Handcrafted Luxury').",
+      dos: ["Keep it under 8 words.", "Focus on the primary benefit (e.g., 'Handcrafted Luxury')."],
+      donts: ["Don't just say 'Welcome to our store'.", "Avoid industry jargon."],
       targetId: "tour-content-headline"
     },
     { 
       title: "Add a Sub-headline", 
       description: "Explain a bit more about your offer or what makes you special. This text appears right below the big headline to give more context.", 
       proTip: "Keep it short, supportive, and action-oriented.",
+      dos: ["Explain exactly what you sell.", "Include a subtle hook or promise."],
+      donts: ["Don't write more than 2 sentences.", "Avoid repeating the headline."],
       targetId: "tour-content-subheadline"
     }
   ],
@@ -138,12 +158,16 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Selection Title", 
       description: "This is the main question you ask your customers. What do you want them to pick?", 
       proTip: "Make it action-oriented (e.g., 'What Piece Are You Looking For?').",
+      dos: ["Make it a question or a clear prompt.", "Keep it conversational."],
+      donts: ["Don't use boring titles like 'Categories'.", "Don't leave it blank."],
       targetId: "tour-categories-global-title"
     },
     { 
       title: "Add Collections", 
       description: "Click here to add product categories like 'Sofas', 'Beds', or 'Dining'.", 
       proTip: "Limit to 1-3 collections. Fewer choices lead to faster buying decisions and less fatigue.",
+      dos: ["Create logical groups (e.g., Living Room, Bedroom).", "Use high-quality cover images for categories."],
+      donts: ["Don't create more than 4 collections.", "Avoid overlapping category names."],
       targetId: "tour-categories-add-btn"
     },
     { 
@@ -159,6 +183,8 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Add Products", 
       description: "Add items from your catalog. This header holds the product name, category, and main price.", 
       proTip: "Keep the name short. This is what shows up on the main store page.",
+      dos: ["Use specific names (e.g., 'Oak Dining Table').", "Add the accurate price."],
+      donts: ["Don't use internal SKU numbers as names.", "Don't leave the description empty."],
       targetId: "tour-products-details",
       fallbackId: "tour-products-empty"
     },
@@ -203,18 +229,24 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Customer Name & City", 
       description: "Add the customer's name and their city. Local social proof (e.g., 'Rahul S. from Mumbai') feels authentic and builds trust.", 
       proTip: "Always include the city — buyers trust reviews from people in nearby locations.",
+      dos: ["Use a real customer's first name and initial.", "Include their city or neighborhood."],
+      donts: ["Don't use fake-sounding names like 'John Doe'.", "Don't forget the location context."],
       targetId: "tour-testimonials-name"
     },
     { 
       title: "Write Their Review", 
       description: "Paste what the customer said about your product. Keep it short and genuine — one or two sentences is perfect.", 
       proTip: "Real quotes convert better than polished marketing copy. Use their exact words.",
+      dos: ["Highlight specific benefits they experienced.", "Keep it under 3 sentences."],
+      donts: ["Don't write overly formal or perfect English if it wasn't what they said.", "Don't make up reviews."],
       targetId: "tour-testimonials-quote"
     },
     { 
       title: "Upload Installation Photo", 
       description: "Upload a real photo of your product installed in the customer's home. This is the single most powerful trust signal.", 
       proTip: "A real room photo beats any studio shot. It proves your product looks great in actual homes.",
+      dos: ["Use user-generated content (UGC) photos.", "Show the product in a real, lived-in space."],
+      donts: ["Don't reuse the pristine studio shots from the product page.", "Avoid heavily filtered images."],
       targetId: "tour-testimonials-photo"
     }
   ],
@@ -223,6 +255,8 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Set Studio Location", 
       description: "Add your physical showroom address or factory location and a Google Maps link. This helps buyers verify your store is real.", 
       proTip: "Even if you are online-only, mentioning your base city or factory location helps establish authenticity.",
+      dos: ["Include a valid Google Maps link.", "Add a precise studio or factory address."],
+      donts: ["Don't hide your location.", "Don't use a fake address."],
       targetId: "tour-location-fields"
     }
   ],
@@ -231,7 +265,234 @@ const TAB_TOURS: Record<string, { title: string; description: string; proTip: st
       title: "Design Floor Plans", 
       description: "Map out the exact layout of your residences so buyers can visualize the space.", 
       proTip: "Use the Focus Mode to get a massive full-screen canvas for precise drag-and-drop arrangements.",
+      dos: ["Keep rooms proportionate.", "Include measurements."],
+      donts: ["Don't crowd the layout.", "Avoid overlapping elements without reason."],
       targetId: "tour-layouts"
+    }
+  ],
+  whatsapp: [
+    { 
+      title: "Button Appearance", 
+      description: "Customize the floating WhatsApp button title, tagline, and call-to-action text.", 
+      proTip: "Make it irresistible. Instead of 'Contact Us', use 'Get Best Deal Instantly'.",
+      dos: ["Use strong action verbs.", "Focus on immediate value."],
+      donts: ["Don't use generic text.", "Don't write paragraphs of text."],
+      targetId: "tour-whatsapp-button"
+    },
+    { 
+      title: "Lead Automation", 
+      description: "Configure automated WhatsApp messaging to capture intent instantly.", 
+      proTip: "Structure your message: Context -> Request -> Next Steps.",
+      dos: ["Structure your message: Context -> Request -> Next Steps.", "Use the {product_name} placeholder to know what the buyer is looking at."],
+      donts: ["Don't write paragraphs of text, keep it skimmable.", "Avoid asking questions the buyer won't know the answer to."],
+      targetId: "tour-whatsapp-automation"
+    }
+  ]
+};
+
+const REAL_ESTATE_TAB_TOURS: Record<string, { title: string; description: string; proTip: string; dos?: string[]; donts?: string[]; targetId?: string; fallbackId?: string }[]> = {
+  store: [
+    { 
+      title: "Construction Company Name", 
+      description: "Enter the name of the developer or construction company representing the project.", 
+      proTip: "Use the official company name. Consistent developer branding builds instant authority and trust with luxury property buyers.",
+      targetId: "tour-store-name"
+    },
+    { 
+      title: "Lead Capture Number", 
+      description: "Concierge requests, visitor callbacks, and lead inquiries will route directly to this WhatsApp number.", 
+      proTip: "Double check this number! Make sure it is active on WhatsApp so you never miss a high-value real estate lead.",
+      targetId: "tour-store-whatsapp"
+    }
+  ],
+  content: [
+    { 
+      title: "Property Identity", 
+      description: "Define the Property Location, Name, and Tagline. This is the first impression visitors see when they land.", 
+      proTip: "Sell the lifestyle, not the square footage. Instead of 'New Apartments', try 'A West-Facing Residence Designed for Silence and Light'.",
+      dos: ["Use a short, evocative project name.", "Include a high-end tagline (e.g., 'A Signature Residence')."],
+      donts: ["Don't use all caps for the name.", "Don't write a long, boring tagline."],
+      targetId: "tour-hero-identity"
+    },
+    { 
+      title: "Hero Visual", 
+      description: "Upload a high-fidelity rendering or lifestyle photo that showcases the grand scale of the property.", 
+      proTip: "Use a premium day or night facade shot to establish an elite luxury feel.",
+      dos: ["Use a high-res (1080p+) horizontal image.", "Ensure the image is brightly lit and clear."],
+      donts: ["Don't use low-res or blurry photos.", "Avoid images with heavy watermarks."],
+      targetId: "tour-hero-visual"
+    },
+    { 
+      title: "Hero Bottom Action Bar", 
+      description: "Set the Property Status (e.g. 'Ready to Move') and Starting Price (e.g. '₹ 6.2 Cr').", 
+      proTip: "Transparent pricing and status qualify leads early and filter for serious high-net-worth buyers.",
+      dos: ["Be fully transparent with the starting price.", "Select an accurate possession status."],
+      donts: ["Don't use 'Price on Request' if possible.", "Avoid misleading status labels."],
+      targetId: "tour-hero-actionbar"
+    },
+    { 
+      title: "Emotional Storytelling", 
+      description: "Write a compelling section title and body describing the luxury living experience.", 
+      proTip: "Evoke feelings of status and tranquility (e.g. 'Private decks. Morning light. Quiet elevation...').",
+      dos: ["Focus on emotions, lifestyle, and spatial volume.", "Keep sentences short and punchy."],
+      donts: ["Don't just list technical specifications here.", "Avoid giant paragraphs of text."],
+      targetId: "tour-hero-story"
+    }
+  ],
+  products: [
+    { 
+      title: "Residence Layouts", 
+      description: "Manage your BHK configurations (e.g. 2 BHK Compact, 3 BHK Signature). Add new layouts to showcase different tiers.", 
+      proTip: "Group configurations clearly. A structured selection makes comparison seamless for buyers.",
+      dos: ["Add distinct options like '2 BHK' or '3 BHK Signature'.", "Keep titles short and punchy."],
+      donts: ["Don't create more than 5 options.", "Avoid long, confusing configuration names."],
+      targetId: "tour-products-details",
+      fallbackId: "tour-products-empty"
+    },
+    { 
+      title: "Residence Identity", 
+      description: "Configure the price label, total area, and upload a high-resolution render or photo for this residence configuration.", 
+      proTip: "Use premium facade shots or interior renders. Mention specific highlights like 'Sky Deck' or 'Italian Marble' in the image subtitle.",
+      targetId: "tour-products-storefront",
+      fallbackId: "tour-products-empty"
+    },
+    { 
+      title: "Elite Description", 
+      description: "Write an outcome-driven description highlighting the spatial volume, views, and lifestyle experience of the space.", 
+      proTip: "Focus on experience: 'Efficiently designed 2-bedroom residence with an open-plan living space and a private balcony.'",
+      targetId: "tour-products-narrative",
+      fallbackId: "tour-products-empty"
+    },
+    { 
+      title: "Conversion Hooks", 
+      description: "Specify an urgency badge (e.g., '5 Units Left') to encourage immediate callbacks.", 
+      proTip: "Using realistic numbers adds subtle urgency and speeds up the decision-making process.",
+      targetId: "tour-products-boosters",
+      fallbackId: "tour-products-empty"
+    },
+    { 
+      title: "Property Details", 
+      description: "Add structural metadata like Tenure (Freehold Estate), Possession (Ready to Move), and Parking details.", 
+      proTip: "Clear, transparent specifications filter for highly qualified buyers and build instant trust.",
+      targetId: "tour-products-specs",
+      fallbackId: "tour-products-empty"
+    },
+    { 
+      title: "Inquiry Button CTA", 
+      description: "Customize the call-to-action text on the callback button for this specific space.", 
+      proTip: "Use action-oriented, premium prompts like 'DISCUSS THIS SPACE' or 'REQUEST SITE VISIT' to maximize conversions.",
+      targetId: "tour-products-benefits",
+      fallbackId: "tour-products-empty"
+    }
+  ],
+  location: [
+    { 
+      title: "Building / Project Name", 
+      description: "Enter the name of your building or project site (e.g. 'The Aurelia Residences').", 
+      proTip: "A premium project name builds strong luxury branding and sets high client expectations.",
+      dos: ["Use the exact legal project name.", "Include the developer prefix if applicable."],
+      donts: ["Don't abbreviate the project name.", "Avoid informal nicknames."],
+      targetId: "tour-location-name"
+    },
+    { 
+      title: "Google Maps URL", 
+      description: "Paste your Google Maps link here so prospective buyers can easily generate driving directions.", 
+      proTip: "Verifiable map pins improve response rates by over 80% for high-intent visitors.",
+      dos: ["Use a direct Google Maps share link.", "Test the link to make sure it opens correctly."],
+      donts: ["Don't use generic city links.", "Don't use broken or outdated pins."],
+      targetId: "tour-location-link"
+    },
+    { 
+      title: "Building/Site Address", 
+      description: "Provide the complete street address of the project site or experience center.", 
+      proTip: "Be detailed. Include sector, landmark, or tower numbers to avoid location confusion.",
+      dos: ["Include a recognizable landmark.", "Write the full, official address."],
+      donts: ["Don't be vague (e.g. 'Near the highway').", "Don't omit the city or zip code."],
+      targetId: "tour-location-address"
+    },
+    { 
+      title: "Strategic Connectivity", 
+      description: "Highlight key infrastructure and transit hubs (like Highways, Metro, or Airports) near your project.", 
+      proTip: "Clear, time-based distances (e.g., 'Metro - 8 min') heavily influence luxury property investment decisions.",
+      dos: ["Highlight airports, highways, or major tech parks.", "Use time-based distances (e.g. '5 mins')."],
+      donts: ["Don't list irrelevant or unknown locations.", "Don't exaggerate the distance."],
+      targetId: "tour-location-connectivity"
+    }
+  ],
+  layouts: [
+    { 
+      title: "Blueprint Layout Editor", 
+      description: "Configure interactive 2D blueprints for each configuration to give buyers a true sense of scale.", 
+      proTip: "Start with your primary BHK configuration. Click on any configuration card below to expand its layout canvas.",
+      dos: ["Ensure you are editing the correct configuration.", "Use accurate proportions."],
+      donts: ["Don't ignore the layout tool—it's highly requested by buyers."],
+      targetId: "tour-layouts-details"
+    },
+    { 
+      title: "Canvas Orientation", 
+      description: "Set the orientation of the layout (e.g., 'West Facing') to showcase natural lighting and views.", 
+      proTip: "Facing direction is a premium attribute. Luxury buyers prioritize sunrise and sunset exposure.",
+      dos: ["State the exact primary facing direction.", "Highlight natural light advantages."],
+      donts: ["Don't leave this blank.", "Avoid confusing multi-directional terms."],
+      targetId: "tour-layouts-canvas"
+    },
+    { 
+      title: "2D Blueprint Designer", 
+      description: "Drag, scale, and align rooms on the blueprint canvas. Tap on any room to edit details or adjust placement.", 
+      proTip: "Use the 'Focus Mode' (top right of the canvas) for a full-screen editing experience.",
+      dos: ["Keep layout proportions highly accurate.", "Use focus mode for complex arrangements."],
+      donts: ["Don't crowd the canvas.", "Avoid placing rooms randomly without context."],
+      targetId: "tour-layouts-designer"
+    },
+    { 
+      title: "Room List & Dimensions", 
+      description: "View and edit each room's name and exact square footage. Expand any row to customize highlights and architectural quotes.", 
+      proTip: "Exact dimensions (e.g. 'Sunset Balcony - 450 sqft') make configurations transparent and engaging.",
+      dos: ["Provide exact measurements for every room.", "Add a lifestyle quote for key spaces."],
+      donts: ["Don't use vague sizes like 'Large'.", "Don't leave the room features blank."],
+      targetId: "tour-layouts-rooms"
+    },
+    { 
+      title: "Quick Add Rooms", 
+      description: "Insert pre-configured spaces (Living, Kitchen, Bedroom, Balcony, Entrance) into your active blueprint.", 
+      proTip: "Include luxury rooms like 'Walk-in Closet' or 'Pooja Room' to enhance the property lifestyle profile.",
+      dos: ["Add premium spaces like 'Powder Room'.", "Ensure essential spaces aren't missed."],
+      donts: ["Don't add duplicate rooms unnecessarily.", "Avoid generic names for luxury spaces."],
+      targetId: "tour-layouts-add"
+    }
+  ],
+  whatsapp: [
+    { 
+      title: "Button Appearance", 
+      description: "Customize the floating WhatsApp button title, tagline, and call-to-action text.", 
+      proTip: "Make it irresistible. Instead of 'Contact Us', use 'Get Floor Plan Instantly'.",
+      dos: ["Use clear action verbs (e.g., Get, View, Explore).", "Focus on immediate value for the buyer."],
+      donts: ["Don't use generic text like 'Contact Us'.", "Avoid long, wordy descriptions."],
+      targetId: "tour-whatsapp-button"
+    },
+    { 
+      title: "Concierge Chat Options", 
+      description: "Define the intent-based options buyers see when they click the WhatsApp button.", 
+      proTip: "Provide exactly 3-4 distinct intent options and keep the {residence} placeholder to maintain context.",
+      dos: ["Provide exactly 3-4 distinct intent options.", "Use {residence} to keep the message highly contextual."],
+      donts: ["Don't create overlapping or confusing options.", "Don't remove the {company_name} placeholder."],
+      targetId: "tour-whatsapp-concierge"
+    },
+    { 
+      title: "Site Visit Options", 
+      description: "Set up curated tour experiences for the property (e.g. Morning Tour, Sunset Viewing).", 
+      proTip: "Keep the options punchy and experiential to encourage bookings.",
+      dos: ["Offer curated time slots or tour experiences.", "Keep the options punchy (e.g., Sunset Viewing)."],
+      donts: ["Don't ask them to type their own time.", "Avoid using more than 4 visit options."],
+      targetId: "tour-whatsapp-visit"
+    },
+    { 
+      title: "Room Explorer Inquiry", 
+      description: "Configure the specific button and pre-filled message used when buyers explore the 3D floorplans.", 
+      proTip: "Keep the {room_name} and {residence_name} placeholders intact so your sales team knows exactly what they are looking at.",
+      dos: ["Keep the button action-oriented (e.g. Enquire About This Residence).", "Ask for detailed pricing and floorplans in the pre-filled message."],
+      donts: ["Don't remove the {room_name} placeholder, it provides critical context.", "Avoid making the button text too long."],
+      targetId: "tour-whatsapp-room"
     }
   ]
 };
@@ -366,13 +627,11 @@ export default function WizardMode({
     };
   }, []);
 
-  const rawTourSteps = TAB_TOURS[activeTab.id] || [
+  const rawTourSteps = (isRealEstate ? REAL_ESTATE_TAB_TOURS[activeTab.id] : TAB_TOURS[activeTab.id]) || [
     { title: "Fill Details", description: "Follow the fields to complete this step.", proTip: "Keep it simple." }
   ];
 
-  const currentTourSteps = (isRealEstate && activeTab.id === 'store') 
-    ? rawTourSteps.filter(step => step.targetId !== 'tour-store-logo')
-    : rawTourSteps;
+  const currentTourSteps = rawTourSteps;
 
   // Auto-start tour when tab changes, ONLY if not completed and haven't skipped/finished overall onboarding
   useEffect(() => {
@@ -570,6 +829,27 @@ export default function WizardMode({
                     <div className={`p-3.5 rounded-xl ${c.bgLight} mb-5`}>
                       <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
                     </div>
+                    
+                    {(step.dos || step.donts) && (
+                      <div className="space-y-3 text-[10px] leading-relaxed border-t border-slate-100 pt-4 mb-6">
+                        {step.dos && (
+                          <div>
+                            <p className="font-bold text-emerald-600 mb-1 flex items-center gap-1"><CheckCircle2 size={10} /> DO THIS</p>
+                            <ul className="list-disc pl-3 text-slate-600 space-y-1">
+                              {step.dos.map((d: string, i: number) => <li key={i}>{d}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                        {step.donts && (
+                          <div>
+                            <p className="font-bold text-rose-500 mb-1 flex items-center gap-1"><X size={10} /> AVOID</p>
+                            <ul className="list-disc pl-3 text-slate-600 space-y-1">
+                              {step.donts.map((d: string, i: number) => <li key={i}>{d}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1.5">
                         {currentTourSteps.map((_, i) => (
@@ -845,6 +1125,7 @@ export default function WizardMode({
             content={content}
             products={products}
             previewMode="mobile"
+            activeSectionId={activeTab.id}
           />
           
           {/* Floating Mobile Action (Preview -> Editor) */}

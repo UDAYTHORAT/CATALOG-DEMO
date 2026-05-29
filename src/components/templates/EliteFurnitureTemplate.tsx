@@ -100,6 +100,7 @@ type TemplateProps = {
   isPreview?: boolean;
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: 'content' | 'categories' | 'products' | 'testimonials' | 'location') => void;
+  activeSectionId?: string;
 };
 
 const springConfig = { type: "spring", damping: 30, stiffness: 160, mass: 0.9 } as const;
@@ -126,13 +127,112 @@ const fadeUp: Variants = {
 type Step = "landing" | "categories" | "recommendations" | "details";
 
 const buildMapEmbedUrl = (mapLink?: string, address?: string) => {
-  const link = (mapLink || '').trim();
+  // Decode HTML entities that may have leaked into stored URLs (e.g. &#39; → ')
+  const link = (mapLink || '').trim()
+    .replace(/&#39;/g, "'").replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"');
   const addr = (address || '').trim();
-  if (link.includes('embed')) return link;
-  if (addr) return `https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed`;
-  if (link) return `https://www.google.com/maps?q=${encodeURIComponent(link)}&output=embed`;
-  return '';
+  
+  if (link.includes('pb=') || link.includes('/embed')) return link;
+  if (link.includes('output=embed')) return link.replace('www.google.com/maps?', 'maps.google.com/maps?');
+
+  // Try to parse exact coordinates or query from the mapLink FIRST
+  let query = '';
+  
+  if (link) {
+    // If it's a /place/ URL, extract exact marker coordinates if available
+    if (link.includes('/place/')) {
+      const exactMatch = link.match(/!8m2!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (exactMatch) {
+        return `https://www.google.com/maps?q=${exactMatch[1]},${exactMatch[2]}&z=20&output=embed`;
+      }
+      
+      const placeMatch = link.match(/\/place\/([^\/]+)/);
+      if (placeMatch && placeMatch[1]) query = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    } else if (link.includes('q=')) {
+      const match = link.match(/[?&]q=([^&]+)/);
+      if (match && match[1]) query = decodeURIComponent(match[1]);
+    }
+  }
+
+  // Fallback to text address only if we couldn't get a query from the link
+  if (!query) {
+    query = addr;
+  }
+
+  // If we STILL don't have a valid query, return empty
+  if (!query) return '';
+
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
 };
+
+const buildDirectionsUrl = (address?: string, mapLink?: string) => {
+  // Decode HTML entities that may have leaked into stored URLs
+  const link = (mapLink || '').trim()
+    .replace(/&#39;/g, "'").replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+  const addr = (address || '').trim();
+
+  if (link) {
+    // 1. If it's a direct place URL or has a CID, use it entirely unchanged to preserve the Place ID and entity data
+    if (link.includes('/place/') || link.includes('cid=')) {
+      return link;
+    }
+
+    // If it's a standard embed/pb/output=embed URL, try to extract q= or coordinates
+    if (link.includes('q=')) {
+      const match = link.match(/[?&]q=([^&]+)/);
+      if (match && match[1]) {
+        return `https://www.google.com/maps/search/?api=1&query=${match[1]}`;
+      }
+    }
+    
+    if (link.includes('pb=')) {
+      const nameMatch = link.match(/!2s([^!&]+)/);
+      const exactMatch = link.match(/!8m2!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+      const featureIdMatch = link.match(/!1s([^!&]+)!2s/);
+
+      // Best: If we have the exact Google Maps feature ID, we can open the place directly
+      if (featureIdMatch && featureIdMatch[1]) {
+        return `https://www.google.com/maps/place/data=!4m2!3m1!1s${featureIdMatch[1]}`;
+      }
+
+      // Better Fallback: Name + Exact Coordinates
+      if (nameMatch && nameMatch[1] && exactMatch) {
+        return `https://www.google.com/maps/search/${nameMatch[1]}/@${exactMatch[1]},${exactMatch[2]},17z`;
+      }
+      
+      // Fallback: Name only
+      if (nameMatch && nameMatch[1]) {
+        return `https://www.google.com/maps/search/?api=1&query=${nameMatch[1]}`;
+      }
+
+      // Fallback: Exact marker coordinates only
+      if (exactMatch) {
+        return `https://www.google.com/maps/search/?api=1&query=${exactMatch[1]},${exactMatch[2]}`;
+      }
+    }
+
+    const atMatch = link.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (atMatch) {
+      return `https://www.google.com/maps/search/?api=1&query=${atMatch[1]},${atMatch[2]}`;
+    }
+
+    // If it doesn't look like an embed, use it directly (e.g. short maps.app.goo.gl URLs)
+    const isEmbedOnly = link.includes('/embed') || link.includes('output=embed');
+    if (!isEmbedOnly) {
+      return link;
+    }
+  }
+
+  // Fallback to address text
+  if (addr) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+  }
+  
+  return 'https://www.google.com/maps';
+};
+
 
 export default React.memo(function EliteFurnitureTemplate({ 
   funnel, store, products: propProducts, isPreview = false, previewMode, onEditSection
@@ -636,7 +736,7 @@ export default React.memo(function EliteFurnitureTemplate({
             <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#94A690] mb-0.5">{content.bottomCtaTitle}</p>
             <p className="text-[12px] font-medium tracking-wide text-[#1C1B1A]">{content.bottomCtaSubTitle}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-[0_8px_20px_rgba(37,211,102,0.3)] shrink-0">
+          <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-[0_0_15px_rgba(37,211,102,0.8)] animate-pulse shrink-0">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
             </svg>
@@ -896,13 +996,13 @@ export default React.memo(function EliteFurnitureTemplate({
                     <h4 className="font-serif text-[1.4rem] tracking-tight text-[#1C1B1A] mb-2 leading-tight">{content.experienceCenterName}</h4>
                     <p className="text-[13px] text-[#6B665F] leading-relaxed font-light italic mb-6">{content.experienceCenterAddress}</p>
                     <a
-                      onClick={(event) => handleEdit('location', event)}
-                      href={content.mapLink}
+                      onClick={(event) => event.stopPropagation()}
+                      href={buildDirectionsUrl(content.experienceCenterAddress, content.mapLink)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center justify-center gap-3 w-full py-4 rounded-[1.5rem] bg-[#1C1B1A] text-[#F7F5F0] text-[10px] font-bold uppercase tracking-[0.2em] transition-all border border-black/5 shadow-[0_15px_30px_rgba(0,0,0,0.08)] hover:bg-black active:scale-[0.98]"
                     >
-                      Get Directions <ExternalLink strokeWidth={1.5} className="w-3.5 h-3.5 opacity-60" />
+                      Open in Maps <ExternalLink strokeWidth={1.5} className="w-3.5 h-3.5 opacity-60" />
                     </a>
                   </div>
                 </div>
@@ -1298,9 +1398,9 @@ export default React.memo(function EliteFurnitureTemplate({
                         setAvailabilityProduct(selectedProduct);
                         setIsAvailabilityOpen(true);
                       }}
-                      className="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white text-[16px] font-black tracking-wide flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.3)] hover:shadow-[0_20px_40px_rgba(37,211,102,0.4)] transition-all active:scale-[0.98] border border-white/20"
+                      className="w-full py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white text-[16px] font-black tracking-wide flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.3)] hover:shadow-[0_20px_40px_rgba(37,211,102,0.4)] transition-all active:scale-[0.98] border border-white/20 group"
                     >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                       </svg>
                       Get Best Deal

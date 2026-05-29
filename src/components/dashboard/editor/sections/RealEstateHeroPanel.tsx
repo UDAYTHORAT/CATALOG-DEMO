@@ -40,7 +40,7 @@ export default React.memo(function RealEstateHeroPanel({
 
       <div className="space-y-6">
         {/* ── Section 1: Property Identity ── */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="tour-hero-identity" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Property Identity</p>
           <div className="space-y-5">
             <Field label="Property Location / Address">
@@ -87,7 +87,7 @@ export default React.memo(function RealEstateHeroPanel({
         </div>
 
         {/* ── Section 2: Hero Visual ── */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="tour-hero-visual" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hero Visual</p>
           <Field label="Hero Image">
             <ImageUpload
@@ -98,7 +98,7 @@ export default React.memo(function RealEstateHeroPanel({
         </div>
 
         {/* ── Section 3: Hero Action Bar ── */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="tour-hero-actionbar" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hero Bottom Action Bar</p>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -134,7 +134,7 @@ export default React.memo(function RealEstateHeroPanel({
         </div>
 
         {/* ── Section 4: Emotional Storytelling ── */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="tour-hero-story" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Emotional Storytelling</p>
           <div className="space-y-5">
             <Field label="Section Title">

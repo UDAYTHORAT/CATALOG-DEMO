@@ -186,7 +186,11 @@ export default React.memo(function RealEstateLayoutsPanel({
           const isExpanded = expandedItems[product.id];
           const rooms = product.rooms || [];
           return (
-            <div key={product.id} className={`group relative rounded-[2rem] border transition-all ${isExpanded ? 'border-slate-300 bg-white shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'}`}>
+            <div 
+              key={product.id} 
+              id={index === 0 ? "tour-layouts-details" : undefined}
+              className={`group relative rounded-[2rem] border transition-all ${isExpanded ? 'border-slate-300 bg-white shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'}`}
+            >
               <div className="flex items-center gap-4 p-4">
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-inner bg-slate-50 flex items-center justify-center">
                   {product.image ? (
@@ -212,12 +216,12 @@ export default React.memo(function RealEstateLayoutsPanel({
                   </button>
                 </div>
               </div>
-
+ 
               {isExpanded && (
                 <div className="p-6 pt-0 space-y-6 animate-in fade-in zoom-in-95 duration-300">
                   <div className="h-px bg-slate-50 w-full" />
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div id="tour-layouts-canvas" className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <DoorOpen size={14} className="text-indigo-500" />
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900/60">Canvas Layout</p>
@@ -238,9 +242,9 @@ export default React.memo(function RealEstateLayoutsPanel({
                         <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-wider">{rooms.length} rooms</span>
                       </div>
                     </div>
-
+ 
                     {rooms.length > 0 && (
-                      <div className="rounded-2xl border border-indigo-100 bg-indigo-50/20 p-4">
+                      <div id="tour-layouts-designer" className="rounded-2xl border border-indigo-100 bg-indigo-50/20 p-4">
                         <BlueprintLayoutEditor
                           rooms={rooms}
                           selectedRoomId={selectedRoomIds[product.id]}
@@ -265,7 +269,7 @@ export default React.memo(function RealEstateLayoutsPanel({
                         />
                       </div>
                     )}
-                    <div className="space-y-1.5 mt-4">
+                    <div id="tour-layouts-rooms" className="space-y-1.5 mt-4">
                       {rooms.map((room: any, rIdx: number) => (
                         <RoomEditor
                           key={room.id || rIdx}
@@ -276,37 +280,6 @@ export default React.memo(function RealEstateLayoutsPanel({
                           isSelected={selectedRoomIds[product.id] === room.id}
                           onSelect={() => setSelectedRoomIds(prev => ({ ...prev, [product.id]: room.id }))}
                         />
-                      ))}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1 mt-4">
-                      <span className="text-[9px] text-slate-300 font-bold uppercase tracking-wider mr-0.5">Add:</span>
-                      {[
-                        { name: 'Living Room', area: '320 sqft', type: 'living', label: 'Living', w: 56, h: 44 },
-                        { name: 'Kitchen', area: '140 sqft', type: 'kitchen', label: 'Kitchen', w: 36, h: 36 },
-                        { name: 'Bedroom', area: '200 sqft', type: 'bedroom', label: 'Bedroom', w: 34, h: 34 },
-                        { name: 'Bathroom', area: '45 sqft', type: 'bathroom', label: 'Bath', w: 14, h: 16 },
-                        { name: 'Balcony', area: '60 sqft', type: 'balcony', label: 'Balcony', w: 22, h: 10 },
-                        { name: 'Entrance', area: '40 sqft', type: 'entrance', label: 'Entrance', w: 15, h: 12 },
-                      ].map((p) => (
-                        <button
-                          key={p.type}
-                          onClick={() => {
-                            const newRoom = {
-                              id: `${p.type}-${Date.now()}`,
-                              name: p.name, type: p.type, area: p.area,
-                              atmosphere: '', note: '', details: [],
-                              img: '', images: [],
-                              label: p.label, w: p.w, h: p.h,
-                              direction: { x: 0, y: 0, scale: 1 },
-                            };
-                            const currentRooms = products[index].rooms || [];
-                            onUpdate(index, { rooms: [...currentRooms, newRoom] } as any);
-                          }}
-                          className="px-2 py-0.5 rounded text-[10px] font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                        >
-                          + {p.label}
-                        </button>
                       ))}
                     </div>
                   </div>

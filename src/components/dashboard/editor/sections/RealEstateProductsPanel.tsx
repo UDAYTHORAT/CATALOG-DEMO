@@ -49,10 +49,12 @@ export default React.memo(function RealEstateProductsPanel({
         action={
           <button
             onClick={onAddCustomProduct}
-            className="flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all active:scale-95 shadow-lg shadow-slate-900/20 bg-slate-900 text-white hover:bg-slate-800"
+            disabled={products.length >= 4}
+            title={products.length >= 4 ? "Maximum 4 configurations allowed" : "Add BHK Configuration"}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-lg ${products.length >= 4 ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/20 active:scale-95'}`}
           >
             <Plus size={14} />
-            Add BHK
+            {products.length >= 4 ? "Max Limit (4)" : "Add BHK"}
           </button>
         }
       />
@@ -60,7 +62,7 @@ export default React.memo(function RealEstateProductsPanel({
       {/* Residence List */}
       <div className="space-y-4">
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-16 px-6 text-center">
+          <div id="tour-products-empty" className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-16 px-6 text-center">
             <Building2 className="mb-4 text-slate-300" size={40} />
             <p className="text-sm font-black text-slate-500">No residences added</p>
             <p className="mt-1 text-[11px] text-slate-400 max-w-[200px]">Add your BHK configurations to showcase in the funnel.</p>
@@ -70,7 +72,11 @@ export default React.memo(function RealEstateProductsPanel({
             const isExpanded = expandedItems[product.id];
             const rooms = product.rooms || [];
             return (
-              <div key={product.id} className={`group relative rounded-[2rem] border transition-all ${isExpanded ? 'border-slate-300 bg-white shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'}`}>
+              <div 
+                key={product.id} 
+                id={index === 0 ? "tour-products-details" : undefined}
+                className={`group relative rounded-[2rem] border transition-all ${isExpanded ? 'border-slate-300 bg-white shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'}`}
+              >
                 {/* Residence Header */}
                 <div className="flex items-center gap-4 p-4">
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-inner bg-slate-50 flex items-center justify-center">
@@ -113,50 +119,54 @@ export default React.memo(function RealEstateProductsPanel({
 
                     {/* Section 1: Identity */}
                     <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Residence Identity</p>
+                      <div id="tour-products-storefront" className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Residence Identity</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <Field label="Price Label">
+                            <input
+                              value={product.priceLabel}
+                              onChange={(e) => onUpdate(index, { priceLabel: e.target.value })}
+                              className={subtleInputClass}
+                              placeholder="₹ 6.2 Cr"
+                            />
+                          </Field>
+                          <Field label="Total Area">
+                            <input
+                              value={product.dimensions || ''}
+                              onChange={(e) => onUpdate(index, { dimensions: e.target.value })}
+                              className={subtleInputClass}
+                              placeholder="1,850 sqft"
+                            />
+                          </Field>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Hero Image</label>
+                          <ImageUpload
+                            defaultImage={product.image}
+                            onUploadComplete={(url) => onUpdate(index, { image: url })}
+                          />
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <Field label="Price Label">
-                          <input
-                            value={product.priceLabel}
-                            onChange={(e) => onUpdate(index, { priceLabel: e.target.value })}
-                            className={subtleInputClass}
-                            placeholder="₹ 6.2 Cr"
+                      <div id="tour-products-narrative">
+                        <Field label="Description">
+                          <textarea
+                            value={product.description ?? ''}
+                            onChange={(e) => onUpdate(index, { description: e.target.value })}
+                            className={`${subtleInputClass} min-h-[80px] resize-none`}
+                            placeholder="Sea-facing living volume with private deck..."
                           />
                         </Field>
-                        <Field label="Total Area">
-                          <input
-                            value={product.dimensions || ''}
-                            onChange={(e) => onUpdate(index, { dimensions: e.target.value })}
-                            className={subtleInputClass}
-                            placeholder="1,850 sqft"
-                          />
-                        </Field>
                       </div>
-
-                      <div>
-                        <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Hero Image</label>
-                        <ImageUpload
-                          defaultImage={product.image}
-                          onUploadComplete={(url) => onUpdate(index, { image: url })}
-                        />
-                      </div>
-
-                      <Field label="Description">
-                        <textarea
-                          value={product.description ?? ''}
-                          onChange={(e) => onUpdate(index, { description: e.target.value })}
-                          className={`${subtleInputClass} min-h-[80px] resize-none`}
-                          placeholder="Sea-facing living volume with private deck..."
-                        />
-                      </Field>
                     </div>
 
                     {/* Section 2: Conversion Hooks */}
-                    <div className="space-y-4 rounded-[2rem] bg-amber-50/30 p-5 border border-amber-100/50">
+                    <div id="tour-products-boosters" className="space-y-4 rounded-[2rem] bg-amber-50/30 p-5 border border-amber-100/50">
                       <div className="flex items-center gap-2">
                         <Zap size={14} className="text-amber-500 fill-amber-500/20" />
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/60">Conversion Hooks</p>
@@ -173,7 +183,7 @@ export default React.memo(function RealEstateProductsPanel({
                       </div>
                     </div>
                     {/* Section 3: Property Details (Inline WYSIWYG) */}
-                    <div className="relative overflow-hidden bg-[#1C1917] rounded-[2rem] p-6 shadow-xl mt-4">
+                    <div id="tour-products-specs" className="relative overflow-hidden bg-[#1C1917] rounded-[2rem] p-6 shadow-xl mt-4">
                       {/* Abstract decorative element */}
                       <div className="absolute top-0 right-0 w-32 h-32 bg-[#9A7B44] opacity-10 rounded-bl-full blur-2xl pointer-events-none" />
                       
@@ -237,7 +247,7 @@ export default React.memo(function RealEstateProductsPanel({
                       </div>
 
                       {/* Inline CTA Editor */}
-                      <div className="mt-8 pt-4 border-t border-white/10 relative z-10 flex flex-col gap-2">
+                      <div id="tour-products-benefits" className="mt-8 pt-4 border-t border-white/10 relative z-10 flex flex-col gap-2">
                         <span className="text-[9px] tracking-widest uppercase text-white/40 font-bold">Inquiry Button</span>
                         <div className="flex items-center gap-3 w-full bg-black/40 rounded-xl px-4 py-3 border border-white/5">
                           <input

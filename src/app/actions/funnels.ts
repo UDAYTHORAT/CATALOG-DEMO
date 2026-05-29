@@ -171,3 +171,20 @@ export async function deleteFunnel(funnelId: string) {
   revalidatePath('/dashboard/funnels');
   return { success: true };
 }
+
+export async function resolveMapUrl(shortUrl: string): Promise<string | null> {
+  try {
+    // Send a fetch request following redirects to resolve short maps URL on the server (bypassing CORS)
+    const res = await fetch(shortUrl, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    });
+    return res.url;
+  } catch (err) {
+    console.error('Failed to resolve map URL:', err);
+    return null;
+  }
+}
+

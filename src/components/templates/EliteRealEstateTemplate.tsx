@@ -71,11 +71,134 @@ type TemplateProps = {
   isPreview?: boolean;
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: SectionId) => void;
+  activeSectionId?: string;
 };
 
-// ───────────────────────────────────────────────────────────────────────────────
-// MAIN TEMPLATE
-// ───────────────────────────────────────────────────────────────────────────────
+const buildMapEmbedUrl = (mapLink?: string, address?: string) => {
+  // Decode HTML entities that may have leaked into stored URLs (e.g. &#39; → ')
+  const link = (mapLink || '').trim()
+    .replace(/&#39;/g, "'").replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+  const addr = (address || '').trim();
+  
+  if (link.includes('pb=') || link.includes('/embed')) return link;
+  if (link.includes('output=embed')) return link.replace('www.google.com/maps?', 'maps.google.com/maps?');
+
+  // Try to parse exact coordinates or query from the mapLink FIRST
+  let query = '';
+  
+  if (link) {
+    // If it's a /place/ URL, extract exact marker coordinates if available
+    if (link.includes('/place/')) {
+      const exactMatch = link.match(/!8m2!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (exactMatch) {
+        return `https://www.google.com/maps?q=${exactMatch[1]},${exactMatch[2]}&z=20&output=embed`;
+      }
+      
+      const placeMatch = link.match(/\/place\/([^\/]+)/);
+      if (placeMatch && placeMatch[1]) query = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    } else if (link.includes('q=')) {
+      const match = link.match(/[?&]q=([^&]+)/);
+      if (match && match[1]) query = decodeURIComponent(match[1]);
+    }
+  }
+
+  // Fallback to text address only if we couldn't get a query from the link
+  if (!query) {
+    query = addr;
+  }
+
+  // If we STILL don't have a valid query, return empty
+  if (!query) return '';
+
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+};
+
+const buildDirectionsUrl = (address?: string, mapLink?: string) => {
+  // Decode HTML entities that may have leaked into stored URLs
+  const link = (mapLink || '').trim()
+    .replace(/&#39;/g, "'").replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+  const addr = (address || '').trim();
+
+  if (link) {
+    // 1. If it's a direct place URL or has a CID, use it entirely unchanged to preserve the Place ID and entity data
+    if (link.includes('/place/') || link.includes('cid=')) {
+      return link;
+    }
+
+    // If it's a standard embed/pb/output=embed URL, try to extract q= or coordinates
+    if (link.includes('q=')) {
+      const match = link.match(/[?&]q=([^&]+)/);
+      if (match && match[1]) {
+        return `https://www.google.com/maps/search/?api=1&query=${match[1]}`;
+      }
+    }
+    
+    if (link.includes('pb=')) {
+      const nameMatch = link.match(/!2s([^!&]+)/);
+      const exactMatch = link.match(/!8m2!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+      const featureIdMatch = link.match(/!1s([^!&]+)!2s/);
+
+      // Best: If we have the exact Google Maps feature ID, we can open the place directly
+      if (featureIdMatch && featureIdMatch[1]) {
+        return `https://www.google.com/maps/place/data=!4m2!3m1!1s${featureIdMatch[1]}`;
+      }
+
+      // Better Fallback: Name + Exact Coordinates
+      if (nameMatch && nameMatch[1] && exactMatch) {
+        return `https://www.google.com/maps/search/${nameMatch[1]}/@${exactMatch[1]},${exactMatch[2]},17z`;
+      }
+      
+      // Fallback: Name only
+      if (nameMatch && nameMatch[1]) {
+        return `https://www.google.com/maps/search/?api=1&query=${nameMatch[1]}`;
+      }
+
+      // Fallback: Exact marker coordinates only
+      if (exactMatch) {
+        return `https://www.google.com/maps/search/?api=1&query=${exactMatch[1]},${exactMatch[2]}`;
+      }
+    }
+
+    const atMatch = link.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (atMatch) {
+      return `https://www.google.com/maps/search/?api=1&query=${atMatch[1]},${atMatch[2]}`;
+    }
+
+    // If it doesn't look like an embed, use it directly (e.g. short maps.app.goo.gl URLs)
+    const isEmbedOnly = link.includes('/embed') || link.includes('output=embed');
+    if (!isEmbedOnly) {
+      return link;
+    }
+  }
+
+  // Fallback to address text
+  if (addr) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+  }
+  
+  return 'https://www.google.com/maps';
+};
+
+
+function useResponsive(isPreview: boolean, previewMode?: 'mobile' | 'tablet' | 'desktop') {
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    if (isPreview) return;
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isPreview]);
+
+  const isMobilePreview = isPreview ? previewMode === 'mobile' : windowWidth < 768;
+  const isTabletPreview = isPreview ? previewMode === 'tablet' : (windowWidth >= 768 && windowWidth < 1024);
+  const isCompact = isMobilePreview || isTabletPreview;
+
+  return { isMobilePreview, isTabletPreview, isCompact };
+}
+
 export default function EliteRealEstateTemplate({
   funnel,
   store,
@@ -83,6 +206,7 @@ export default function EliteRealEstateTemplate({
   isPreview = false,
   previewMode,
   onEditSection,
+  activeSectionId,
 }: TemplateProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -212,6 +336,62 @@ export default function EliteRealEstateTemplate({
   const [qPurpose, setQPurpose] = useState('');
   const [qTimeline, setQTimeline] = useState('');
   const [qPreference, setQPreference] = useState('');
+
+  // Synchronize screen/scrolling state with the editor's active tab/step
+  useEffect(() => {
+    if (!isPreview || !activeSectionId) return;
+
+    if (activeSectionId !== 'whatsapp') {
+      if (activeSectionId === 'layouts') {
+        // 1. Show the "tour" screen showing blueprint/layouts
+        setScreen('tour');
+        // Set to first product if there is one
+        if (normalizedProducts.length > 0) {
+          setResidenceId(normalizedProducts[0].id);
+        }
+      } else {
+        // 2. For all other sections, make sure we are on the 'home' screen
+        setScreen('home');
+      }
+    }
+
+    // 3. Wait a moment for React/Framer-motion to transition back to 'home', then scroll to target element
+      const timer = setTimeout(() => {
+        const container = document.getElementById('mobile-scroll-container');
+        if (!container) return;
+
+        let targetElementId = '';
+        if (activeSectionId === 'store') {
+          // Project Identity -> Scroll to top of the preview container
+          container.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        } else if (activeSectionId === 'content') {
+          targetElementId = 'preview-section-content';
+        } else if (activeSectionId === 'products') {
+          targetElementId = 'preview-section-products';
+        } else if (activeSectionId === 'location') {
+          targetElementId = 'preview-section-location';
+        }
+
+        if (targetElementId) {
+          const element = document.getElementById(targetElementId);
+          if (element) {
+            // Calculate top position of element relative to container
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            const relativeTop = elementRect.top - containerRect.top + container.scrollTop;
+            
+            // Scroll to the element smoothly
+            container.scrollTo({
+              top: relativeTop - 20, // Add small padding at top
+              behavior: 'smooth',
+            });
+          }
+        }
+      }, 150);
+
+      return () => clearTimeout(timer);
+  }, [activeSectionId, isPreview, normalizedProducts]);
 
   const openConcierge = useCallback(() => {
     let parent = containerRef.current?.parentElement;
@@ -390,6 +570,7 @@ export default function EliteRealEstateTemplate({
               previewMode={previewMode}
               onEditSection={onEditSection}
               heroData={content.heroData}
+              whatsAppData={content.whatsappData}
             />
           </motion.div>
         )}
@@ -409,6 +590,7 @@ export default function EliteRealEstateTemplate({
           storeName={content.baseContent.storeName || "SAUNTER"}
           activeResidence={activeResidence}
           whatsappNumber={content.baseContent.whatsappNumber || ''}
+          whatsappData={content.whatsappData}
         />
       )}
 
@@ -588,9 +770,7 @@ function Home({
   handleWhatsAppCTA: (intent: string, product?: any, messageOverride?: string) => void;
   openConcierge: () => void;
 }) {
-  const isMobilePreview = isPreview && previewMode === 'mobile';
-  const isTabletPreview = isPreview && previewMode === 'tablet';
-  const isCompact = isMobilePreview || isTabletPreview;
+  const { isMobilePreview, isCompact } = useResponsive(isPreview, previewMode);
   const { heroData, locationData, categoriesData, testimonialsData } = content;
   // Intercept the long default text
   const taglineText = heroData?.tagline === 'Sea-facing 3 & 4 BHK residences in Worli starting ₹6.2 Cr' ? 'Own The Skyline' : (heroData?.tagline || 'Own The Skyline');
@@ -606,6 +786,7 @@ function Home({
     <main className={`${isCompact ? 'pt-24' : 'pt-14'}`}>
       {/* ── FULLSCREEN HERO ── */}
       <section
+        id="preview-section-content"
         className={`relative w-full ${isCompact ? 'h-[88vh]' : 'h-[92vh]'} overflow-hidden cursor-pointer`}
         onClick={() => isPreview && onEditSection?.('content')}
       >
@@ -678,6 +859,7 @@ function Home({
 
       {/* ── AVAILABLE RESIDENCES ── */}
       <section
+        id="preview-section-products"
         className={`max-w-[1400px] mx-auto px-5 ${isCompact ? '' : 'md:px-10'} pb-20 pt-10 cursor-pointer`}
         onClick={() => isPreview && onEditSection?.('products')}
       >
@@ -749,6 +931,7 @@ function Home({
 
       {/* ── LOCATION ── */}
       <section
+        id="preview-section-location"
         className={`max-w-[1400px] mx-auto px-5 ${isCompact ? '' : 'md:px-10'} py-16 cursor-pointer`}
         onClick={() => isPreview && onEditSection?.('location')}
       >
@@ -770,9 +953,9 @@ function Home({
 
         {/* Map Container - Clean and Unobstructed */}
         <div className={`relative w-full ${isCompact ? 'h-[320px]' : 'h-[460px]'} bg-[#E7E5E4] rounded-sm overflow-hidden border border-[#E7E5E4]/60`}>
-          {locationData?.mapLink?.includes('http') && locationData.mapLink.includes('embed') ? (
+          {buildMapEmbedUrl(locationData?.mapLink, locationData?.experienceCenterAddress) ? (
             <iframe
-              src={locationData.mapLink}
+              src={buildMapEmbedUrl(locationData?.mapLink, locationData?.experienceCenterAddress)}
               className="w-full h-full border-0"
               allowFullScreen
               loading="lazy"
@@ -802,19 +985,20 @@ function Home({
               </div>
             ))}
           </div>
-          <div className="border-t border-[#E7E5E4] p-4 flex justify-between items-center bg-[#FAF9F5]/40 hover:bg-[#FAF9F5] transition-colors">
-            <span className="text-[10px] text-[#78716C] uppercase tracking-wider hidden md:block">
+          <a
+            onClick={(event) => event.stopPropagation()}
+            href={buildDirectionsUrl(locationData?.experienceCenterAddress, locationData?.mapLink)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group border-t border-[#E7E5E4] p-4 flex justify-between items-center bg-[#FAF9F5]/40 hover:bg-[#FAF9F5] transition-colors cursor-pointer block"
+          >
+            <span className="text-[10px] text-[#78716C] group-hover:text-[#9A7B44] uppercase tracking-wider hidden md:block transition-colors">
               Strategic Connectivity
             </span>
-            <a
-              href={locationData?.mapLink || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-2 text-[10px] text-[#1C1917] hover:text-[#9A7B44] uppercase tracking-widest font-bold transition-colors ${isCompact ? 'w-full justify-center' : ''}`}
-            >
-              Get Directions <span className="text-[14px] leading-none mb-0.5">↗</span>
-            </a>
-          </div>
+            <span className={`inline-flex items-center gap-2 text-[10px] text-[#1C1917] group-hover:text-[#9A7B44] uppercase tracking-widest font-bold transition-colors ${isCompact ? 'w-full justify-center' : ''}`}>
+              Open in Maps <span className="text-[14px] leading-none mb-0.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">↗</span>
+            </span>
+          </a>
         </div>
       </section>
 
@@ -838,8 +1022,7 @@ function Residences({
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: SectionId) => void;
 }) {
-  const isMobilePreview = isPreview && previewMode === 'mobile';
-  const isCompact = isMobilePreview || false;
+  const { isMobilePreview, isCompact } = useResponsive(isPreview, previewMode);
   return (
     <main className={`${isMobilePreview ? 'pt-24' : 'pt-14'} min-h-screen`}>
       <div className={`max-w-[1400px] mx-auto px-5 ${isCompact ? '' : 'md:px-10'} py-8 flex items-center justify-between`}>
@@ -1073,7 +1256,8 @@ function Tour({
   isPreview,
   previewMode,
   onEditSection,
-  heroData
+  heroData,
+  whatsAppData
 }: {
   residence: any;
   onBack: () => void;
@@ -1083,11 +1267,10 @@ function Tour({
   previewMode?: 'mobile' | 'tablet' | 'desktop';
   onEditSection?: (sectionId: SectionId) => void;
   heroData?: any;
+  whatsAppData?: any;
 }) {
   const GOLD = '#9A7B44';
-  const isMobilePreview = isPreview && previewMode === 'mobile';
-  const isTabletPreview = isPreview && previewMode === 'tablet';
-  const isCompact = isMobilePreview || isTabletPreview;
+  const { isMobilePreview, isCompact } = useResponsive(isPreview, previewMode);
   const rooms = residence?.rooms || [];
   const [activeId, setActiveId] = useState<string>(rooms[0]?.id || "");
   const [imgIdx, setImgIdx] = useState(0);
@@ -1117,10 +1300,16 @@ function Tour({
   const goPrev = () => { if (roomIndex > 0) setActiveId(rooms[roomIndex - 1].id); };
   const counter = `${String(roomIndex + 1).padStart(2, '0')} / ${String(rooms.length).padStart(2, '0')}`;
 
+  const defaultRoomMsg = `Hello ${storeName || 'Company Identity'},\n\nI am currently exploring the {room_name} inside the {residence_name}.\n\nPlease share the detailed floorplans, pricing, and availability for this residence.`;
+  const roomMsgTemplate = whatsAppData?.roomInquiryMessageTemplate || defaultRoomMsg;
+
   const onInquire = () => onWhatsApp(
     'tour_room_cta',
     residence,
-    `Hi ${storeName}, I am exploring the ${room.name} of ${residence.name}. I'd love to discuss this space.`
+    roomMsgTemplate
+      .replaceAll('{company_name}', storeName || 'Company Identity')
+      .replaceAll('{room_name}', room.name || 'this space')
+      .replaceAll('{residence_name}', residence.name || 'this residence')
   );
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -1521,7 +1710,7 @@ function Tour({
             {/* CTA */}
             <button onClick={onInquire} className="relative w-full overflow-hidden group py-5 text-xs tracking-[0.2em] uppercase font-bold rounded-xl cursor-pointer text-white bg-[#1C1917] hover:bg-black transition-colors duration-400 mt-2">
               <span className="relative z-10 flex items-center justify-center gap-3">
-                {residence.spaceCtaText || heroData?.spaceCtaText || 'Inquire About This Space'} <span className="text-[#9A7B44] group-hover:translate-x-1 transition-transform duration-400">→</span>
+                {whatsAppData?.roomInquiryCtaText || residence.spaceCtaText || heroData?.spaceCtaText || 'Enquire About This Residence'} <span className="text-[#9A7B44] group-hover:translate-x-1 transition-transform duration-400">→</span>
               </span>
             </button>
           </div>
@@ -1541,6 +1730,7 @@ function ActionBar({
   storeName,
   activeResidence,
   whatsappNumber,
+  whatsappData,
 }: {
   onExplore: (residenceId?: string) => void;
   onWhatsApp: (msg?: string) => void;
@@ -1551,6 +1741,7 @@ function ActionBar({
   storeName: string;
   activeResidence?: any;
   whatsappNumber: string;
+  whatsappData?: any;
 }) {
   const isMobilePreview = isPreview && previewMode === 'mobile';
   const [activeMenu, setActiveMenu] = useState<'explore' | 'concierge' | 'viewing' | null>(null);
@@ -1558,7 +1749,20 @@ function ActionBar({
   const [chatStep, setChatStep] = useState<'intent' | 'config' | 'preview'>('intent');
   const [viewStep, setViewStep] = useState<'config' | 'preference'>('config');
   const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
   const [customMessage, setCustomMessage] = useState('');
+
+  const conciergeOptions = useMemo(() => whatsappData?.conciergeOptions || [
+    { label: 'Explore Availability', action: 'explore current availability' },
+    { label: 'Request Floorplans', action: 'request detailed floorplans' },
+    { label: 'Arrange Viewing', action: 'arrange a private viewing' },
+    { label: 'Investment Details', action: 'discuss investment details' },
+  ], [whatsappData?.conciergeOptions]);
+
+  const visitTourOptions = useMemo(() => whatsappData?.visitOptions || ['Morning Tour', 'Sunset Viewing', 'Weekend Visit'], [whatsappData?.visitOptions]);
+
+  const conciergeMessageTemplate = whatsappData?.conciergeMessageTemplate || 'Hello {company_name},\n\nI would like to {intent} for the {residence}.\n\nPlease share the next steps.';
+  const visitMessageTemplate = whatsappData?.visitMessageTemplate || 'Hello {company_name},\n\nI would like to arrange a {tour_type} for the {residence}.\n\nPlease let me know your availability.';
 
   useEffect(() => {
     if (activeResidence) setSelectedProduct(activeResidence);
@@ -1568,11 +1772,27 @@ function ActionBar({
     if (activeMenu !== 'concierge') {
       setChatStep('intent');
       setSelectedIntent(null);
+      setSelectedOptionIndex(null);
     }
     if (activeMenu !== 'viewing') {
       setViewStep('config');
     }
   }, [activeMenu]);
+
+  useEffect(() => {
+    if (chatStep === 'preview' && selectedOptionIndex !== null && selectedProduct) {
+      const optMsg = conciergeOptions[selectedOptionIndex]?.message;
+      const templateToUse = optMsg || conciergeMessageTemplate;
+      setCustomMessage(
+        templateToUse
+          .replaceAll('{company_name}', storeName)
+          .replaceAll('{store_name}', storeName)
+          .replaceAll('{intent}', selectedIntent || '')
+          .replaceAll('{residence}', selectedProduct.name)
+          .replaceAll('{product_name}', selectedProduct.name)
+      );
+    }
+  }, [conciergeOptions, conciergeMessageTemplate, selectedOptionIndex, selectedProduct, storeName, selectedIntent, chatStep]);
 
   return (
     <>
@@ -1588,7 +1808,7 @@ function ActionBar({
             onClick={() => { setActiveMenu(null); onExplore(selectedProduct?.id); }}
             className="px-4 md:px-5 py-3 text-[9px] md:text-[10px] tracking-[0.2em] font-bold uppercase text-white/70 hover:text-[#9A7B44] transition-all cursor-pointer rounded-full hover:bg-white/5"
           >
-            Explore
+            {whatsappData?.ctaText || 'Explore'}
           </button>
           
 
@@ -1599,7 +1819,7 @@ function ActionBar({
               className="px-4 md:px-5 py-3 bg-[#FAF9F5] text-[#1C1917] text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(154,123,68,0.1)] cursor-pointer rounded-full flex items-center gap-2"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-[#1C1917]"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.062-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-              Chat
+              {whatsappData?.title || 'Chat'}
             </button>
             
             <AnimatePresence>
@@ -1624,16 +1844,12 @@ function ActionBar({
 
                   {chatStep === 'intent' ? (
                     <div className="flex flex-col gap-1 mt-1">
-                      {[
-                        { label: 'Explore Availability', action: 'explore current availability' },
-                        { label: 'Request Floorplans', action: 'request detailed floorplans' },
-                        { label: 'Arrange Viewing', action: 'arrange a private viewing' },
-                        { label: 'Investment Details', action: 'discuss investment details' },
-                      ].map((intent, i) => (
+                      {conciergeOptions.map((intent: any, i: number) => (
                         <button
                           key={i}
                           onClick={() => {
                             setSelectedIntent(intent.action);
+                            setSelectedOptionIndex(i);
                             setChatStep('config');
                           }}
                           className="text-center px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
@@ -1649,7 +1865,16 @@ function ActionBar({
                           key={p.id}
                           onClick={() => {
                             setSelectedProduct(p);
-                            setCustomMessage(`Hello ${storeName},\n\nI would like to ${selectedIntent} for the ${p.name}.\n\nPlease share the next steps.`);
+                            const optMsg = selectedOptionIndex !== null ? conciergeOptions[selectedOptionIndex]?.message : null;
+                            const templateToUse = optMsg || conciergeMessageTemplate;
+                            setCustomMessage(
+                              templateToUse
+                                .replaceAll('{company_name}', storeName)
+                                .replaceAll('{store_name}', storeName)
+                                .replaceAll('{intent}', selectedIntent || '')
+                                .replaceAll('{residence}', p.name)
+                                .replaceAll('{product_name}', p.name)
+                            );
                             setChatStep('preview');
                           }}
                           className="flex flex-col items-center text-center px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer"
@@ -1688,7 +1913,7 @@ function ActionBar({
               onClick={() => setActiveMenu(activeMenu === 'viewing' ? null : 'viewing')}
               className="px-4 md:px-5 py-3 text-[9px] md:text-[10px] tracking-[0.2em] font-bold uppercase text-white/70 hover:text-[#9A7B44] transition-all cursor-pointer rounded-full hover:bg-white/5"
             >
-              Visit
+              {whatsappData?.subTitle || 'Visit'}
             </button>
             
             <AnimatePresence>
@@ -1729,12 +1954,19 @@ function ActionBar({
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1 mt-1">
-                      {['Morning Tour', 'Sunset Viewing', 'Weekend Visit'].map((tour, idx) => (
+                      {visitTourOptions.map((tour: string, idx: number) => (
                         <button
                           key={idx}
                           onClick={() => {
                             setActiveMenu(null);
-                            onVisit(`Hello ${storeName},\n\nI would like to arrange a ${tour} for the ${selectedProduct?.name || 'residence'}.\n\nPlease let me know your availability.`);
+                            onVisit(
+                              visitMessageTemplate
+                                .replaceAll('{company_name}', storeName)
+                                .replaceAll('{store_name}', storeName)
+                                .replaceAll('{tour_type}', tour)
+                                .replaceAll('{residence}', selectedProduct?.name || 'residence')
+                                .replaceAll('{product_name}', selectedProduct?.name || 'residence')
+                            );
                           }}
                           className="flex flex-col items-center text-center px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer"
                         >

@@ -413,6 +413,9 @@ export default function FunnelAdRealEstateEditor({
     handleSectionUpdate('products', (data) => {
       const productsList = (data as ProductsData).products;
 
+      // Limit to max 4 configs
+      if (productsList.length >= 4) return;
+
       productsList.push({
         id: `bhk-${Date.now()}`,
         category_id: categoriesData.categories[0]?.id ?? 'family',
@@ -761,8 +764,8 @@ export default function FunnelAdRealEstateEditor({
       id: 'sidebar',
       title: "Your Project Studio",
       label: "Step 1 — Branding",
-      description: "This is where you define the project identity — project name, logo, hero visuals, residences, and more. Each tab on the left controls a critical part of your lead generation funnel.",
-      proTip: "Start with the Project Identity tab to set your developer branding. High-fidelity logos build instant trust with luxury property buyers.",
+      description: "This is where you define the project identity — project name, contact information, hero visuals, residences, and more. Each tab on the left controls a critical part of your lead generation funnel.",
+      proTip: "Start with the Project Identity tab to set your developer profile. Naming and contact info build instant trust with luxury property buyers.",
       icon: ShieldCheck,
       color: "indigo",
       position: "left-12 top-[140px]",
@@ -981,6 +984,7 @@ export default function FunnelAdRealEstateEditor({
       return (
         <LocationPanel
           data={locationData}
+          isRealEstate={true}
           onChange={(updates) => {
             handleSectionUpdate('location', (data) => {
               Object.assign(data as LocationData, updates);
@@ -996,6 +1000,7 @@ export default function FunnelAdRealEstateEditor({
           data={whatsappData}
           storeName={liveContent.storeName}
           whatsappNumber={liveContent.whatsappNumber}
+          isRealEstate={true}
           onChange={(updates) => {
             handleSectionUpdate('whatsapp', (data) => {
               Object.assign(data as WhatsAppData, updates);
@@ -1712,6 +1717,7 @@ export default function FunnelAdRealEstateEditor({
             products={productsData.products}
             previewMode={previewMode}
             onEditSection={handleEditSection}
+            activeSectionId={activeTab}
           />
           
           {/* Floating Mobile Action (Preview -> Editor) */}
