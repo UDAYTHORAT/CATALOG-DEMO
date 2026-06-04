@@ -1,6 +1,7 @@
 import React from 'react';
 import EliteFurnitureTemplate from '@/components/templates/EliteFurnitureTemplate';
 import EliteRealEstateTemplate from '@/components/templates/EliteRealEstateTemplate';
+import EliteCafeTemplate from '@/components/templates/EliteCafeTemplate';
 import type { Funnel } from '@/app/actions/funnels';
 import type { Content, PreviewMode, SectionId } from './types';
 
@@ -28,6 +29,8 @@ export default React.memo(function PreviewPane({
   const templateId = funnel.story_mode_data?.[0]?.templateId as string | undefined;
   const TemplateComponent = templateId === 'funnelad-elite-real-estate'
     ? EliteRealEstateTemplate
+    : templateId === 'funnelad-elite-cafe'
+    ? EliteCafeTemplate
     : EliteFurnitureTemplate;
 
   return (

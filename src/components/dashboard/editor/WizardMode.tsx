@@ -11,7 +11,6 @@ import {
 import type { Content, TabId, Section, SectionId } from './types';
 import type { Funnel } from '@/app/actions/funnels';
 import PreviewPane from './PreviewPane';
-import EditorSidebar from './EditorSidebar';
 
 interface WizardProps {
   content: Content;
@@ -26,45 +25,72 @@ interface WizardProps {
 }
 
 // Wizard flow: same tabs as Advanced, minus WhatsApp
-const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; guide: string; reLabel?: string; reHint?: string; reProTip?: string }[] = [
-  { 
+const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; guide: string; reLabel?: string; reHint?: string; reProTip?: string; cafeLabel?: string; cafeHint?: string; cafeProTip?: string; cafeGuide?: string }[] = [
+  {
     id: 'store', 
     label: 'Store Identity', 
     reLabel: 'Project Identity',
+    cafeLabel: 'Cafe Identity',
     hint: 'Set your store name, WhatsApp number, and logo. This is the foundation of your funnel.',
     reHint: 'Set your project name, contact number, and branding. This is the foundation of your lead funnel.',
+    cafeHint: 'Set your cafe name and WhatsApp number. This is the foundation of your table reservation funnel.',
     proTip: 'Use a clean, high-resolution logo. A professional identity builds instant trust with your customers.',
     reProTip: 'Consistent developer branding and an active contact number build instant trust with luxury property buyers.',
-    guide: '👶 Here is what to fill in:\n• **Logo**: Click or drag a picture here (PNG/JPG up to 5MB).\n• **Business Name**: Type your shop\'s name here (e.g., Urban Living).\n• **WhatsApp Lead Capture**: Put your number with country code (+91). This is where you get leads!'
+    cafeProTip: 'Ensure your WhatsApp number is active and monitored to capture table reservations instantly.',
+    guide: '👶 Here is what to fill in:\n• **Logo**: Click or drag a picture here (PNG/JPG up to 5MB).\n• **Business Name**: Type your shop\'s name here (e.g., Urban Living).\n• **WhatsApp Lead Capture**: Put your number with country code (+91). This is where you get leads!',
+    cafeGuide: '👶 Here is what to fill in:\n• **Cafe Name**: Type your cafe\'s name here (e.g., Kaffestuggu).\n• **WhatsApp Lead Capture**: Put your number with country code (+91). This is where you get leads!'
   },
   { 
     id: 'content', 
     label: 'Hero Landing', 
+    cafeLabel: 'Hero & Branding',
     hint: 'Write a powerful headline and sub-headline. This is the hook that stops visitors from scrolling away.',
     reHint: 'Write a majestic project headline. This is the first impression for high-intent property buyers.',
+    cafeHint: 'Set your cafe tagline, sub-tagline, and hero CTA button. This is the first impression diners see — make it irresistible.',
     proTip: 'Focus on benefits, not features. Instead of "We sell furniture", try "Transform your living space with handcrafted luxury".',
     reProTip: 'Sell the lifestyle, not the square footage. Instead of "New Apartments", try "A West-Facing Residence Designed for Silence and Light".',
-    guide: '👶 Here is what to do:\n• Write a big, loud sentence (Headline) to make people say "Wow!".\n• Write a little sentence below that (Sub-headline) to explain more.'
+    cafeProTip: 'Evoke warmth and authenticity. Instead of "Welcome to our cafe", try "The Oldest Eatery in Town" or "Freshly Roasted Since 1914".',
+    guide: '👶 Here is what to do:\n• Write a big, loud sentence (Headline) to make people say "Wow!".\n• Write a little sentence below that (Sub-headline) to explain more.',
+    cafeGuide: '☕ Here is what to do:\n• Write a bold tagline that captures your cafe\'s soul.\n• Add a sub-tagline with more warmth and detail.\n• Set the CTA button text (e.g., "Menu").'
   },
   { 
     id: 'categories', 
     label: 'Collections', 
     reLabel: 'Persona Matching',
+    cafeLabel: 'Experience',
     hint: 'Create 1-3 product collections. Fewer choices lead to faster buying decisions.',
     reHint: 'Create 1-3 buyer personas (e.g., Family Living, Investment). This helps buyers find their perfect match instantly.',
+    cafeHint: 'Upload up to 7 photos of your cafe\'s atmosphere to build your "Experience" gallery.',
     proTip: 'Start with your most popular category. Most buyers decide within the first few seconds of viewing your collections.',
     reProTip: 'Group by intent (Investment vs. Lifestyle). Segmenting your audience increases lead quality significantly.',
-    guide: '👶 Here is what to do:\n• Give your group a Name (like "Sofas").\n• Add a Tagline (a short sentence) to describe it.'
+    cafeProTip: 'Diners book tables based on the ambiance they see. Include photos of seating, lighting, and decor.',
+    guide: '👶 Here is what to do:\n• Give your group a Name (like "Sofas").\n• Add a Tagline (a short sentence) to describe it.',
+    cafeGuide: '☕ Here is what to do:\n• Set the Atmosphere section headings.\n• Upload high-quality photos of your cafe interior.'
   },
   { 
     id: 'products', 
     label: 'Product Showcase', 
     reLabel: 'Property Showcase',
+    cafeLabel: 'Specialities Showcase',
     hint: 'Add products with clear names, prices, and descriptions. Quality over quantity.',
     reHint: 'Add residences with clear configurations (2BHK, 3BHK), prices, and spatial details.',
+    cafeHint: 'Add your top 3 signature dishes with names, prices, and high-quality photos. This curated 3-dish limit ensures maximum visual impact.',
     proTip: 'Always use real product photos if possible. Highlight customization options in the description to increase intent.',
     reProTip: 'Use high-resolution renders or site photos. Mention specific highlights like "Sky Deck" or "Italian Marble" to drive inquiries.',
-    guide: '👶 Here is what to do:\n• Type the Product Name so people know what it is.\n• Put the Price so they know how much it costs.\n• Add a Picture so they can see it.'
+    cafeProTip: 'Use real, mouth-watering food photos, not stock images. Mention key ingredients in the description so diners know what makes it special.',
+    guide: '👶 Here is what to do:\n• Type the Product Name so people know what it is.\n• Put the Price so they know how much it costs.\n• Add a Picture so they can see it.',
+    cafeGuide: '☕ Here is what to do:\n• Enter the Dish Name (e.g., "Artisanal Caramel Latte").\n• Set the Price (e.g., "$4.20").\n• Upload a beautiful photo of the dish.\n• Note: This showcase is strictly limited to your best 3 items.'
+  },
+  {
+    id: 'menu',
+    label: 'Full Menu',
+    cafeLabel: 'Full Menu',
+    hint: 'Add and categorize your full cafe menu items (e.g. Coffee, Gourmet Sandwiches, Pastries & Bites) with descriptions and prices.',
+    cafeHint: 'Add and categorize your full cafe menu items (e.g. Coffee, Gourmet Sandwiches, Pastries & Bites) with descriptions and prices.',
+    proTip: 'A categorized menu helps guests find their preferred items quickly. Highlight popular items like "Pesto Chicken Sourdough".',
+    cafeProTip: 'A categorized menu helps guests find their preferred items quickly. Highlight popular items like "Pesto Chicken Sourdough".',
+    guide: '☕ Here is what to do:\n• Manage menu categories (e.g. Coffee, Gourmet Sandwiches, Pastries).\n• Add items under each category with prices and descriptions.',
+    cafeGuide: '☕ Here is what to do:\n• Create menu categories (e.g., "Gourmet Sandwiches", "Coffee").\n• Add items under each category with prices and descriptions.\n• Toggle the "Popular Badge" to highlight best-sellers (e.g., "Pesto Chicken Sourdough").'
   },
   {
     id: 'layouts',
@@ -80,31 +106,29 @@ const WIZARD_FLOW: { id: TabId; label: string; hint: string; proTip: string; gui
     id: 'testimonials', 
     label: 'Customer Reviews', 
     reLabel: 'Social Proof',
+    cafeLabel: 'Guest Reviews',
     hint: 'Add real installation photos and customer reviews. Visual proof is the ultimate trust signal for premium buyers.',
     reHint: 'Add real resident or investor reviews. Trust is the primary driver for high-value real estate decisions.',
+    cafeHint: 'Add 1-3 genuine guest reviews. Real testimonials are the strongest trust signal for a cafe — they drive walk-ins and reservations.',
     proTip: 'Upload high-quality photos of the product in the customer\'s home to build absolute authority.',
     reProTip: 'Highlight the speed of booking or the quality of service. Real human stories remove hesitation for large investments.',
-    guide: '👑 How to build a luxury trust engine:\n• Add the Customer\'s Name and City.\n• Upload a real Installation Photo.\n• Add 2 strong details (e.g., "Delivered in 9 Days", "Solid Walnut Finish").'
+    cafeProTip: 'Use real guest names with their role (e.g., "Food Blogger", "Tourist"). Authentic reviews with specific dish mentions are most convincing.',
+    guide: '👑 How to build a luxury trust engine:\n• Add the Customer\'s Name and City.\n• Upload a real Installation Photo.\n• Add 2 strong details (e.g., "Delivered in 9 Days", "Solid Walnut Finish").',
+    cafeGuide: '☕ How to build trust:\n• Add the Guest\'s Name (e.g., "Sarah L.").\n• Add their role or city (e.g., "Tourist", "Food Blogger").\n• Write a short, authentic review quote.'
   },
   { 
     id: 'location', 
     label: 'Studio Location', 
     reLabel: 'Project Site',
+    cafeLabel: 'Cafe Location',
     hint: 'Add your showroom address or factory location. This helps buyers verify your store is real.',
     reHint: 'Add your experience center address or project site location. This is crucial for booking site visits.',
+    cafeHint: 'Add your cafe\'s address and Google Maps link. This helps diners find you instantly and drives foot traffic.',
     proTip: 'Even if you are online-only, mentioning your base city or factory location helps establish authenticity.',
     reProTip: 'Include a Google Maps link. 80% of buyers will look at the location context before inquiring.',
-    guide: '👶 Here is what to do:\n• Type your Address (where your shop is).\n• Add a Map Link so they can get directions.'
-  },
-  {
-    id: 'whatsapp',
-    label: 'Sales Automation',
-    reLabel: 'Lead Capture',
-    hint: 'Configure automated WhatsApp messaging to capture intent instantly.',
-    reHint: 'Configure the luxury concierge chat options and site visit requests.',
-    proTip: 'Pre-filled messages make it effortless for buyers to contact you.',
-    reProTip: 'Offer a variety of distinct options (like "Arrange Viewing") to qualify buyers immediately.',
-    guide: 'Configure your WhatsApp buttons and automated replies here.'
+    cafeProTip: 'A precise Google Maps pin is essential. 90% of diners will check your location before deciding to visit.',
+    guide: '👶 Here is what to do:\n• Type your Address (where your shop is).\n• Add a Map Link so they can get directions.',
+    cafeGuide: '☕ Here is what to do:\n• Type your Cafe Name (e.g., "Kaffestuggu Cafe").\n• Enter your full Address.\n• Paste a Google Maps link for directions.'
   }
 ];
 
@@ -497,36 +521,222 @@ const REAL_ESTATE_TAB_TOURS: Record<string, { title: string; description: string
   ]
 };
 
+const CAFE_TAB_TOURS: Record<string, { title: string; description: string; proTip: string; dos?: string[]; donts?: string[]; targetId?: string; fallbackId?: string }[]> = {
+  store: [
+    { 
+      title: 'Cafe Name', 
+      description: 'Enter the name of your cafe. This appears on the hero, header, and WhatsApp messages.',
+      proTip: 'Use your official cafe name. A recognizable brand builds instant trust with diners.',
+      dos: ['Use your exact registered cafe name.', 'Keep it short and recognizable.'],
+      donts: ["Don't use generic names like 'Coffee Shop'.", "Don't add 'Cafe' if it's already implied."],
+      targetId: 'tour-store-name'
+    },
+    { 
+      title: 'Table Reservation Number', 
+      description: 'Add your WhatsApp number with country code. Table reservations and menu inquiries will route directly here.',
+      proTip: 'Double check this number! If it is wrong, you will miss reservations.',
+      dos: ['Use an active WhatsApp Business number.', 'Ensure someone monitors it during cafe hours.'],
+      donts: ["Don't use a personal number if possible.", "Don't add spaces or hyphens."],
+      targetId: 'tour-store-whatsapp'
+    }
+  ],
+  content: [
+    { 
+      title: 'Cafe Tagline', 
+      description: 'Write a bold, short tagline that captures your cafe\'s identity. This is the first text diners see on the hero page.',
+      proTip: 'Focus on heritage, authenticity, or uniqueness (e.g., "The Oldest Eatery in Town").',
+      dos: ['Keep it under 8 words.', 'Focus on what makes your cafe special.'],
+      donts: ["Don't just say 'Welcome to our cafe'.", 'Avoid generic phrases.'],
+      targetId: 'tour-content-headline'
+    },
+    { 
+      title: 'Sub-Tagline', 
+      description: 'Add a supporting line below the tagline. Describe what makes your food or experience special.',
+      proTip: 'Keep it warm and inviting. Mention tradition, ingredients, or atmosphere.',
+      dos: ['Explain your culinary philosophy.', 'Keep it under 2 sentences.'],
+      donts: ["Don't repeat the tagline.", 'Avoid listing menu items here.'],
+      targetId: 'tour-content-subheadline'
+    },
+    {
+      title: 'Hero Badge',
+      description: 'A stylish, cursive floating badge next to your cafe name.',
+      proTip: 'Use a short, catchy phrase like "always fresh" or "est. 1914".',
+      targetId: 'tour-content-herobadge'
+    },
+    {
+      title: 'Call to Action Buttons',
+      description: 'Configure the primary ("Menu") and secondary ("Reserve Table") buttons that drive your diner\'s next step. Add a trust hook like "Dine-in, Takeaway & Delivery".',
+      proTip: 'Action-oriented text converts better. "Explore Menu" is stronger than "See More".',
+      targetId: 'tour-content-cta'
+    }
+  ],
+  categories: [
+    { 
+      title: 'Experience Headers', 
+      description: 'Set the main heading and subheadings for your cafe atmosphere gallery.',
+      proTip: 'Use inviting language like "Feel the Vibe" or "More than just coffee".',
+      targetId: 'tour-experience-global-title'
+    },
+    { 
+      title: 'Add Atmosphere Images', 
+      description: 'Click to upload up to 7 photos of your cafe\'s interior, seating, or vibe.',
+      proTip: 'Use high-quality, well-lit photos. Diners book tables based on the ambiance they see.',
+      targetId: 'tour-experience-add-btn'
+    }
+  ],
+  products: [
+    { 
+      title: 'Curate 3 Specialities', 
+      description: 'Add exactly your top 3 signature dishes. We removed categories and limited this to 3 items to ensure maximum visual impact and prevent menu fatigue.',
+      proTip: 'Focus only on your absolute best-sellers or highest-margin items.',
+      dos: ['Curate exactly 3 signature items.', 'Use specific names (e.g., "Artisanal Caramel Latte").'],
+      donts: ["Don't try to upload your full menu.", "Don't leave the description empty."],
+      targetId: 'tour-products-details',
+      fallbackId: 'tour-products-empty'
+    },
+    { 
+      title: 'Dish Photo & Badge', 
+      description: 'Upload a high-quality photo and set a Marketing Badge (like "Bestseller" or "Chef\'s Pick").',
+      proTip: 'Use real food photos, not stock images. A real photo of your signature dish can triple reservation intent.',
+      targetId: 'tour-products-storefront',
+      fallbackId: 'tour-products-empty'
+    },
+    { 
+      title: 'Best Seller Badge', 
+      description: 'Highlight your absolute best-sellers with a premium "Best Seller" badge on the live page.',
+      proTip: 'Use this badge sparingly to guide your visitor\'s eyes to your highest-margin signature items.',
+      targetId: 'tour-products-boosters',
+      fallbackId: 'tour-products-empty'
+    },
+    { 
+      title: 'Dish Description', 
+      description: 'Write a short, mouth-watering description. Mention key ingredients, flavors, or preparation style.',
+      proTip: 'Paint a picture with words: "Smooth espresso, steamed milk, and sea salt caramel."',
+      targetId: 'tour-products-narrative',
+      fallbackId: 'tour-products-empty'
+    }
+  ],
+  menu: [
+    {
+      title: 'Section Headers & Titles',
+      description: 'Set the kicker and main heading for your full menu section on the landing page.',
+      proTip: 'Use a clean kicker like "Our Signature" and a welcoming heading like "Handpicked recommendations just for you".',
+      targetId: 'tour-menu-section-text',
+      fallbackId: 'tour-menu-categories'
+    },
+    {
+      title: 'Add New Category',
+      description: 'Click here to add a new category (such as "Gourmet Sandwiches", "Desserts", or "Mocktails") to organize your menu.',
+      proTip: 'A categorized menu helps guests find their preferred items quickly.',
+      targetId: 'tour-menu-add-category',
+      fallbackId: 'tour-menu-categories'
+    },
+    {
+      title: 'Organize Categories',
+      description: 'Click the pencil icon to rename a category, the trash icon to remove it, or the arrow icon to expand and view the items inside.',
+      proTip: 'Make sure to expand a category to add or manage the dishes belonging to it.',
+      targetId: 'tour-menu-categories',
+      fallbackId: 'tour-menu-empty'
+    },
+    {
+      title: 'Add Dishes & Drinks',
+      description: 'Once a category is expanded, click "Add Item" to create a new dish or drink under that category.',
+      proTip: 'Add as many dishes as needed to complete your menu.',
+      targetId: 'tour-menu-add-item',
+      fallbackId: 'tour-menu-categories'
+    },
+    {
+      title: 'Dish Details & Pricing',
+      description: 'Specify the item\'s name, exact price, and a short description. Mention key ingredients or preparation style.',
+      proTip: 'Write mouth-watering descriptions: "Fresh mozzarella, ripe tomatoes, basil pesto, and wild rocket on toasted sourdough."',
+      targetId: 'tour-menu-items',
+      fallbackId: 'tour-menu-categories'
+    },
+    {
+      title: 'Popular Badge Toggle',
+      description: 'Toggle the "Popular Badge" to highlight a dish with a highlighted "POPULAR" badge on the live page.',
+      proTip: 'Highlight 1 or 2 high-margin items per category to catch the diner\'s attention.',
+      targetId: 'tour-menu-popular-badge',
+      fallbackId: 'tour-menu-categories'
+    }
+  ],
+  testimonials: [
+    { 
+      title: 'Guest Name & Role', 
+      description: 'Add the guest\'s name and their role or city (e.g., "Tourist", "Food Blogger", "Local"). This adds authenticity.',
+      proTip: 'Reviews from food bloggers or tourists carry extra social weight.',
+      dos: ['Use a real guest name.', 'Add their role (Tourist, Local, Food Blogger).'],
+      donts: ["Don't use fake-sounding names.", "Don't forget to add a role or city."],
+      targetId: 'tour-testimonials-name'
+    },
+    { 
+      title: 'Guest Review Quote', 
+      description: 'Paste what the guest said about your cafe. Keep it short and genuine — one or two sentences is perfect.',
+      proTip: 'Mention specific dishes or experiences. "The cinnamon rolls are out of this world!" is better than "Great food".',
+      dos: ['Mention a specific dish or experience.', 'Keep it under 3 sentences.'],
+      donts: ["Don't write overly formal text.", "Don't make up reviews."],
+      targetId: 'tour-testimonials-quote'
+    }
+  ],
+  location: [
+    { 
+      title: 'Cafe Name & Address', 
+      description: 'Enter your cafe\'s full name and street address so diners can find you.',
+      proTip: 'Include a recognizable landmark or neighborhood name to help first-time visitors.',
+      dos: ['Include the full street address.', 'Add nearby landmarks.'],
+      donts: ["Don't be vague (e.g., 'Near the park').", "Don't omit the city or postal code."],
+      targetId: 'tour-location-fields'
+    }
+  ],
+  whatsapp: [
+    { 
+      title: 'Reservation Button', 
+      description: 'Customize the title and CTA text for the WhatsApp reservation button.',
+      proTip: 'Make it action-oriented: "Reserve a Table" is better than "Contact Us".',
+      dos: ['Use clear action verbs (Reserve, Book, Inquire).', 'Focus on immediate value.'],
+      donts: ["Don't use generic text like 'Contact Us'.", 'Avoid long descriptions.'],
+      targetId: 'tour-whatsapp-button'
+    },
+    { 
+      title: 'Reservation Message Template', 
+      description: 'Configure the pre-filled WhatsApp message for table reservations and menu inquiries.',
+      proTip: 'Keep the {cafe_name} and {party_size} placeholders to maintain context for your staff.',
+      dos: ['Structure: Greeting → Request → Details.', 'Use placeholders for personalization.'],
+      donts: ["Don't write long paragraphs.", "Don't remove important placeholders."],
+      targetId: 'tour-whatsapp-automation'
+    }
+  ]
+};
+
 export default function WizardMode({
   content, funnel, panelRenderer, products,
   onSwitchToAdvanced, onFinish, onReorderSections,
-  onResetSection, onResetAll,
-}: WizardProps) {
+  onResetSection, onResetAll, isCafe, isRealEstate
+}: WizardProps & { isCafe?: boolean; isRealEstate?: boolean }) {
   const [stepIdx, setStepIdx] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(`wizard_step_${funnel.id}`);
-      if (saved) {
-        const idx = parseInt(saved, 10);
-        if (!isNaN(idx)) return idx;
-      }
+      return saved ? parseInt(saved, 10) : 0;
     }
     return 0;
   });
-  const isRealEstate = funnel.story_mode_data?.[0]?.templateId === 'funnelad-elite-real-estate';
   
   const effectiveFlow = WIZARD_FLOW.filter(tab => {
     if (isRealEstate) {
-      return tab.id !== 'categories' && tab.id !== 'testimonials';
+      return tab.id !== 'categories' && tab.id !== 'testimonials' && tab.id !== 'menu' && tab.id !== 'layouts';
     }
-    return tab.id !== 'layouts';
+    if (isCafe) {
+      return tab.id !== 'layouts';
+    }
+    return tab.id !== 'layouts' && tab.id !== 'menu';
   });
 
   const activeTabRaw = effectiveFlow[stepIdx] || effectiveFlow[0];
   const activeTab = {
     ...activeTabRaw,
-    label: (isRealEstate && activeTabRaw.reLabel) ? activeTabRaw.reLabel : activeTabRaw.label,
-    hint: (isRealEstate && activeTabRaw.reHint) ? activeTabRaw.reHint : activeTabRaw.hint,
-    proTip: (isRealEstate && activeTabRaw.reProTip) ? activeTabRaw.reProTip : activeTabRaw.proTip,
+    label: (isCafe && activeTabRaw.cafeLabel) ? activeTabRaw.cafeLabel : (isRealEstate && activeTabRaw.reLabel) ? activeTabRaw.reLabel : activeTabRaw.label,
+    hint: (isCafe && activeTabRaw.cafeHint) ? activeTabRaw.cafeHint : (isRealEstate && activeTabRaw.reHint) ? activeTabRaw.reHint : activeTabRaw.hint,
+    proTip: (isCafe && activeTabRaw.cafeProTip) ? activeTabRaw.cafeProTip : (isRealEstate && activeTabRaw.reProTip) ? activeTabRaw.reProTip : activeTabRaw.proTip,
   };
   const isLast = stepIdx === effectiveFlow.length - 1;
 
@@ -627,7 +837,8 @@ export default function WizardMode({
     };
   }, []);
 
-  const rawTourSteps = (isRealEstate ? REAL_ESTATE_TAB_TOURS[activeTab.id] : TAB_TOURS[activeTab.id]) || [
+  // --- GUIDED TOUR LOGIC ---
+  const rawTourSteps = (isCafe ? CAFE_TAB_TOURS[activeTab.id] : isRealEstate ? REAL_ESTATE_TAB_TOURS[activeTab.id] : TAB_TOURS[activeTab.id]) || [
     { title: "Fill Details", description: "Follow the fields to complete this step.", proTip: "Keep it simple." }
   ];
 
@@ -745,7 +956,7 @@ export default function WizardMode({
             hl = fieldHighlight;
             
             // Calculate a smart top position so the card doesn't go off-screen
-            const cardHeight = 360; // Approximate card height
+            const cardHeight = 480; // Approximate max card height (with dos/donts)
             let cardTop = hl.top - 20;
             if (cardTop + cardHeight > windowHeight - 20) {
               cardTop = windowHeight - cardHeight - 20;
@@ -768,14 +979,36 @@ export default function WizardMode({
               }
               arrowStyle = { display: 'none' };
             } else {
-              cardStyle = { left: hl.left + hl.width + 24, top: cardTop, width: 360 };
+              let proposedLeft = hl.left + hl.width + 24;
+              const cardWidth = 360;
               
-              // Calculate the arrow position to point to the middle of the highlighted field
-              let arrowTop = (hl.top + (hl.height / 2)) - cardTop - 10;
-              // Keep arrow within the bounds of the card
-              arrowTop = Math.max(20, Math.min(arrowTop, cardHeight - 40));
+              // If card goes off the right edge, move it to the left side of the highlight
+              if (proposedLeft + cardWidth > windowWidth - 24) {
+                proposedLeft = hl.left - cardWidth - 24;
+                
+                // If it goes off the left edge too, center it at the bottom
+                if (proposedLeft < 24) {
+                  proposedLeft = Math.max(24, (windowWidth - cardWidth) / 2);
+                  cardTop = hl.top + hl.height + 24;
+                  arrowStyle = { display: 'none' };
+                } else {
+                  // Point arrow to the right if card is on the left
+                  let arrowTop = (hl.top + (hl.height / 2)) - cardTop - 10;
+                  arrowTop = Math.max(20, Math.min(arrowTop, cardHeight - 40));
+                  arrowStyle = { position: 'absolute', right: -8, top: arrowTop, width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderLeft: '10px solid white' };
+                }
+              } else {
+                // Point arrow to the left if card is on the right
+                let arrowTop = (hl.top + (hl.height / 2)) - cardTop - 10;
+                arrowTop = Math.max(20, Math.min(arrowTop, cardHeight - 40));
+                arrowStyle = { position: 'absolute', left: -8, top: arrowTop, width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' };
+              }
               
-              arrowStyle = { position: 'absolute', left: -8, top: arrowTop, width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: '10px solid white' };
+              // Final clamp: ensure card bottom doesn't exceed viewport
+              const maxTop = windowHeight - 120; // Leave room for the pinned footer
+              if (cardTop > maxTop) cardTop = maxTop;
+              
+              cardStyle = { left: proposedLeft, top: cardTop, width: cardWidth };
             }
           }
 
@@ -814,9 +1047,10 @@ export default function WizardMode({
                 style={cardStyle}
               >
                 <div style={arrowStyle} />
-                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col max-h-[85vh]">
+                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col max-h-[80vh]">
                   <div className={`h-1 shrink-0 ${c.bg}`} />
-                  <div className="p-6 overflow-y-auto overflow-x-hidden">
+                  {/* Scrollable content area */}
+                  <div className="p-5 pb-3 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${c.bgLight} ${c.text}`}>
                         <HelpCircle size={10} />
@@ -826,12 +1060,12 @@ export default function WizardMode({
                     </div>
                     <h3 className="text-[28px] leading-[1.1] text-slate-900 mb-3" style={{ fontFamily: "'Tanker', serif" }}>{step.title}</h3>
                     <p className="text-[13px] text-slate-500 leading-relaxed mb-4">{step.description}</p>
-                    <div className={`p-3.5 rounded-xl ${c.bgLight} mb-5`}>
+                    <div className={`p-3.5 rounded-xl ${c.bgLight} mb-4`}>
                       <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
                     </div>
                     
                     {(step.dos || step.donts) && (
-                      <div className="space-y-3 text-[10px] leading-relaxed border-t border-slate-100 pt-4 mb-6">
+                      <div className="space-y-3 text-[10px] leading-relaxed border-t border-slate-100 pt-3">
                         {step.dos && (
                           <div>
                             <p className="font-bold text-emerald-600 mb-1 flex items-center gap-1"><CheckCircle2 size={10} /> DO THIS</p>
@@ -850,19 +1084,20 @@ export default function WizardMode({
                         )}
                       </div>
                     )}
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-1.5">
-                        {currentTourSteps.map((_, i) => (
-                          <div key={i} className={`h-1.5 rounded-full transition-all duration-400 ${i < onboardingStep - 1 ? `w-1.5 ${c.bg} opacity-40` : i === onboardingStep - 1 ? `w-6 ${c.bg}` : 'w-1.5 bg-slate-200'}`} />
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={handleSkipTour} className="px-3 py-2 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest transition-colors">Skip</button>
-                        <button onClick={handleNextTour} className={`px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-white transition-all active:scale-95 flex items-center gap-1.5 ${c.btn} ${c.btnHover} shadow-md ${c.shadow}`}>
-                          {onboardingStep === currentTourSteps.length ? "Done" : "Next"}
-                          <ChevronRight size={12} strokeWidth={3} />
-                        </button>
-                      </div>
+                  </div>
+                  {/* Pinned footer — always visible */}
+                  <div className="shrink-0 px-5 py-3 border-t border-slate-100 bg-white rounded-b-2xl flex items-center justify-between">
+                    <div className="flex gap-1.5">
+                      {currentTourSteps.map((_, i) => (
+                        <div key={i} className={`h-1.5 rounded-full transition-all duration-400 ${i < onboardingStep - 1 ? `w-1.5 ${c.bg} opacity-40` : i === onboardingStep - 1 ? `w-6 ${c.bg}` : 'w-1.5 bg-slate-200'}`} />
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={handleSkipTour} className="px-3 py-2 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest transition-colors">Skip</button>
+                      <button onClick={handleNextTour} className={`px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-white transition-all active:scale-95 flex items-center gap-1.5 ${c.btn} ${c.btnHover} shadow-md ${c.shadow}`}>
+                        {onboardingStep === currentTourSteps.length ? "Done" : "Next"}
+                        <ChevronRight size={12} strokeWidth={3} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -879,7 +1114,7 @@ export default function WizardMode({
           <div className="shrink-0 h-4 md:h-5 w-px bg-slate-200" />
           <div className="min-w-0 truncate">
             <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-400 truncate">Editor</p>
-            <p className="text-sm md:text-base font-semibold text-slate-900 truncate">{funnel?.welcome_title ?? 'Furniture Funnel'}</p>
+            <p className="text-sm md:text-base font-semibold text-slate-900 truncate">{funnel?.welcome_title ?? (isCafe ? 'Cafe Funnel' : isRealEstate ? 'Property Funnel' : 'Furniture Funnel')}</p>
           </div>
         </div>
         
@@ -1016,7 +1251,7 @@ export default function WizardMode({
                           }`}>
                             {isDone ? <CheckCircle2 size={14} /> : <span className="text-[10px] font-black">{i + 1}</span>}
                           </div>
-                          <span className="text-xs font-bold">{(isRealEstate && tab.reLabel) ? tab.reLabel : tab.label}</span>
+                          <span className="text-xs font-bold">{(isCafe && tab.cafeLabel) ? tab.cafeLabel : (isRealEstate && tab.reLabel) ? tab.reLabel : tab.label}</span>
                         </div>
                         <ChevronRight size={12} className={`ml-2 ${isActive ? 'text-white/40' : 'text-slate-300'}`} />
                       </button>
@@ -1044,14 +1279,14 @@ export default function WizardMode({
                 <div className="flex items-start gap-3">
                   <Info size={16} className="text-indigo-500 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1">Step {stepIdx + 1} — {activeTab.label}</p>
-                    <p className="text-xs text-indigo-700 leading-relaxed font-medium">{activeTab.hint}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1">Step {stepIdx + 1} — {(isCafe && activeTab.cafeLabel) ? activeTab.cafeLabel : activeTab.label}</p>
+                    <p className="text-xs text-indigo-700 leading-relaxed font-medium">{(isCafe && activeTab.cafeHint) ? activeTab.cafeHint : activeTab.hint}</p>
                   </div>
                 </div>
-                {activeTab.proTip && (
+                {((isCafe && activeTab.cafeProTip) || activeTab.proTip) && (
                   <div className="mt-1 p-3 rounded-xl bg-white/80 border border-indigo-50">
                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-1">💡 Pro Tip</p>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">{activeTab.proTip}</p>
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">{(isCafe && activeTab.cafeProTip) ? activeTab.cafeProTip : activeTab.proTip}</p>
                   </div>
                 )}
 
@@ -1125,6 +1360,10 @@ export default function WizardMode({
             content={content}
             products={products}
             previewMode="mobile"
+            onEditSection={(sectionId) => {
+              const idx = effectiveFlow.findIndex(tab => tab.id === sectionId);
+              if (idx !== -1) setStepIdx(idx);
+            }}
             activeSectionId={activeTab.id}
           />
           

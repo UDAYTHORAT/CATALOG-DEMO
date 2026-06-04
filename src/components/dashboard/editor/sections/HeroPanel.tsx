@@ -7,10 +7,12 @@ export default React.memo(function HeroPanel({
   data,
   onChange,
   hideCtaSection,
+  hideTrustBar,
 }: {
   data: HeroData;
   onChange: (updates: Partial<HeroData>) => void;
   hideCtaSection?: boolean;
+  hideTrustBar?: boolean;
 }) {
   return (
     <div className="space-y-8">
@@ -55,9 +57,22 @@ export default React.memo(function HeroPanel({
                 </div>
               </Field>
             </div>
+            
+            <div id="tour-content-herobadge">
+              <Field label="Hero Badge (Optional)">
+                <input
+                  type="text"
+                  value={data.heroBadge ?? ''}
+                  onChange={(event) => onChange({ heroBadge: event.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. always fresh"
+                />
+              </Field>
+            </div>
           </div>
         </div>
 
+        {!hideTrustBar && (
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Trust Bar</p>
           
@@ -87,9 +102,10 @@ export default React.memo(function HeroPanel({
             </div>
           </div>
         </div>
+        )}
 
         {!hideCtaSection && (
-        <div className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
+        <div id="tour-content-cta" className="rounded-2xl border border-slate-900/5 bg-slate-900/[0.02] p-6">
           <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Call to Action</p>
           <div className="grid grid-cols-1 gap-5">
             <Field label="Primary Button Text">
@@ -97,6 +113,14 @@ export default React.memo(function HeroPanel({
                 value={data.heroCtaText}
                 onChange={(event) => onChange({ heroCtaText: event.target.value })}
                 className={inputClass}
+              />
+            </Field>
+            <Field label="Secondary Button Text (Optional)">
+              <input
+                value={data.heroSecondaryCtaText ?? ''}
+                onChange={(event) => onChange({ heroSecondaryCtaText: event.target.value })}
+                className={inputClass}
+                placeholder="e.g. Reserve Table"
               />
             </Field>
             <Field label="Trust Hook (Helper Text)">

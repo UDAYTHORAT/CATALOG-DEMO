@@ -35,32 +35,108 @@ export default React.memo(function LocationPanel({
   data,
   onChange,
   isRealEstate,
+  templateId,
 }: {
   data: LocationData;
   onChange: (updates: Partial<LocationData>) => void;
   isRealEstate?: boolean;
+  templateId?: string;
 }) {
   const [isResolving, setIsResolving] = React.useState(false);
   const [resolveError, setResolveError] = React.useState<string | null>(null);
+  const isCafe = templateId === 'funnelad-elite-cafe';
 
   return (
     <div className="space-y-8">
       <PanelTitle 
         icon={MapPin} 
-        label={isRealEstate ? "Project Site & Gallery" : "Experience Center"} 
-        meta={isRealEstate ? "Project Location" : "Studio Location"} 
+        label={isRealEstate ? "Project Site & Gallery" : (isCafe ? "Cafe Location" : "Experience Center")} 
+        meta={isRealEstate ? "Project Location" : (isCafe ? "Location Details" : "Studio Location")} 
       />
+
+      <div className="rounded-2xl border border-amber-900/5 bg-amber-50/30 p-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+            <MapPin size={16} />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-amber-900">Conversion Tip</p>
+            <p className="text-[10px] leading-relaxed text-amber-800/80">
+              {isRealEstate 
+                ? "Providing a clear physical building address and maps link builds significant trust with premium property buyers and drives site visits."
+                : (isCafe
+                  ? "Providing a clear physical address and map link builds significant trust with hungry diners and drives foot traffic."
+                  : "Providing a clear physical address and map link builds significant trust with premium furniture buyers.")}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {isCafe && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Section Text & Hours</p>
+          <div className="space-y-5">
+            <Field label="Section Kicker">
+              <input
+                value={data.kicker || 'Visit Us'}
+                onChange={(event) => onChange({ kicker: event.target.value })}
+                className={inputClass}
+                placeholder="e.g. Visit Us"
+              />
+            </Field>
+
+            <Field label="Section Heading">
+              <input
+                value={data.title || 'Come Say Hi'}
+                onChange={(event) => onChange({ title: event.target.value })}
+                className={inputClass}
+                placeholder="e.g. Come Say Hi"
+              />
+            </Field>
+
+            <Field label="Section Subtitle">
+              <textarea
+                value={data.subTitle || 'We would love to serve you. Located right in the heart of Røros.'}
+                onChange={(event) => onChange({ subTitle: event.target.value })}
+                rows={2}
+                className={`${inputClass} resize-none`}
+                placeholder="e.g. We would love to serve you. Located right in the heart of Røros."
+              />
+            </Field>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Hours (Mon - Fri)">
+                <input
+                  value={data.hoursMonFri || '07:00 - 18:00'}
+                  onChange={(event) => onChange({ hoursMonFri: event.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. 07:00 - 18:00"
+                />
+              </Field>
+
+              <Field label="Hours (Sat - Sun)">
+                <input
+                  value={data.hoursSatSun || '08:00 - 19:00'}
+                  onChange={(event) => onChange({ hoursSatSun: event.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. 08:00 - 19:00"
+                />
+              </Field>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Location Details</p>
         <div id="tour-location-fields" className="space-y-5">
           <div id="tour-location-name">
-            <Field label={isRealEstate ? "Building / Project Name" : "Studio/Center Name"}>
+            <Field label={isRealEstate ? "Building / Project Name" : (isCafe ? "Cafe Name" : "Studio/Center Name")}>
               <input
                 value={data.experienceCenterName}
                 onChange={(event) => onChange({ experienceCenterName: event.target.value })}
                 className={inputClass}
-                placeholder={isRealEstate ? "e.g. The Aurelia Residences" : "e.g. Modohouz Experience Center"}
+                placeholder={isRealEstate ? "e.g. The Aurelia Residences" : (isCafe ? "e.g. Kaffestuggu Cafe" : "e.g. Modohouz Experience Center")}
               />
             </Field>
           </div>
@@ -154,18 +230,19 @@ export default React.memo(function LocationPanel({
           </div>
 
           <div id="tour-location-address">
-            <Field label={isRealEstate ? "Building/Site Address" : "Complete Address"}>
+            <Field label={isRealEstate ? "Building/Site Address" : (isCafe ? "Cafe Address" : "Complete Address")}>
               <textarea
                 value={data.experienceCenterAddress}
                 onChange={(event) => onChange({ experienceCenterAddress: event.target.value })}
                 rows={4}
                 className={`${inputClass} resize-none leading-relaxed`}
-                placeholder={isRealEstate ? "Enter the full physical building or site address..." : "Enter the full physical address..."}
+                placeholder={isRealEstate ? "Enter the full physical building or site address..." : (isCafe ? "Enter the full physical cafe address..." : "Enter the full physical address...")}
               />
             </Field>
           </div>
         </div>
       </div>
+
 
       {isRealEstate && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -218,21 +295,6 @@ export default React.memo(function LocationPanel({
         </div>
       )}
 
-      <div className="rounded-2xl border border-amber-900/5 bg-amber-50/30 p-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
-            <MapPin size={16} />
-          </div>
-          <div>
-            <p className="text-[11px] font-bold text-amber-900">Conversion Tip</p>
-            <p className="text-[10px] leading-relaxed text-amber-800/80">
-              {isRealEstate 
-                ? "Providing a clear physical building address and maps link builds significant trust with premium property buyers and drives site visits."
-                : "Providing a clear physical address and map link builds significant trust with premium furniture buyers."}
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 });

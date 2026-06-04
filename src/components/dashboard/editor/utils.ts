@@ -9,11 +9,13 @@ import type {
   SectionId,
   TestimonialsData,
   WhatsAppData,
+  MenuData,
 } from './types';
 
 export const HERO_IMAGE = 'https://images.unsplash.com/photo-1583847268964-b28dc2f51ac9?auto=format&fit=crop&w=1200&q=80';
 export const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80';
 export const REAL_ESTATE_TEMPLATE_ID = 'funnelad-elite-real-estate';
+export const CAFE_TEMPLATE_ID = 'funnelad-elite-cafe';
 
 const sanitizeLegacyText = (value: unknown): unknown => {
   if (typeof value === 'string') {
@@ -436,30 +438,143 @@ const defaultRealEstateWhatsAppData: WhatsAppData = {
   visitMessageTemplate: 'Hello {company_name},\n\nI would like to arrange a {tour_type} for the {residence}.\n\nPlease let me know your availability.',
 };
 
+const defaultCafeHeroData: HeroData = {
+  tagline: 'The Oldest Eatery in Town.',
+  subTagline: 'Delicious traditional dishes served with generosity and rooted in long-standing culinary traditions.',
+  heroCtaText: 'Menu',
+  heroCtaSubtext: 'Dine-in, Takeaway & Delivery',
+  heroSecondaryCtaText: 'Reserve Table',
+  trustBarTop1: 'Est. 1914',
+  trustBarBottom1: 'Tradition',
+  trustBarTop2: '100%',
+  trustBarBottom2: 'Fresh Ingredients',
+  trustBarTop3: '4.9★',
+  trustBarBottom3: 'Guest Rating',
+  heroBadge: 'always fresh',
+};
+
+const defaultCafeCategories: CategoryItem[] = [
+  { id: 'exp1', label: '', tagline: '', image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80' },
+  { id: 'exp2', label: '', tagline: '', image: 'https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&w=600&q=80' },
+  { id: 'exp3', label: '', tagline: '', image: 'https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=600&q=80' },
+  { id: 'exp4', label: '', tagline: '', image: 'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=600&q=80' },
+  { id: 'exp5', label: '', tagline: '', image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
+];
+
+const defaultCafeProducts: ProductsData = {
+  products: [
+    { id: 'p1', category_id: 'coffee', name: 'Artisanal Caramel Latte', priceLabel: '$4.20', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'House Special', delivery: '5 mins', tier: 'premium' },
+    { id: 'p2', category_id: 'pastries', name: 'Fresh Butter Croissant', priceLabel: '$2.50', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80', rating: 4.8, urgency: 'Bestseller', delivery: 'Ready', tier: 'most_popular' },
+    { id: 'p3', category_id: 'meals', name: 'Avocado Sourdough Toast', priceLabel: '$6.50', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80', rating: 4.9, urgency: 'Chef\'s Pick', delivery: '10-15 mins', tier: 'premium' },
+  ],
+  preTitle: 'Our Signature',
+  title: 'Must try',
+  subTitle: 'Handpicked recommendations just for you.',
+};
+
+const defaultCafeTestimonials: TestimonialsData = {
+  testimonials: [
+    { id: 't1', name: 'Sarah L.', city: 'Tourist', text: 'The most authentic and cozy cafe I\'ve ever visited. The cinnamon rolls are out of this world!', rating: 5 },
+    { id: 't2', name: 'Magnus J.', city: 'Local', text: 'A weekend staple for our family. Hearty meals that taste exactly like my grandmother used to make.', rating: 5 },
+    { id: 't3', name: 'Elena V.', city: 'Food Blogger', text: 'Impeccable service, stunning rustic decor, and artisanal coffee that hits all the right notes.', rating: 5 },
+  ],
+};
+
+const defaultCafeLocation: LocationData = {
+  experienceCenterName: 'Kaffestuggu Cafe',
+  experienceCenterAddress: 'Kjerkgata 18, 7374 Røros',
+  mapImage: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80',
+  mapLink: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1822.427773229605!2d11.383186216124707!3d62.57564798363717!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x466ce98a287c9dc9%3A0x6b198c66e92cbbd4!2sKaffestuggu!5e0!3m2!1sen!2sno!4v1709212000000!5m2!1sen!2sno',
+  kicker: 'Visit Us',
+  title: 'Come Say Hi',
+  subTitle: 'We would love to serve you. Located right in the heart of Røros.',
+  hoursMonFri: '07:00 - 18:00',
+  hoursSatSun: '08:00 - 19:00',
+};
+
+const defaultCafeWhatsAppData: WhatsAppData = {
+  title: 'Book a Table',
+  subTitle: 'Reserve your spot today',
+  ctaText: 'Reserve via WhatsApp',
+  welcomeMessage: 'Hi {store_name},\n\nI would like to make a reservation.\n\nPlease share the available slots and menu.',
+  productInquiryText: 'Hi {store_name},\n\nI am interested in:\n• {product_name}\n\nCould you please confirm its availability today?',
+};
+
+const defaultCafeMenuData: MenuData = {
+  title: 'Our Signature',
+  subTitle: 'Handpicked recommendations just for you.',
+  categories: [
+    {
+      id: 'cat-coffee',
+      name: 'Coffee',
+      items: [
+        { id: 'm1', name: 'Espresso', priceLabel: '$3.50', description: 'Rich, full-bodied espresso with a creamy crema.' },
+        { id: 'm2', name: 'Cappuccino', priceLabel: '$4.50', description: 'Espresso topped with deeply frothed milk.' },
+        { id: 'm3', name: 'Flat White', priceLabel: '$4.75', description: 'Velvety steamed milk over a double shot.' },
+        { id: 'm4', name: 'Iced Caramel Latte', priceLabel: '$5.50', description: 'Chilled espresso, milk, and house caramel.', popular: true },
+      ],
+    },
+    {
+      id: 'cat-sandwiches',
+      name: 'Gourmet Sandwiches',
+      items: [
+        { id: 'm9', name: 'Caprese Panini', priceLabel: '$8.50', description: 'Fresh mozzarella, ripe tomatoes, basil pesto, and wild rocket on toasted sourdough.' },
+        { id: 'm10', name: 'Pesto Chicken Sourdough', priceLabel: '$9.50', description: 'Tender grilled chicken, homemade basil pesto, melted provolone, and baby spinach.', popular: true },
+        { id: 'm11', name: 'Truffle Mushroom Toastie', priceLabel: '$9.00', description: 'Sautéed wild mushrooms, white truffle oil, and aged gruyère on rustic sourdough.' },
+      ],
+    },
+    {
+      id: 'cat-pastries',
+      name: 'Pastries & Bites',
+      items: [
+        { id: 'm5', name: 'Butter Croissant', priceLabel: '$4.00', description: 'Flaky, golden baked fresh every morning.' },
+        { id: 'm6', name: 'Almond Tart', priceLabel: '$5.50', description: 'Sweet almond frangipane in a crisp pastry shell.', popular: true },
+        { id: 'm7', name: 'Avocado Toast', priceLabel: '$9.00', description: 'Sourdough, smashed avocado, chili flakes.' },
+        { id: 'm8', name: 'Truffle Fries', priceLabel: '$7.50', description: 'Crispy fries tossed in parmesan and truffle oil.' },
+      ],
+    },
+  ],
+};
+
 export const createDefaultSections = (templateId?: string): Section[] => {
   const isRealEstate = templateId === REAL_ESTATE_TEMPLATE_ID;
+  const isCafe = templateId === CAFE_TEMPLATE_ID;
 
-  return [
-    { id: 'content', type: 'hero', enabled: true, data: isRealEstate ? defaultRealEstateHeroData : defaultHeroData },
+  const sections: Section[] = [
+    { id: 'content', type: 'hero', enabled: true, data: isRealEstate ? defaultRealEstateHeroData : (isCafe ? defaultCafeHeroData : defaultHeroData) },
     {
       id: 'categories',
       type: 'categories',
       enabled: true,
       data: {
-        categories: isRealEstate ? defaultRealEstateCategories : defaultCategories,
-        title: isRealEstate ? 'What kind of home are you looking for?' : 'What are you looking for?',
+        categories: isRealEstate ? defaultRealEstateCategories : (isCafe ? defaultCafeCategories : defaultCategories),
+        title: isRealEstate ? 'What kind of home are you looking for?' : (isCafe ? 'Feel the Vibe' : 'What are you looking for?'),
         subTitle: isRealEstate
           ? 'Select your lifestyle and we will personalize the residences.'
-          : 'Select a category to view our factory-direct collections.',
-        helpTitle: isRealEstate ? 'Need a private tour?' : 'Need help?',
-        helpSubTitle: isRealEstate ? 'Chat with a luxury advisor' : 'Chat directly with factory',
+          : (isCafe ? 'More than just coffee' : 'Select a category to view our factory-direct collections.'),
+        helpTitle: isRealEstate ? 'Need a private tour?' : (isCafe ? 'Experience' : 'Need help?'),
+        helpSubTitle: isRealEstate ? 'Chat with a luxury advisor' : (isCafe ? '' : 'Chat directly with factory'),
       },
     },
-    { id: 'products', type: 'products', enabled: true, data: isRealEstate ? defaultRealEstateProducts : defaultProducts },
-    { id: 'testimonials', type: 'testimonials', enabled: true, data: isRealEstate ? defaultRealEstateTestimonials : defaultTestimonials },
-    { id: 'location', type: 'location', enabled: true, data: isRealEstate ? defaultRealEstateLocation : defaultLocation },
-    { id: 'whatsapp', type: 'whatsapp', enabled: true, data: isRealEstate ? defaultRealEstateWhatsAppData : defaultWhatsAppData },
+    { id: 'products', type: 'products', enabled: true, data: isRealEstate ? defaultRealEstateProducts : (isCafe ? defaultCafeProducts : defaultProducts) },
   ];
+
+  if (isCafe) {
+    sections.push({
+      id: 'menu',
+      type: 'menu',
+      enabled: true,
+      data: defaultCafeMenuData,
+    });
+  }
+
+  sections.push(
+    { id: 'testimonials', type: 'testimonials', enabled: true, data: isRealEstate ? defaultRealEstateTestimonials : (isCafe ? defaultCafeTestimonials : defaultTestimonials) },
+    { id: 'location', type: 'location', enabled: true, data: isRealEstate ? defaultRealEstateLocation : (isCafe ? defaultCafeLocation : defaultLocation) },
+    { id: 'whatsapp', type: 'whatsapp', enabled: true, data: isRealEstate ? defaultRealEstateWhatsAppData : (isCafe ? defaultCafeWhatsAppData : defaultWhatsAppData) }
+  );
+
+  return sections;
 };
 
 export const createInitialContent = (funnel: Funnel): Content => {
@@ -467,24 +582,59 @@ export const createInitialContent = (funnel: Funnel): Content => {
   const templateId = funnel.story_mode_data?.[0]?.templateId as string | undefined;
   const defaults = createDefaultSections(templateId);
   const isRealEstate = templateId === REAL_ESTATE_TEMPLATE_ID;
+  const isCafe = templateId === CAFE_TEMPLATE_ID;
 
   let content: Content;
 
   if (saved && Array.isArray(saved.sections)) {
     content = sanitizeLegacyText(saved) as Content;
     
-    // Ensure all default sections exist for existing funnels
+    // Ensure all default sections exist for existing funnels and keep them in default order
+    const orderedSections: Section[] = [];
     defaults.forEach((defSection) => {
-      if (!content.sections.find((s) => s.id === defSection.id)) {
-        content.sections.push(structuredClone(defSection));
+      const existing = content.sections.find((s) => s.id === defSection.id);
+      if (existing) {
+        if (defSection.id === 'location' && isCafe) {
+          existing.data = {
+            ...defaultCafeLocation,
+            ...existing.data
+          };
+        }
+        orderedSections.push(existing);
+      } else {
+        orderedSections.push(structuredClone(defSection));
       }
     });
+    content.sections = orderedSections;
+
+    if (isCafe) {
+      const menuSection = content.sections.find((s) => s.id === 'menu');
+      if (menuSection && menuSection.data) {
+        if (!menuSection.data.categories) {
+          menuSection.data.categories = [];
+        }
+        const hasSandwiches = menuSection.data.categories.some(
+          (c: any) => c.id === 'cat-sandwiches' || c.name?.toLowerCase().includes('sandwich')
+        );
+        if (!hasSandwiches) {
+          menuSection.data.categories.push({
+            id: 'cat-sandwiches',
+            name: 'Gourmet Sandwiches',
+            items: [
+              { id: 'm9', name: 'Caprese Panini', priceLabel: '$8.50', description: 'Fresh mozzarella, ripe tomatoes, basil pesto, and wild rocket on toasted sourdough.' },
+              { id: 'm10', name: 'Pesto Chicken Sourdough', priceLabel: '$9.50', description: 'Tender grilled chicken, homemade basil pesto, melted provolone, and baby spinach.', popular: true },
+              { id: 'm11', name: 'Truffle Mushroom Toastie', priceLabel: '$9.00', description: 'Sautéed wild mushrooms, white truffle oil, and aged gruyère on rustic sourdough.' },
+            ],
+          });
+        }
+      }
+    }
   } else {
     content = {
-      storeName: isRealEstate ? 'Aurelia Residences' : 'Urban Living',
+      storeName: isRealEstate ? 'Aurelia Residences' : (isCafe ? 'Kaffestuggu' : 'Urban Living'),
       logoUrl: isRealEstate
         ? 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=300&q=80'
-        : '',
+        : (isCafe ? 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=200&q=80' : ''),
       whatsappNumber: '919876543210',
       sections: defaults,
     };
@@ -507,7 +657,10 @@ export const getSectionData = <T,>(content: Content, id: SectionId, fallback: T)
   return (content.sections.find((section) => section.id === id)?.data as T | undefined) ?? fallback;
 };
 
-export const formatProductPrice = (price?: number | null) => {
-  if (!price || Number.isNaN(price)) return 'Rs 0';
+export const formatProductPrice = (price?: number | null, isCafe = false) => {
+  if (!price || Number.isNaN(price)) return isCafe ? '$0.00' : 'Rs 0';
+  if (isCafe) {
+    return `$${price.toFixed(2)}`;
+  }
   return `Rs ${price.toLocaleString('en-IN')}`;
 };

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { produce } from 'immer';
 import {
-  Building2,
   CheckCircle2,
   ChevronLeft,
   Copy,
@@ -14,6 +13,7 @@ import {
   Eye,
   Edit2,
   Monitor,
+  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   Redo2,
@@ -21,22 +21,32 @@ import {
   RotateCcw,
   Save,
   Smartphone,
+  Sun,
   Tablet,
   Undo2,
   ExternalLink,
-  GripVertical,
   X,
   HelpCircle,
+  Info,
   ChevronRight,
+  Target,
+  MousePointer2,
   Trophy,
+  PartyPopper,
   ShieldCheck,
   Zap,
   Wand2,
   Settings2,
   Clock,
   ArrowRight,
-  LayoutList,
   AlertTriangle,
+  GripVertical,
+  UtensilsCrossed,
+  Type,
+  LayoutGrid,
+  Package,
+  MessageCircle,
+  MapPin,
 } from 'lucide-react';
 import { useEditorHistory } from '@/components/dashboard/editor/hooks/useEditorHistory';
 import type { Funnel } from '@/app/actions/funnels';
@@ -45,14 +55,15 @@ import type { Product } from '@/app/actions/products';
 import EditorSidebar from '@/components/dashboard/editor/EditorSidebar';
 import PreviewPane from '@/components/dashboard/editor/PreviewPane';
 import WizardMode from '@/components/dashboard/editor/WizardMode';
-import CategoriesPanel from '@/components/dashboard/editor/sections/CategoriesPanel';
-import RealEstateHeroPanel from '@/components/dashboard/editor/sections/RealEstateHeroPanel';
+import ExperiencePanel from '@/components/dashboard/editor/sections/ExperiencePanel';
+import HeroPanel from '@/components/dashboard/editor/sections/HeroPanel';
 import LocationPanel from '@/components/dashboard/editor/sections/LocationPanel';
-import RealEstateProductsPanel from '@/components/dashboard/editor/sections/RealEstateProductsPanel';
-import RealEstateLayoutsPanel from '@/components/dashboard/editor/sections/RealEstateLayoutsPanel';
+import ProductsPanel from '@/components/dashboard/editor/sections/ProductsPanel';
+import CafeMenuPanel from '@/components/dashboard/editor/sections/CafeMenuPanel';
 import StorePanel from '@/components/dashboard/editor/sections/StorePanel';
 import TestimonialsPanel from '@/components/dashboard/editor/sections/TestimonialsPanel';
 import WhatsAppPanel from '@/components/dashboard/editor/sections/WhatsAppPanel';
+import CafeFullMenuPanel from '@/components/dashboard/editor/sections/CafeFullMenuPanel';
 import type {
   CategoriesData,
   CategoryItem,
@@ -68,6 +79,7 @@ import type {
   TestimonialItem,
   TestimonialsData,
   WhatsAppData,
+  MenuData,
 } from '@/components/dashboard/editor/types';
 import {
   createDefaultSections,
@@ -77,20 +89,22 @@ import {
   getSectionData,
 } from '@/components/dashboard/editor/utils';
 
-type GuideHighlightMap = Record<string, DOMRect | null>;
+const previewModes: Array<{ id: PreviewMode; label: string; icon: React.ReactNode }> = [
+  { id: 'mobile', label: 'Mobile', icon: <Smartphone className="h-4 w-4" /> },
+  { id: 'tablet', label: 'Tablet', icon: <Tablet className="h-4 w-4" /> },
+  { id: 'desktop', label: 'Desktop', icon: <Monitor className="h-4 w-4" /> },
+];
 
-export default function FunnelAdRealEstateEditor({
+export default function FunnelAdCafeEditor({
   funnel,
   allProducts: products = [],
 }: {
   funnel: Funnel;
   allProducts?: Product[];
 }) {
-  const templateId = (funnel.story_mode_data?.[0]?.templateId as string | undefined) ?? 'funnelad-elite-real-estate';
-  const defaultSections = useMemo(() => createDefaultSections(templateId), [templateId]);
+  const templateId = (funnel.story_mode_data?.[0]?.templateId as string | undefined) ?? 'funnelad-elite-cafe';
   const initialContent = useMemo(() => createInitialContent(funnel), [funnel]);
 
-  // ✅ FIX #1: Properly destructure the history hook for cleaner state access
   const {
     current: draftContent,
     push: pushHistory,
@@ -110,39 +124,21 @@ export default function FunnelAdRealEstateEditor({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [changeTick, setChangeTick] = useState(0);
-  const [isDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [editorMode, setEditorMode] = useState<'choosing' | 'wizard' | 'advanced'>('choosing');
   const [isHydrated, setIsHydrated] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [guideHighlights, setGuideHighlights] = useState<GuideHighlightMap>({});
+  const [guideHighlights, setGuideHighlights] = useState<any>({});
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState<number | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     title: string;
     message: string;
     onConfirm: () => void;
   } | null>(null);
-
-  useEffect(() => {
-    if (!isResizing) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const newWidth = Math.min(Math.max(e.clientX, 400), window.innerWidth - 320);
-      setSidebarWidth(newWidth);
-    };
-    const handleMouseUp = () => setIsResizing(false);
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isResizing]);
 
   useEffect(() => {
     const handleFocusIn = (e: FocusEvent) => {
@@ -196,6 +192,25 @@ export default function FunnelAdRealEstateEditor({
   const [liveContent, setLiveContent] = useState<Content>(initialContent);
   const pushHistoryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [sidebarWidth, setSidebarWidth] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.min(Math.max(e.clientX, 400), window.innerWidth - 320);
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
   // Sync liveContent when history changes (undo/redo)
   useEffect(() => {
     setLiveContent(draftContent);
@@ -235,7 +250,7 @@ export default function FunnelAdRealEstateEditor({
     };
   }, [activeTab, funnel.id, isHydrated]);
 
-  // ✅ Auto-show onboarding whenever entering Advanced mode, but only once
+  // Auto-show onboarding whenever entering Advanced mode, but only once
   useEffect(() => {
     if (editorMode === 'advanced') {
       const shown = localStorage.getItem(`guide_shown_${funnel.id}`);
@@ -253,8 +268,6 @@ export default function FunnelAdRealEstateEditor({
     setEditorMode(mode);
     localStorage.setItem(`editor_mode_${funnel.id}`, mode);
   }, [funnel.id]);
-
-
 
   const updateContent = useCallback(
     (recipe: (draft: Content) => void) => {
@@ -282,7 +295,7 @@ export default function FunnelAdRealEstateEditor({
       updateContent((draft) => {
         let section = draft.sections.find((item) => item.id === sectionId);
         if (!section) {
-          const fallback = defaultSections.find((item) => item.id === sectionId);
+          const fallback = createDefaultSections(templateId).find((item) => item.id === sectionId);
           if (!fallback) return;
           const nextSection = structuredClone(fallback);
           draft.sections.push(nextSection);
@@ -291,7 +304,7 @@ export default function FunnelAdRealEstateEditor({
         updater(section.data);
       });
     },
-    [defaultSections, updateContent]
+    [updateContent, templateId]
   );
 
   const handleStoreUpdate = useCallback(
@@ -302,6 +315,8 @@ export default function FunnelAdRealEstateEditor({
     },
     [updateContent]
   );
+
+  const defaultSections = useMemo(() => createDefaultSections(templateId), [templateId]);
 
   const heroData = getSectionData<HeroData>(
     liveContent,
@@ -317,6 +332,11 @@ export default function FunnelAdRealEstateEditor({
     liveContent,
     'products',
     defaultSections.find((section) => section.id === 'products')?.data as ProductsData
+  );
+  const menuData = getSectionData<MenuData>(
+    liveContent,
+    'menu',
+    defaultSections.find((section) => section.id === 'menu')?.data as MenuData
   );
   const testimonialsData = getSectionData<TestimonialsData>(
     liveContent,
@@ -342,12 +362,13 @@ export default function FunnelAdRealEstateEditor({
 
   const handleAddCategory = useCallback(() => {
     handleSectionUpdate('categories', (data) => {
-      const nextId = `cat-${Date.now()}`;
-      (data as CategoriesData).categories.push({
-        id: nextId,
-        label: 'New Collection',
-        tagline: 'Short collection tagline.',
-        image: '/images/sofa/sofa-1.jpg',
+      const cats = (data as CategoriesData).categories;
+      if (cats.length >= 7) return;
+      cats.push({
+        id: `exp-${Date.now()}`,
+        label: '',
+        tagline: '',
+        image: '',
       });
     });
   }, [handleSectionUpdate]);
@@ -383,25 +404,23 @@ export default function FunnelAdRealEstateEditor({
     (product: Product) => {
       handleSectionUpdate('products', (data) => {
         const productsList = (data as ProductsData).products;
-        const defaultCatId = categoriesData.categories[0]?.id ?? 'seating';
-        const countInCat = productsList.filter(p => p.category_id === defaultCatId).length;
         
-        if (countInCat >= 3) {
-          alert(`The category "${categoriesData.categories[0]?.label}" is full (max 3). Remove an item or change category after adding.`);
+        if (productsList.length >= 3) {
+          alert("The Must Try Showcase is limited to 3 signature dishes.");
           return;
         }
+
+        const defaultCatId = categoriesData.categories[0]?.id ?? 'coffee';
 
         const nextProduct: ProductItem = {
           id: product.id ?? `prod-${Date.now()}`,
           category_id: defaultCatId,
           name: product.name ?? 'Product',
-          priceLabel: formatProductPrice(product.price ?? 0),
+          priceLabel: formatProductPrice(product.price ?? 0, true),
           image: product.image_url || FALLBACK_PRODUCT_IMAGE,
-          image2: product.image_url_2 || undefined,
-          urgency: 'Limited stock',
-          delivery: '7-10 Days',
           description: product.description || undefined,
-          dimensions: product.dimensions || undefined,
+          urgency: '',
+          delivery: '',
         };
         productsList.unshift(nextProduct);
       });
@@ -412,52 +431,50 @@ export default function FunnelAdRealEstateEditor({
   const handleAddCustomProduct = useCallback(() => {
     handleSectionUpdate('products', (data) => {
       const productsList = (data as ProductsData).products;
+      
+      if (productsList.length >= 3) {
+        alert("The Must Try Showcase is limited to 3 signature dishes.");
+        return;
+      }
+      
+      const defaultCatId = categoriesData.categories[0]?.id ?? 'coffee';
 
-      // Limit to max 4 configs
-      if (productsList.length >= 4) return;
+      const gorgeousDefaults = [
+        {
+          name: 'Artisanal Caramel Latte',
+          priceLabel: '$4.20',
+          image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80',
+          description: 'Smooth espresso, steamed milk, sea salt caramel.',
+          tier: 'premium' as const
+        },
+        {
+          name: 'Fresh Butter Croissant',
+          priceLabel: '$2.50',
+          image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
+          description: 'Flaky, golden layers of pastry baked fresh every morning with French butter.',
+          tier: 'most_popular' as const
+        },
+        {
+          name: 'Avocado Sourdough Toast',
+          priceLabel: '$6.50',
+          image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
+          description: 'Smashed avocado on toasted artisan sourdough, topped with chili flakes and microgreens.',
+          tier: 'premium' as const
+        }
+      ];
+
+      const defaultData = gorgeousDefaults[productsList.length % gorgeousDefaults.length];
 
       productsList.push({
-        id: `bhk-${Date.now()}`,
-        category_id: categoriesData.categories[0]?.id ?? 'family',
-        name: 'New BHK',
-        priceLabel: '₹ 0',
-        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-        urgency: 'New Listing',
-        delivery: 'Possession: TBD',
-        dimensions: '0 sqft',
-        description: 'A new residence configuration.',
-        rooms: [
-          {
-            id: `room-${Date.now()}-1`,
-            name: 'Living Room',
-            area: '300 sqft',
-            img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80',
-            details: ['Premium flooring', 'Natural light'],
-            direction: { x: 0, y: 0, scale: 1 },
-            x: 6, y: 8, w: 56, h: 44,
-            label: 'Living'
-          },
-          {
-            id: `room-${Date.now()}-2`,
-            name: 'Kitchen',
-            area: '150 sqft',
-            img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=2400&q=80',
-            details: ['Modular kitchen', 'Modern appliances'],
-            direction: { x: -40, y: 0, scale: 1.02 },
-            x: 6, y: 56, w: 36, h: 36,
-            label: 'Kitchen'
-          },
-          {
-            id: `room-${Date.now()}-3`,
-            name: 'Master Bedroom',
-            area: '200 sqft',
-            img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=2400&q=80',
-            details: ['Ensuite bathroom', 'Walk-in wardrobe'],
-            direction: { x: 40, y: 20, scale: 1.04 },
-            x: 46, y: 56, w: 48, h: 36,
-            label: 'Master'
-          }
-        ] as any
+        id: `custom-${Date.now()}`,
+        category_id: defaultCatId,
+        name: defaultData.name,
+        priceLabel: defaultData.priceLabel,
+        image: defaultData.image,
+        description: defaultData.description,
+        tier: defaultData.tier,
+        urgency: 'Freshly Brewed',
+        delivery: '5 mins',
       });
     });
   }, [categoriesData.categories, handleSectionUpdate]);
@@ -470,21 +487,6 @@ export default function FunnelAdRealEstateEditor({
         } else {
           const productsList = (data as ProductsData).products;
           if (!productsList[index]) return;
-
-          // Enforce 3 product limit per category
-          if (updates.hasOwnProperty('category_id')) {
-            const nextCatId = (updates as Partial<ProductItem>).category_id;
-            const currentCatId = productsList[index].category_id;
-            
-            if (nextCatId && nextCatId !== currentCatId) {
-              const countInNewCat = productsList.filter(p => p.category_id === nextCatId).length;
-              if (countInNewCat >= 3) {
-                alert("This category already has 3 products. Please remove one before moving this product here.");
-                return;
-              }
-            }
-          }
-
           productsList[index] = { ...productsList[index], ...(updates as Partial<ProductItem>) };
         }
       });
@@ -504,6 +506,15 @@ export default function FunnelAdRealEstateEditor({
     [handleSectionUpdate]
   );
 
+  const handleUpdateMenu = useCallback(
+    (updates: Partial<MenuData>) => {
+      handleSectionUpdate('menu', (data) => {
+        Object.assign(data as MenuData, updates);
+      });
+    },
+    [handleSectionUpdate]
+  );
+
   const handleUpdateTestimonial = useCallback(
     (index: number, updates: Partial<TestimonialItem>) => {
       handleSectionUpdate('testimonials', (data) => {
@@ -517,11 +528,16 @@ export default function FunnelAdRealEstateEditor({
 
   const handleAddTestimonial = useCallback(() => {
     handleSectionUpdate('testimonials', (data) => {
-      (data as TestimonialsData).testimonials.push({
+      const testimonials = (data as TestimonialsData).testimonials;
+      if (testimonials.length >= 3) {
+        alert("You can only add a maximum of 3 customer reviews.");
+        return;
+      }
+      testimonials.push({
         id: `testimonial-${Date.now()}`,
-        name: 'New Client',
-        city: 'City',
-        text: 'Add a short testimonial about the experience.',
+        name: 'New Guest',
+        city: 'Local',
+        text: 'Add a short review about the food or experience.',
         rating: 5,
       });
     });
@@ -554,19 +570,19 @@ export default function FunnelAdRealEstateEditor({
       message: 'Are you sure you want to reset this section to its default state? All your changes in this section will be lost.',
       onConfirm: () => {
         updateContent((draft) => {
-          const fallback = defaultSections.find((item) => item.id === sectionId);
+          const fallback = createDefaultSections(templateId).find((item) => item.id === sectionId);
           if (!fallback) return;
           const index = draft.sections.findIndex((item) => item.id === sectionId);
           if (index !== -1) {
-            draft.sections[index] = structuredClone(fallback);
+            draft.sections[index] = fallback;
           } else {
-            draft.sections.push(structuredClone(fallback));
+            draft.sections.push(fallback);
           }
         });
         setConfirmModal(null);
       }
     });
-  }, [defaultSections, updateContent]);
+  }, [updateContent, templateId]);
 
   const handleResetAll = useCallback(() => {
     setConfirmModal({
@@ -575,10 +591,10 @@ export default function FunnelAdRealEstateEditor({
       message: 'Are you sure you want to completely reset the entire funnel to the default template? ALL your changes will be lost.',
       onConfirm: () => {
         const resetContent = {
-          sections: structuredClone(defaultSections),
-          storeName: 'Aurelia Residences',
+          sections: createDefaultSections(templateId),
+          storeName: 'Kaffestuggu',
           whatsappNumber: '919876543210',
-          logoUrl: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=300&q=80',
+          logoUrl: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=200&q=80',
         };
         updateContent((draft) => {
           draft.sections = resetContent.sections;
@@ -597,9 +613,8 @@ export default function FunnelAdRealEstateEditor({
         setConfirmModal(null);
       }
     });
-  }, [defaultSections, updateContent, funnel.id, reset]);
+  }, [updateContent, funnel.id, reset, templateId]);
 
-  // ✅ FIX #4: Proper undo/redo handlers that integrate with change tracking
   const handleUndo = useCallback(() => {
     undo();
     setChangeTick((prev) => prev + 1);
@@ -613,14 +628,12 @@ export default function FunnelAdRealEstateEditor({
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
 
-  // ✅ FIX #5: Optimized handleSave with deep comparison to prevent redundant network calls
   const handleSave = useCallback(
     async (silent = false) => {
       if (!funnel?.id || isPendingSaveRef.current) return;
 
       const contentChanged = JSON.stringify(liveContent) !== JSON.stringify(lastSavedContentRef.current);
       if (!contentChanged && !silent) {
-        // Even if content hasn't changed, if user manually clicked save, show success briefly
         setSaveSuccess(true);
         if (saveSuccessTimer.current) clearTimeout(saveSuccessTimer.current);
         saveSuccessTimer.current = setTimeout(() => setSaveSuccess(false), 2000);
@@ -665,7 +678,6 @@ export default function FunnelAdRealEstateEditor({
     if (!funnel?.id) return;
     setIsPublishing(true);
     try {
-      // 1. Force a save first
       const contentChanged = JSON.stringify(draftContent) !== JSON.stringify(lastSavedContentRef.current);
       if (contentChanged) {
         await updateFunnel(funnel.id, {
@@ -696,7 +708,7 @@ export default function FunnelAdRealEstateEditor({
     localStorage.setItem(`editor_mode_${funnel.id}`, 'advanced');
   }, [handlePublish, funnel.id]);
 
-  // ✅ FIX #6: Robust auto-save debouncing logic
+
   useEffect(() => {
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
@@ -713,7 +725,6 @@ export default function FunnelAdRealEstateEditor({
     };
   }, [changeTick, handleSave]);
 
-  // ✅ FIX #7: Full keyboard shortcut support (S, Z, Shift+Z, Y)
   useEffect(() => {
     const handleKeys = (event: KeyboardEvent) => {
       const isMac = navigator.platform.toLowerCase().includes('mac');
@@ -741,7 +752,6 @@ export default function FunnelAdRealEstateEditor({
     return () => window.removeEventListener('keydown', handleKeys);
   }, [handleSave, handleRedo, handleUndo]);
 
-  // ✅ FIX #8: Comprehensive cleanup on unmount
   useEffect(() => {
     return () => {
       if (saveSuccessTimer.current) clearTimeout(saveSuccessTimer.current);
@@ -758,14 +768,13 @@ export default function FunnelAdRealEstateEditor({
     copyTimer.current = setTimeout(() => setCopied(false), 1200);
   }, [funnel?.slug]);
 
-  // ✅ ADVANCED: Outcome-Driven Spotlight Tour
   const tourSteps = useMemo(() => [
     {
       id: 'sidebar',
-      title: "Your Project Studio",
+      title: "Your Cafe Setup",
       label: "Step 1 — Branding",
-      description: "This is where you define the project identity — project name, contact information, hero visuals, residences, and more. Each tab on the left controls a critical part of your lead generation funnel.",
-      proTip: "Start with the Project Identity tab to set your developer profile. Naming and contact info build instant trust with luxury property buyers.",
+      description: "This is where you define your cafe's identity — name, WhatsApp number, hero image, menu, and more. Each tab controls a part of your reservation funnel.",
+      proTip: "Start with the Cafe Profile tab to set your basic info. Naming and contact info build instant trust with diners.",
       icon: ShieldCheck,
       color: "indigo",
       position: "left-12 top-[140px]",
@@ -774,10 +783,10 @@ export default function FunnelAdRealEstateEditor({
     },
     {
       id: 'tabs',
-      title: "Lead Generation Tabs",
-      label: "Step 2 — Navigate",
-      description: "Switch between sections: Project Identity, Property Hero, Residences, Project Location, and Lead Capture. Each controls a specific conversion touchpoint.",
-      proTip: "Focus on the Residences tab — add high-res renders and clear pricing. That's what stops the scroll.",
+      title: "Funnel Navigation",
+      label: "Step 2 — Specialities & Atmosphere",
+      description: "Switch between sections: Cafe Profile, Hero Splash, Atmosphere, and Specialities. Organize your offerings cleanly.",
+      proTip: "Ensure your Specialities showcase has clear names and pricing. Curated, high-quality photos increase table booking intent.",
       icon: Zap,
       color: "amber",
       position: "left-[100px] top-[200px]",
@@ -788,8 +797,8 @@ export default function FunnelAdRealEstateEditor({
       id: 'preview',
       title: "Interactive Preview",
       label: "Step 3 — Visualize",
-      description: "See your property funnel exactly as your buyers will see it. Test the virtual walkthrough and spatial tour features in real-time.",
-      proTip: "Toggle between Mobile and Desktop. 90% of your leads will come from mobile devices.",
+      description: "See your cafe funnel exactly as your customers will see it. Test the reservation flow in real-time.",
+      proTip: "Toggle between Mobile and Desktop. Most diners will book tables from their phones.",
       icon: Smartphone,
       color: "emerald",
       position: "right-[15%] top-[250px]",
@@ -799,9 +808,9 @@ export default function FunnelAdRealEstateEditor({
     {
       id: 'launch',
       title: "Go Live Instantly",
-      label: "Step 4 — Conversion",
-      description: "Once your project looks majestic, hit Publish. Your high-conversion property funnel will be live and ready to capture leads.",
-      proTip: "Use the 'Copy Link' feature to share your funnel directly on Instagram, Facebook Ads, or WhatsApp.",
+      label: "Step 4 — Bookings",
+      description: "Once your cafe looks great, hit Publish. Your high-conversion reservation funnel will be live and ready to capture table bookings.",
+      proTip: "Share your published link on your Instagram bio to drive immediate reservations.",
       icon: Rocket,
       color: "rose",
       position: "right-12 top-[40px]",
@@ -830,7 +839,7 @@ export default function FunnelAdRealEstateEditor({
     }
 
     const interval = setInterval(() => {
-      const highlights: GuideHighlightMap = {};
+      const highlights: any = {};
       
       const sidebarEl = document.getElementById('tour-sidebar');
       if (sidebarEl) highlights.sidebar = sidebarEl.getBoundingClientRect();
@@ -844,7 +853,7 @@ export default function FunnelAdRealEstateEditor({
       const launchEl = document.getElementById(window.innerWidth < 1024 ? 'tour-launch-mobile' : 'tour-launch-desktop');
       if (launchEl) highlights.launch = launchEl.getBoundingClientRect();
       
-      setGuideHighlights((prev) => {
+      setGuideHighlights((prev: any) => {
         let changed = false;
         for (const k of ['sidebar', 'tabs', 'preview', 'launch']) {
           if (!prev[k] && highlights[k]) changed = true;
@@ -860,9 +869,11 @@ export default function FunnelAdRealEstateEditor({
 
   const readiness = useMemo(() => {
     const items = [
-      { id: 'store', label: 'Project Name', met: liveContent.storeName.trim().length > 0 },
-      { id: 'store', label: 'Contact Number', met: liveContent.whatsappNumber.trim().length > 0 },
-      { id: 'products', label: 'Residence Listings', met: productsData.products.length > 0 },
+      { id: 'store', label: 'Cafe Name', met: liveContent.storeName.trim().length > 0 },
+      { id: 'store', label: 'WhatsApp Number', met: liveContent.whatsappNumber.trim().length > 0 },
+      { id: 'categories', label: 'Menu Categories', met: categoriesData.categories.length > 0 },
+      { id: 'products', label: 'Menu Items', met: productsData.products.length > 0 },
+      { id: 'testimonials', label: 'Customer Reviews', met: testimonialsData.testimonials.length > 0 },
     ];
 
     const metItems = items.filter(i => i.met);
@@ -878,7 +889,6 @@ export default function FunnelAdRealEstateEditor({
     testimonialsData.testimonials.length,
   ]);
 
-  // ✅ FIX #9: Clean panel rendering without redundant memoization
   const getPanelContent = (tab?: TabId) => {
     const currentTab = tab ?? activeTab;
     if (currentTab === 'store') {
@@ -889,24 +899,25 @@ export default function FunnelAdRealEstateEditor({
           logoUrl={liveContent.logoUrl}
           readiness={readiness}
           counts={{
-            collections: 0,
+            collections: categoriesData.categories.length,
             products: productsData.products.length,
-            reviews: 0,
+            reviews: testimonialsData.testimonials.length,
           }}
           isWizard={editorMode === 'wizard'}
           onChangeStoreName={(value) => handleStoreUpdate('storeName', value)}
           onChangeWhatsApp={(value) => handleStoreUpdate('whatsappNumber', value)}
           onChangeLogo={(value) => handleStoreUpdate('logoUrl', value)}
           onJumpTo={(tab) => setActiveTab(tab)}
-          panelLabel="Developer Profile"
-          nameLabel="Construction Company Name"
-          namePlaceholder="e.g. Aurelia Group"
           hideLogo={true}
-          whatsappLabel="Lead Capture Number"
-          whatsappHint="Concierge requests, visitor callbacks, and lead inquiries will route directly to this WhatsApp number."
-          inventorySectionLabel="Active Project Assets"
+          panelLabel="Cafe Profile"
+          nameLabel="Cafe Name"
+          namePlaceholder="e.g. Kaffestuggu"
+          whatsappLabel="Table Reservation Number"
+          whatsappHint="Table reservations and inquiries will route directly to this WhatsApp number."
+          inventorySectionLabel="Active Menu"
           inventoryLabels={{
-            products: 'Residences',
+            collections: 'Menu Categories',
+            products: 'Menu Items',
           }}
         />
       );
@@ -914,18 +925,13 @@ export default function FunnelAdRealEstateEditor({
 
     if (currentTab === 'content') {
       return (
-        <RealEstateHeroPanel
+        <HeroPanel
           data={heroData}
-          hideCtaSection={editorMode === 'wizard'}
+          hideCtaSection={false}
+          hideTrustBar={true}
           onChange={(updates) => {
             handleSectionUpdate('content', (data) => {
               Object.assign(data as HeroData, updates);
-            });
-          }}
-          locationAddress={locationData.experienceCenterAddress}
-          onChangeLocationAddress={(val) => {
-            handleSectionUpdate('location', (data) => {
-              (data as LocationData).experienceCenterAddress = val;
             });
           }}
         />
@@ -934,7 +940,7 @@ export default function FunnelAdRealEstateEditor({
 
     if (currentTab === 'categories') {
       return (
-        <CategoriesPanel
+        <ExperiencePanel
           data={categoriesData}
           onAdd={handleAddCategory}
           onRemove={handleRemoveCategory}
@@ -945,26 +951,23 @@ export default function FunnelAdRealEstateEditor({
 
     if (currentTab === 'products') {
       return (
-        <RealEstateProductsPanel
+        <CafeMenuPanel
           data={productsData}
+          categories={categoriesData.categories}
+          allProducts={products}
+          onAddFromCatalog={handleAddProductFromCatalog}
           onAddCustomProduct={handleAddCustomProduct}
           onRemove={handleRemoveProduct}
           onUpdate={handleUpdateProduct}
-          heroData={heroData}
-          onChangeHero={(updates) => {
-            handleSectionUpdate('content', (data) => {
-              Object.assign(data as HeroData, updates);
-            });
-          }}
         />
       );
     }
 
-    if (currentTab === 'layouts') {
+    if (currentTab === 'menu') {
       return (
-        <RealEstateLayoutsPanel
-          data={productsData}
-          onUpdate={handleUpdateProduct}
+        <CafeFullMenuPanel
+          data={menuData}
+          onUpdate={handleUpdateMenu}
         />
       );
     }
@@ -976,6 +979,7 @@ export default function FunnelAdRealEstateEditor({
           onAdd={handleAddTestimonial}
           onRemove={handleRemoveTestimonial}
           onUpdate={handleUpdateTestimonial}
+          templateId={templateId}
         />
       );
     }
@@ -984,7 +988,7 @@ export default function FunnelAdRealEstateEditor({
       return (
         <LocationPanel
           data={locationData}
-          isRealEstate={true}
+          templateId={templateId}
           onChange={(updates) => {
             handleSectionUpdate('location', (data) => {
               Object.assign(data as LocationData, updates);
@@ -1000,18 +1004,20 @@ export default function FunnelAdRealEstateEditor({
           data={whatsappData}
           storeName={liveContent.storeName}
           whatsappNumber={liveContent.whatsappNumber}
-          isRealEstate={true}
           onChange={(updates) => {
             handleSectionUpdate('whatsapp', (data) => {
               Object.assign(data as WhatsAppData, updates);
             });
           }}
+          isCafe={true}
         />
       );
     }
 
     return null;
   };
+
+
 
   const handleNextTour = () => {
     if (onboardingStep < tourSteps.length) {
@@ -1057,7 +1063,7 @@ export default function FunnelAdRealEstateEditor({
               >
                 Quick Setup
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-8">Step-by-step guided wizard. Add project identity, residences, and go live in under 30 seconds.</p>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Step-by-step guided wizard. Enter your store info, add products, and go live in under 30 seconds.</p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600">
                   <Clock size={14} />
@@ -1082,7 +1088,7 @@ export default function FunnelAdRealEstateEditor({
               >
                 Advanced Editor
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-8">Full sidebar + live preview. Fine-tune every detail — hero copy, WhatsApp scripts, residence specs, and more.</p>
+              <p className="text-sm text-slate-400 leading-relaxed mb-8">Full sidebar + live preview. Fine-tune every detail — hero copy, WhatsApp templates, product specs, and more.</p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-600">
                   <Settings2 size={14} />
@@ -1111,7 +1117,7 @@ export default function FunnelAdRealEstateEditor({
           onReorderSections={handleReorderSections}
           onResetSection={handleResetSection}
           onResetAll={handleResetAll}
-          isRealEstate={true}
+          isCafe={true}
         />
         <ConfirmModal
           isOpen={!!confirmModal?.isOpen}
@@ -1127,7 +1133,7 @@ export default function FunnelAdRealEstateEditor({
   // ===================== ADVANCED MODE =====================
   return (
     <div className={`flex h-full flex-col transition-colors duration-300 ${isDarkMode ? 'bg-[#0f1117]' : 'bg-white'}`}>
-      {/* ✅ ADVANCED GUIDE — Moves & Highlights Each Area */}
+      {/* ADVANCED GUIDE — Spotlight Tour */}
       <AnimatePresence>
         {showOnboarding && (() => {
           const step = tourSteps[onboardingStep - 1];
@@ -1142,8 +1148,8 @@ export default function FunnelAdRealEstateEditor({
           const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
           const isMobile = windowWidth < 1024;
 
-          const hlData = guideHighlights[step.id];
-          const hl: React.CSSProperties = hlData ? {
+          const hlData = guideHighlights[step.id] || {};
+          const hl: React.CSSProperties = hlData.top !== undefined ? {
             top: hlData.top,
             left: hlData.left,
             width: hlData.width,
@@ -1154,15 +1160,13 @@ export default function FunnelAdRealEstateEditor({
           let arrowStyle: React.CSSProperties = { display: 'none' };
           
           if (isMobile) {
-            // Smart docking logic
             const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-            if (hlData?.top !== undefined && hlData.top > windowHeight / 2) {
+            if (hlData.top !== undefined && hlData.top > windowHeight / 2) {
               cardStyle = { left: 16, right: 16, top: 80, bottom: 'auto', transform: 'none' };
             } else {
               cardStyle = { left: 16, right: 16, bottom: 24, top: 'auto', transform: 'none' };
             }
           } else {
-            // Desktop logic
             if (step.id === 'sidebar') cardStyle = { left: 220, top: '50%', transform: 'translateY(-50%)' };
             if (step.id === 'tabs') cardStyle = { left: 680, top: '50%', transform: 'translateY(-50%)' };
             if (step.id === 'preview') cardStyle = { right: 40, top: '50%', transform: 'translateY(-50%)' };
@@ -1177,7 +1181,7 @@ export default function FunnelAdRealEstateEditor({
 
           return (
             <div className="fixed inset-0 z-[200]">
-              {/* Dim overlay with cutout for highlighted area */}
+              {/* Dim overlay with cutout */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1185,19 +1189,15 @@ export default function FunnelAdRealEstateEditor({
                 className="absolute inset-0"
                 onClick={() => setShowOnboarding(false)}
               >
-                {/* Top dimmer */}
-                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hlData?.top ?? 0 }} />
-                {/* Bottom dimmer */}
-                {hlData?.height ? (
+                <div className="absolute top-0 left-0 right-0 bg-black/40" style={{ height: hlData.top ?? 0 }} />
+                {hlData.height ? (
                   <div className="absolute left-0 right-0 bottom-0 bg-black/40" style={{ top: hlData.top + hlData.height }} />
                 ) : null}
-                {/* Left dimmer */}
-                <div className="absolute bg-black/40" style={{ top: hlData?.top ?? 0, left: 0, width: hlData?.left ?? 0, height: hlData?.height }} />
-                {/* Right dimmer */}
-                <div className="absolute bg-black/40" style={{ top: hlData?.top ?? 0, left: (hlData?.left ?? 0) + (hlData?.width ?? 0), right: 0, height: hlData?.height }} />
+                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: 0, width: hlData.left ?? 0, height: hlData.height }} />
+                <div className="absolute bg-black/40" style={{ top: hlData.top ?? 0, left: (hlData.left ?? 0) + (hlData.width ?? 0), right: 0, height: hlData.height }} />
               </motion.div>
 
-              {/* Highlight border ring around the focused area */}
+              {/* Highlight border */}
               <motion.div
                 layoutId="guide-highlight"
                 className={`absolute z-[201] pointer-events-none border-2 ${c.border} ring-4 ${c.ring}`}
@@ -1205,7 +1205,7 @@ export default function FunnelAdRealEstateEditor({
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               />
 
-              {/* Tooltip Card — positioned near the highlighted area */}
+              {/* Tooltip Card */}
               <motion.div
                 key={step.id}
                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -1215,15 +1215,10 @@ export default function FunnelAdRealEstateEditor({
                 className={`fixed z-[210] w-[calc(100%-32px)] lg:w-[360px]`}
                 style={cardStyle}
               >
-                {/* Arrow */}
                 <div style={arrowStyle} />
-
-                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col max-h-[85vh]">
-                  {/* Accent bar */}
-                  <div className={`h-1 shrink-0 ${c.bg}`} />
-
-                  <div className="p-6 overflow-y-auto overflow-x-hidden">
-                    {/* Step badge + count */}
+                <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden">
+                  <div className={`h-1 ${c.bg}`} />
+                  <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${c.bgLight} ${c.text}`}>
                         {React.createElement(step.icon, { size: 10 })}
@@ -1232,29 +1227,19 @@ export default function FunnelAdRealEstateEditor({
                       <span className="text-[10px] font-bold text-slate-300">{onboardingStep}/{tourSteps.length}</span>
                     </div>
 
-                    {/* Title — Tanker */}
                     <h3
                       className="text-[28px] leading-[1.1] text-slate-900 mb-3"
                       style={{ fontFamily: "'Tanker', serif" }}
                     >
                       {step.title}
                     </h3>
+                    <p className="text-[13px] text-slate-500 leading-relaxed mb-4">{step.description}</p>
 
-                    {/* Description */}
-                    <p className="text-[13px] text-slate-500 leading-relaxed mb-4">
-                      {step.description}
-                    </p>
-
-                    {/* Pro tip */}
                     <div className={`p-3.5 rounded-xl ${c.bgLight} mb-5`}>
-                      <div className="flex items-start gap-2.5">
-                        <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
-                      </div>
+                      <p className="text-[12px] font-semibold text-slate-700 leading-snug">{step.proTip}</p>
                     </div>
 
-                    {/* Footer */}
                     <div className="flex items-center justify-between">
-                      {/* Progress */}
                       <div className="flex gap-1.5">
                         {tourSteps.map((_, i) => (
                           <div
@@ -1267,8 +1252,6 @@ export default function FunnelAdRealEstateEditor({
                           />
                         ))}
                       </div>
-
-                      {/* Buttons */}
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setShowOnboarding(false)}
@@ -1311,7 +1294,7 @@ export default function FunnelAdRealEstateEditor({
                     >
                       You&apos;re All Set!
                     </h2>
-                    <p className="text-slate-400 font-medium text-sm">Start building your elite funnel now.</p>
+                    <p className="text-slate-400 font-medium text-sm">Start building your cafe reservation funnel now.</p>
                   </div>
                 </motion.div>
               )}
@@ -1319,9 +1302,6 @@ export default function FunnelAdRealEstateEditor({
           );
         })()}
       </AnimatePresence>
-
-
-
 
       <div className={`flex items-center justify-between border-b px-6 py-4 transition-colors duration-300 ${isDarkMode ? 'border-white/[0.06] bg-[#13151b]' : 'border-slate-200 bg-white'}`}>
         <div className="flex items-center gap-3">
@@ -1335,7 +1315,7 @@ export default function FunnelAdRealEstateEditor({
           <div className={`h-5 w-px ${isDarkMode ? 'bg-white/10' : 'bg-slate-200'}`} />
           <div>
             <p className={`text-xs uppercase tracking-[0.3em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Editor</p>
-            <p className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{funnel?.welcome_title ?? 'Real Estate Funnel'}</p>
+            <p className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{funnel?.welcome_title ?? 'Cafe Funnel'}</p>
           </div>
         </div>
 
@@ -1381,7 +1361,6 @@ export default function FunnelAdRealEstateEditor({
               <RotateCcw size={14} strokeWidth={2.5} />
               Reset All
             </button>
-
           </div>
 
           <button
@@ -1465,7 +1444,6 @@ export default function FunnelAdRealEstateEditor({
             exit={{ opacity: 0, y: -10 }}
             className="lg:hidden absolute top-[73px] left-0 right-0 z-[100] bg-white border-b border-slate-200 shadow-2xl p-4 flex flex-col gap-3"
           >
-            {/* Row 1: Wizard & Guide */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
@@ -1489,7 +1467,6 @@ export default function FunnelAdRealEstateEditor({
               </button>
             </div>
 
-            {/* Row 2: Hide panels & Copy link */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
@@ -1513,7 +1490,6 @@ export default function FunnelAdRealEstateEditor({
               </button>
             </div>
 
-            {/* Row 3: Save & Device Preview */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
@@ -1538,7 +1514,6 @@ export default function FunnelAdRealEstateEditor({
               </button>
             </div>
 
-            {/* Row 4: Device Preview Toggle */}
             <div className="flex items-center justify-between border-t border-slate-100 pt-3 mt-1">
               <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Device Preview</span>
               <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5">
@@ -1577,42 +1552,41 @@ export default function FunnelAdRealEstateEditor({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -240, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              style={{ '--desktop-width': sidebarWidth ? `${sidebarWidth}px` : (activeTab === 'layouts' ? '900px' : '660px') } as React.CSSProperties}
-              className={`flex h-full w-full lg:w-[var(--desktop-width)] shrink-0 snap-center flex-col relative z-40 border-r border-slate-200 bg-white shadow-xl ${!isResizing ? 'transition-[width] duration-300' : ''}`}
+              className={`flex h-full w-full lg:w-[660px] shrink-0 snap-center flex-col relative z-40 border-r border-slate-200 bg-white shadow-xl ${isResizing ? 'duration-0' : 'duration-300'}`}
+              style={{ width: sidebarWidth ? `${sidebarWidth}px` : undefined }}
             >
               {/* Resizer Handle */}
-              <div 
-                className={`hidden lg:flex absolute top-0 right-[-10px] bottom-0 w-[20px] cursor-col-resize z-50 flex-col items-center justify-center group transition-colors ${isResizing ? 'bg-orange-500/10' : 'hover:bg-orange-500/10'}`}
+              <div
+                className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 cursor-col-resize z-50 items-center justify-center group"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   setIsResizing(true);
                 }}
               >
-                <div className={`flex items-center justify-center h-8 w-4 rounded-full bg-white border shadow-sm transition-all ${isResizing ? 'border-orange-500 text-orange-500 scale-110 shadow-md' : 'border-slate-200 text-slate-400 group-hover:border-orange-400 group-hover:text-orange-400'}`}>
+                <div className={`flex items-center justify-center h-8 w-4 rounded-full bg-white border shadow-sm transition-all ${isResizing ? 'border-indigo-500 text-indigo-500 scale-110 shadow-md' : 'border-slate-200 text-slate-400 group-hover:border-indigo-400 group-hover:text-indigo-400'}`}>
                   <GripVertical size={12} strokeWidth={2.5} />
                 </div>
               </div>
-              
-              {/* ✅ FIX #10: Professional Two-Column Sidebar Layout */}
+
+              {/* Two-Column Sidebar Layout */}
               <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
                 {/* Navigation Column */}
                 <div id="tour-sidebar" className="flex w-full md:w-[260px] shrink-0 flex-col border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
                   <EditorSidebar
-                    sections={draftContent.sections.filter(s => s.id !== 'testimonials' && s.id !== 'categories')}
+                    sections={draftContent.sections}
                     activeTab={activeTab}
                     onChangeTab={setActiveTab}
                     onReorderSections={handleReorderSections}
                     onStoreClick={() => setActiveTab('store')}
-                    storeLabel="Project Identity"
+                    storeLabel="Cafe Identity"
                     sectionLabels={{
-                      content: { label: 'Property Hero', icon: Building2 },
-                      products: { label: 'Residences', icon: Building2 },
-                      location: { label: 'Project Location' },
-                      whatsapp: { label: 'Lead Capture' },
+                      content: { label: 'Hero & Branding', icon: Type },
+                      categories: { label: 'Experience', icon: LayoutGrid },
+                      products: { label: 'Specialities Showcase', icon: Package },
+                      menu: { label: 'Full Menu', icon: UtensilsCrossed },
+                      testimonials: { label: 'Guest Reviews', icon: MessageCircle },
+                      location: { label: 'Cafe Location', icon: MapPin },
                     }}
-                    extraTabs={[
-                      { id: 'layouts', label: 'Layout Config', icon: LayoutList }
-                    ]}
                   />
                 </div>
                 
@@ -1644,7 +1618,7 @@ export default function FunnelAdRealEstateEditor({
                 </div>
               </div>
 
-              {/* ✅ FIX #11: Footer with unified autosave status and undo/redo */}
+              {/* Footer with unified autosave status and undo/redo */}
               <div className={`border-t border-slate-200 bg-slate-50/80 p-4 backdrop-blur-sm ${isKeyboardOpen ? 'hidden md:block' : ''}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs">
@@ -1653,20 +1627,10 @@ export default function FunnelAdRealEstateEditor({
                         <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-600" />
                         <span className="font-medium text-slate-600">Autosaving...</span>
                       </>
-                    ) : saveError ? (
-                      <>
-                        <div className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                        <span className="font-medium text-rose-600">{saveError}</span>
-                      </>
-                    ) : saveSuccess ? (
-                      <>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                        <span className="font-medium text-emerald-600">Changes saved</span>
-                      </>
                     ) : (
                       <>
-                        <Save className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="font-medium text-slate-500">Ready to save</span>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                        <span className="font-medium text-slate-500">Saved to cloud</span>
                       </>
                     )}
                   </div>
@@ -1675,152 +1639,38 @@ export default function FunnelAdRealEstateEditor({
                     <button
                       onClick={handleUndo}
                       disabled={!canUndo}
-                      className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all hover:bg-slate-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="p-2 rounded-lg hover:bg-slate-200/60 disabled:opacity-30 disabled:hover:bg-transparent text-slate-600 transition-colors"
                       title="Undo (Ctrl+Z)"
                     >
-                      <Undo2 className="h-3 w-3" />
-                      Undo
+                      <Undo2 size={16} />
                     </button>
                     <button
                       onClick={handleRedo}
                       disabled={!canRedo}
-                      className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all hover:bg-slate-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                      title="Redo (Ctrl+Shift+Z)"
+                      className="p-2 rounded-lg hover:bg-slate-200/60 disabled:opacity-30 disabled:hover:bg-transparent text-slate-600 transition-colors"
+                      title="Redo (Ctrl+Y)"
                     >
-                      <Redo2 className="h-3 w-3" />
-                      Redo
+                      <Redo2 size={16} />
                     </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Floating Mobile Action (Editor -> Preview) */}
-              <div className="lg:hidden absolute bottom-24 right-6 z-50">
-                <button 
-                  onClick={() => {
-                    document.getElementById('mobile-scroll-layout')?.scrollTo({ left: window.innerWidth, behavior: 'smooth' });
-                  }}
-                  className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-full shadow-2xl shadow-slate-900/30 font-bold text-xs active:scale-95 transition-transform"
-                >
-                  <Eye size={16} />
-                  Preview
-                  <ArrowRight size={14} className="ml-1 opacity-50" />
-                </button>
               </div>
             </motion.aside>
           )}
         </AnimatePresence>
 
-        <div id="tour-preview" className="w-full h-full shrink-0 snap-center lg:w-auto lg:flex-1 relative">
+        {/* Live Preview Column */}
+        <section id="tour-preview" className="flex-1 min-w-0 h-full snap-center relative z-10">
           <PreviewPane
             funnel={funnel}
             content={liveContent}
-            products={productsData.products}
+            products={products}
             previewMode={previewMode}
             onEditSection={handleEditSection}
             activeSectionId={activeTab}
           />
-          
-          {/* Floating Mobile Action (Preview -> Editor) */}
-          <div className="lg:hidden absolute bottom-6 left-6 z-50">
-            <button 
-              onClick={() => {
-                document.getElementById('mobile-scroll-layout')?.scrollTo({ left: 0, behavior: 'smooth' });
-              }}
-              className="flex items-center gap-2 bg-white text-slate-900 border border-slate-200 px-5 py-3 rounded-full shadow-2xl font-bold text-xs active:scale-95 transition-transform"
-            >
-              <ChevronLeft size={14} className="mr-1 opacity-50" />
-              <Edit2 size={16} />
-              Editor
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
-
-      {/* ✅ FIX #12: Premium Publish Success Modal */}
-      <AnimatePresence>
-        {showPublishModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPublishModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] bg-white shadow-2xl"
-            >
-              <div className="absolute right-6 top-6">
-                <button
-                  onClick={() => setShowPublishModal(false)}
-                  className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="p-10 pt-12">
-                <div className="mb-8 flex justify-center">
-                  <div className="relative">
-                    <div className="absolute inset-0 animate-ping rounded-full bg-orange-400/20" />
-                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 shadow-inner">
-                      <Rocket className="h-10 w-10 text-orange-500" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <h3 className="mb-3 font-serif text-3xl font-bold tracking-tight text-slate-900">
-                    Your Funnel is Live!
-                  </h3>
-                  <p className="mb-8 text-[15px] leading-relaxed text-slate-600 px-4">
-                    Congratulations! Your high-conversion real estate funnel is now published and ready to capture leads.
-                  </p>
-
-                  <div className="mb-10 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                    <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-left px-2">
-                      Public URL
-                    </div>
-                    <div className="flex items-center justify-between gap-4 rounded-xl bg-white p-3 shadow-sm border border-slate-100">
-                      <span className="truncate text-sm font-medium text-slate-600">
-                        {window.location.origin}/s/{funnel.slug}
-                      </span>
-                      <button
-                        onClick={handleCopyLink}
-                        className="flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-black transition-all active:scale-95"
-                      >
-                        <Copy className="h-3 w-3" />
-                        {copied ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link
-                      href={`/s/${funnel.slug}`}
-                      target="_blank"
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 py-4 text-[14px] font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all active:scale-[0.98]"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      View Live Funnel
-                    </Link>
-                    <button
-                      onClick={() => setShowPublishModal(false)}
-                      className="flex-1 rounded-2xl border border-slate-200 bg-white py-4 text-[14px] font-bold text-slate-700 hover:bg-slate-50 transition-all"
-                    >
-                      Continue Editing
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <ConfirmModal
         isOpen={!!confirmModal?.isOpen}
@@ -1829,68 +1679,164 @@ export default function FunnelAdRealEstateEditor({
         onConfirm={confirmModal?.onConfirm || (() => {})}
         onCancel={() => setConfirmModal(null)}
       />
+
+      <PublishModal
+        isOpen={showPublishModal}
+        onClose={() => setShowPublishModal(false)}
+        funnelUrl={typeof window !== 'undefined' ? `${window.location.origin}/s/${funnel?.slug}` : ''}
+        onCopy={handleCopyLink}
+        copied={copied}
+      />
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// CONFIRM MODAL COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════
-interface ConfirmModalProps {
+// ===================== CONFIRMATION MODAL =====================
+function ConfirmModal({
+  isOpen,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+}: {
   isOpen: boolean;
   title: string;
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
-}
-
-function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }: ConfirmModalProps) {
+}) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onCancel}
-            className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white p-6 shadow-2xl border border-slate-100"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 leading-snug">{title}</h3>
+                <p className="mt-2 text-sm text-slate-500 leading-relaxed">{message}</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={onCancel}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onConfirm}
+                className="rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-red-700 shadow-md shadow-red-200 transition-colors"
+              >
+                Reset Settings
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ===================== PUBLISH SUCCESS MODAL =====================
+function PublishModal({
+  isOpen,
+  onClose,
+  funnelUrl,
+  onCopy,
+  copied,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  funnelUrl: string;
+  onCopy: () => void;
+  copied: boolean;
+}) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
           />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', duration: 0.4 }}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 text-left"
+            className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl border border-slate-100"
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-rose-500" />
-
-            <div className="flex gap-4 items-start mt-2">
-              <div className="p-3 rounded-2xl bg-rose-50 text-rose-500 shrink-0">
-                <AlertTriangle size={24} className="animate-pulse" />
-              </div>
-              <div className="flex-1 space-y-1">
-                <h3 className="text-base font-black text-slate-900 tracking-tight">{title}</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">{message}</p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 border border-slate-200/50"
+            <div className="text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', delay: 0.1 }}
+                className="w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto mb-6"
               >
-                No, Keep Changes
-              </button>
-              <button
-                type="button"
-                onClick={onConfirm}
-                className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/10 hover:shadow-rose-600/20 hover:scale-[1.02] transition-all active:scale-95"
+                <PartyPopper size={36} />
+              </motion.div>
+
+              <h3 
+                className="text-4xl text-slate-900 tracking-tight mb-2"
+                style={{ fontFamily: "'Tanker', serif" }}
               >
-                Yes, Reset
-              </button>
+                Your Funnel is Live!
+              </h3>
+              <p className="text-sm text-slate-400 font-medium max-w-sm mx-auto mb-8">Share this link with customers on Instagram, WhatsApp, or ads to start booking tables.</p>
+
+              {/* Link Box */}
+              <div className="flex items-center gap-2 p-2 rounded-2xl bg-slate-50 border border-slate-100 mb-8">
+                <span className="text-xs text-slate-400 font-mono flex-1 truncate pl-3 text-left">{funnelUrl}</span>
+                <button
+                  onClick={onCopy}
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all ${
+                    copied 
+                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-100' 
+                      : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                  }`}
+                >
+                  {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+
+              <div className="flex gap-3 justify-center">
+                <a
+                  href={funnelUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 hover:bg-black text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition-colors shadow-lg shadow-slate-100"
+                >
+                  Visit Funnel
+                  <ExternalLink size={14} />
+                </a>
+                <button
+                  onClick={onClose}
+                  className="rounded-xl border border-slate-200 px-6 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>

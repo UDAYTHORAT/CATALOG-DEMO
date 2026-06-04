@@ -1,6 +1,26 @@
-export type SectionId = 'content' | 'categories' | 'products' | 'testimonials' | 'location' | 'whatsapp';
+export type SectionId = 'content' | 'categories' | 'products' | 'testimonials' | 'location' | 'whatsapp' | 'menu';
 export type TabId = 'store' | 'layouts' | SectionId;
 export type PreviewMode = 'mobile' | 'tablet' | 'desktop';
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  priceLabel: string;
+  description: string;
+  popular?: boolean;
+}
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+  items: MenuItem[];
+}
+
+export interface MenuData {
+  title?: string;
+  subTitle?: string;
+  categories: MenuCategory[];
+}
 
 export interface CategoryItem {
   id: string;
@@ -62,6 +82,7 @@ export interface HeroData {
   subTagline: string;
   heroCtaText: string;
   heroCtaSubtext: string;
+  heroSecondaryCtaText?: string;
   trustBarTop1?: string;
   trustBarBottom1?: string;
   trustBarTop2?: string;
@@ -108,6 +129,11 @@ export interface LocationData {
   mapImage: string;
   mapLink: string;
   connectivity?: { label: string; time: string }[];
+  kicker?: string;
+  title?: string;
+  subTitle?: string;
+  hoursMonFri?: string;
+  hoursSatSun?: string;
 }
 
 export interface WhatsAppData {
@@ -128,6 +154,7 @@ export type Section =
   | { id: 'content'; type: 'hero'; data: HeroData; enabled: boolean }
   | { id: 'categories'; type: 'categories'; data: CategoriesData; enabled: boolean }
   | { id: 'products'; type: 'products'; data: ProductsData; enabled: boolean }
+  | { id: 'menu'; type: 'menu'; data: MenuData; enabled: boolean }
   | { id: 'testimonials'; type: 'testimonials'; data: TestimonialsData; enabled: boolean }
   | { id: 'location'; type: 'location'; data: LocationData; enabled: boolean }
   | { id: 'whatsapp'; type: 'whatsapp'; data: WhatsAppData; enabled: boolean };

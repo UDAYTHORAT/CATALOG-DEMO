@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { FunnelMockContent } from './FunnelMockContent';
 import EliteFurnitureTemplate from '@/components/templates/EliteFurnitureTemplate';
 import EliteRealEstateTemplate from '@/components/templates/EliteRealEstateTemplate';
+import EliteCafeTemplate from '@/components/templates/EliteCafeTemplate';
 import { createInitialContent } from './editor/utils';
 
 interface TemplatePreviewModalProps {
@@ -20,6 +21,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
 
   const isEliteFurniture = template?.id === 'funnelad-elite-furniture';
   const isEliteRealEstate = template?.id === 'funnelad-elite-real-estate';
+  const isEliteCafe = template?.id === 'funnelad-elite-cafe';
   
   const elitePreviewProps = useMemo(() => {
     if (!isEliteFurniture) return null;
@@ -251,6 +253,22 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
     };
   }, [isEliteRealEstate, template?.id, view]);
 
+  const cafePreviewProps = useMemo(() => {
+    if (!isEliteCafe) return null;
+    const mockFunnel = { id: template.id, story_mode_data: [{ templateId: template.id }] } as any;
+    const content = createInitialContent(mockFunnel);
+    content.logoUrl = '';
+    const productsSection = content.sections.find((s) => s.id === 'products');
+    const mockProducts = productsSection?.data?.products || [];
+    return {
+      funnel: { ...mockFunnel, story_mode_data: [{ templateId: template.id, content }] },
+      store: { name: content.storeName, whatsapp_number: content.whatsappNumber, logo_url: null },
+      products: mockProducts,
+      isPreview: true,
+      previewMode: view,
+    };
+  }, [isEliteCafe, template?.id, view]);
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) { window.addEventListener('keydown', h); document.body.style.overflow = 'hidden'; }
@@ -322,6 +340,8 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
                   <div className="relative w-full" style={{ overflowX: 'hidden' }}>
                     <EliteRealEstateTemplate {...realEstatePreviewProps} />
                   </div>
+                ) : isEliteCafe && cafePreviewProps ? (
+                  <EliteCafeTemplate {...(cafePreviewProps as any)} />
                 ) : (
                   <FunnelMockContent template={template} isMobile={view==='mobile'} />
                 )}

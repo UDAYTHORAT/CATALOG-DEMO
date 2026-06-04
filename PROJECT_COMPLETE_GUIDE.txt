@@ -1,0 +1,116 @@
+================================================================================
+ELITE MULTI-TEMPLATE FUNNEL BUILDER SYSTEM — COMPLETE TECHNICAL GUIDE
+================================================================================
+
+1. PROJECT OVERVIEW & VISION
+----------------------------
+This project is an advanced, high-conversion visual funnel builder designed to turn user traffic into high-intent actions, primarily focused on direct WhatsApp engagement. Originally starting as Aurelian Studio (a premium furniture catalog), the platform has evolved into a versatile multi-template marketing engine.
+
+Core Tech Stack:
+- Framework: Next.js 16 (App Router)
+- Runtime: React 19
+- Styling: Tailwind CSS v4 (design system & theme tokens)
+- Animation: Framer Motion
+- Icons: Lucide React
+- Database & Persistence: Supabase (saves JSON configurations & lead submissions)
+
+--------------------------------------------------------------------------------
+2. PROJECT DIRECTORY ARCHITECTURE
+--------------------------------------------------------------------------------
+src/
+├── app/
+│   ├── layout.tsx         # Root layout configuring fonts, custom cursor, and smooth scroll.
+│   ├── page.tsx           # Day-to-night hero landing page.
+│   ├── globals.css        # Global CSS stylesheet importing Tailwind CSS v4, custom theme variables, and keyframe animations.
+│   ├── (dashboard)/       # Admin Dashboard routes.
+│   │   └── dashboard/
+│   │       ├── page.tsx   # Dashboard home showing overview statistics.
+│   │       ├── funnels/   # Funnel builder creation and listing console.
+│   │       ├── leads/     # Captures inquiries, pre-orders, and table reservations.
+│   │       └── products/  # Inventory manager for products to display in the funnels.
+│   ├── s/
+│   │   └── [slug]/        # Public route serving custom live funnels dynamically based on url slug.
+│   │       └── page.tsx   # Renders the template with corresponding database values.
+│   └── actions/           # Next.js Server Actions handling DB reads, writes, and publishes.
+│
+├── components/
+│   ├── templates/         # Public-facing visual templates.
+│   │   ├── EliteCafeTemplate.tsx       # Café/restaurant mobile-first reservation funnel.
+│   │   ├── EliteFurnitureTemplate.tsx  # Furniture cinematic hotspot-based brochure.
+│   │   └── EliteRealEstateTemplate.tsx # Luxury property layout & floor plan viewer.
+│   ├── dashboard/         # Components supporting the administration editor.
+│   │   ├── templates/     # Template orchestrators (e.g., FunnelAdCafeEditor.tsx).
+│   │   └── editor/        # Editing panels (Branding, Showcase, Automation, Location).
+│   ├── Catalog.tsx        # Spread-based horizontal magazine view for furniture.
+│   ├── LiveCatalog.tsx    # Responsive grid catalog browsing.
+│   └── EnquireModal.tsx   # Lead generation overlay routing to WhatsApp, Call, or Email.
+│
+├── data/
+│   └── catalog.ts         # Central local source of truth & data models for demo products.
+└── lib/
+    └── utils.ts           # Standard Tailwind merge and helper utility.
+
+--------------------------------------------------------------------------------
+3. THE THREE PREMIUM CONVERSION TEMPLATES
+--------------------------------------------------------------------------------
+
+[A] ELITE CAFE & RESTAURANT TEMPLATE (EliteCafeTemplate.tsx)
+- Purpose: Optimized booking funnel for food, beverage, and dining spaces.
+- Target Actions: Booking a table reservation, picking guests count, selecting a time, and pre-ordering menu items.
+- Core UX Elements:
+  * Decision Hero: Fast 3-second header to reserve a table immediately.
+  * Menu Showcase: Immersive horizontal atmosphere card scroller and signature items list.
+  * Interactive Guest Picker: Seamless visual increment/decrement guest counter.
+  * Digital Clock Time Picker: Elegant digital time selection overlay with visual watch-style numbers.
+  * WhatsApp Booking CTA: A clean, flat, high-contrast button for instant booking confirmations.
+
+[B] ELITE FURNITURE & RETAIL TEMPLATE (EliteFurnitureTemplate.tsx)
+- Purpose: Immersive storytelling catalog for showrooms, premium makers, and retail products.
+- Target Actions: Hotspot Discovery, Material Spec Deep-Dive, Custom Design Requests, and Direct Purchase.
+- Core UX Elements:
+  * Interactive Image Hotspots: Pulsing gold dots on room lifestyle photos that slide open details of products.
+  * Sketch-to-Build Story Mode: Dynamic scroll-driven transition showcasing blueprints, sketches, raw frames, and finished items.
+  * Concierge Portal: Input forms for custom dimensions and bespoke design enquiries.
+
+[C] ELITE REAL ESTATE TEMPLATE (EliteRealEstateTemplate.tsx)
+- Purpose: Interactive blueprints for luxury property developments, villas, and apartments.
+- Target Actions: BHK floor plan exploration, interactive room highlights, and site visit scheduling.
+- Core UX Elements:
+  * Interactive Blueprint Viewer: Responsive percentage layout allowing users to tap on spaces (bedrooms, kitchen, balconies) to load live specifications.
+  * BHK Configuration Selectors: Switch between 2BHK, 3BHK, and 4BHK architectural maps instantly.
+
+--------------------------------------------------------------------------------
+4. WHAT WE HAVE IMPLEMENTED & REFINED RECENTLY
+--------------------------------------------------------------------------------
+
+1. Simplified "Confirm via WhatsApp" Button:
+   - Replaced complex gradient transitions, shining glares, and pulsing badges with a highly legible, premium solid espresso brand color button (`#3A2211` to `#4E321E` on hover).
+   - Designed with clean tracking, white uppercase text, and a standard `MessageCircle` icon to establish maximum trust and minimize decision fatigue.
+
+2. Redesigned Symmetrical Location Map Grid:
+   - Refactored the location section layout to prevent empty space gaps and misalignment in tablet (tab) views.
+   - Header is now placed full-width centered at the top of the section.
+   - Info/Hours Card (left) and Google Maps Card (right) are placed in a balanced grid. Using CSS Grid with `items-stretch` ensures they automatically sync to the exact same vertical height, presenting a cohesive, premium layout.
+   - Enhanced the iframe sepia and grayscale filter for clear map visibility and text readability.
+
+--------------------------------------------------------------------------------
+5. HOW TO RUN, USE, AND MAINTAIN THE CODE
+--------------------------------------------------------------------------------
+
+Running Development Locally:
+$ npm run dev
+Starts the development server at http://localhost:3000. Next.js App Router hot-reloads updates immediately.
+
+Type-Checking & Compilation Checks:
+$ npx tsc --noEmit
+Ensures TypeScript compiles correctly and imports/exports are verified.
+
+Updating Business Settings:
+- Static Fallback Inquiries: Open `src/components/EnquireModal.tsx` and adjust `BUSINESS_PHONE` or `BUSINESS_EMAIL` at the top of the file.
+- Dynamic Funnels: Saved directly inside Supabase under the `story_mode_data` column. Admin changes are automatically synced via the dashboard panels.
+
+Adding New Products or Templates:
+1. Define the component in `src/components/templates/`.
+2. Add its schema config and entry within `src/app/s/[slug]/page.tsx` and the editor routing tables.
+3. Edit `src/data/catalog.ts` to add catalog entries for the horizontal slide show if necessary.
+================================================================================

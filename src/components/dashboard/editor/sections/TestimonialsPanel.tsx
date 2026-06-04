@@ -9,11 +9,13 @@ export default React.memo(function TestimonialsPanel({
   onAdd,
   onUpdate,
   onRemove,
+  templateId,
 }: {
   data: TestimonialsData;
   onAdd: () => void;
   onUpdate: (index: number, updates: Partial<TestimonialItem>) => void;
   onRemove: (id: string) => void;
+  templateId?: string;
 }) {
   const testimonials = data.testimonials;
 
@@ -93,36 +95,40 @@ export default React.memo(function TestimonialsPanel({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Detail 1 (Delivery Proof)</label>
-                <input
-                  value={testimonial.detail1 || ''}
-                  onChange={(event) => onUpdate(index, { detail1: event.target.value })}
-                  placeholder="e.g. Delivered in 9 Days"
-                  className={subtleInputClass}
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Detail 2 (Finish/Material)</label>
-                <input
-                  value={testimonial.detail2 || ''}
-                  onChange={(event) => onUpdate(index, { detail2: event.target.value })}
-                  placeholder="e.g. Custom walnut finish"
-                  className={subtleInputClass}
-                />
-              </div>
-            </div>
+            {templateId !== 'funnelad-elite-cafe' && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Detail 1 (Delivery Proof)</label>
+                    <input
+                      value={testimonial.detail1 || ''}
+                      onChange={(event) => onUpdate(index, { detail1: event.target.value })}
+                      placeholder="e.g. Delivered in 9 Days"
+                      className={subtleInputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Detail 2 (Finish/Material)</label>
+                    <input
+                      value={testimonial.detail2 || ''}
+                      onChange={(event) => onUpdate(index, { detail2: event.target.value })}
+                      placeholder="e.g. Custom walnut finish"
+                      className={subtleInputClass}
+                    />
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-1 gap-4 pt-2" id="tour-testimonials-photo">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Real Installation Photo</label>
-                <ImageUpload
-                  defaultImage={testimonial.image}
-                  onUploadComplete={(url) => onUpdate(index, { image: url })}
-                />
-              </div>
-            </div>
+                <div className="grid grid-cols-1 gap-4 pt-2" id="tour-testimonials-photo">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Real Installation Photo</label>
+                    <ImageUpload
+                      defaultImage={testimonial.image}
+                      onUploadComplete={(url) => onUpdate(index, { image: url })}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>

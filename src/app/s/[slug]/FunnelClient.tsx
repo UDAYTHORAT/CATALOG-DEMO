@@ -2,6 +2,7 @@
 
 import EliteFurnitureTemplate, { type FunnelProduct } from '@/components/templates/EliteFurnitureTemplate';
 import EliteRealEstateTemplate from '@/components/templates/EliteRealEstateTemplate';
+import EliteCafeTemplate from '@/components/templates/EliteCafeTemplate';
 
 export type { FunnelProduct };
 
@@ -30,6 +31,10 @@ export default function FunnelClient(props: Props) {
 
   if (templateId === 'funnelad-elite-real-estate') {
     return <EliteRealEstateTemplate {...props} />;
+  }
+
+  if (templateId === 'funnelad-elite-cafe') {
+    return <EliteCafeTemplate {...props} />;
   }
 
   return <EliteFurnitureTemplate {...props} />;

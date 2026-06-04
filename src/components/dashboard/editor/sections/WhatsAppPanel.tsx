@@ -184,18 +184,66 @@ export default React.memo(function WhatsAppPanel({
   whatsappNumber,
   onChange,
   isRealEstate,
+  isCafe,
 }: {
   data: WhatsAppData;
   storeName: string;
   whatsappNumber: string;
   onChange: (updates: Partial<WhatsAppData>) => void;
   isRealEstate?: boolean;
+  isCafe?: boolean;
 }) {
+  // Refs and cursor state to prevent cursor jumping on state updates
+  const restoreEmojis = (text: string) => {
+    if (!text) return text;
+    return text
+      .replace(/(👤|[\?\uFFFD])\s*Name:/g, '1. Name:')
+      .replace(/(👥|[\?\uFFFD])\s*Party\s*Size:/g, '2. Party Size:')
+      .replace(/(📅|[\?\uFFFD])\s*Date:/g, '3. Date:')
+      .replace(/(🕒|[\?\uFFFD])\s*Time:/g, '4. Time:');
+  };
+
+  const welcomeMessageRef = React.useRef<HTMLTextAreaElement>(null);
+  const [welcomeMessageCursor, setWelcomeMessageCursor] = React.useState<number | null>(null);
+
+  const productInquiryRef = React.useRef<HTMLTextAreaElement>(null);
+  const [productInquiryCursor, setProductInquiryCursor] = React.useState<number | null>(null);
+
+  const visitMessageRef = React.useRef<HTMLTextAreaElement>(null);
+  const [visitMessageCursor, setVisitMessageCursor] = React.useState<number | null>(null);
+
+  const roomInquiryRef = React.useRef<HTMLTextAreaElement>(null);
+  const [roomInquiryCursor, setRoomInquiryCursor] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (welcomeMessageRef.current && welcomeMessageCursor !== null) {
+      welcomeMessageRef.current.setSelectionRange(welcomeMessageCursor, welcomeMessageCursor);
+    }
+  }, [data.welcomeMessage, welcomeMessageCursor]);
+
+  React.useEffect(() => {
+    if (productInquiryRef.current && productInquiryCursor !== null) {
+      productInquiryRef.current.setSelectionRange(productInquiryCursor, productInquiryCursor);
+    }
+  }, [data.productInquiryText, productInquiryCursor]);
+
+  React.useEffect(() => {
+    if (visitMessageRef.current && visitMessageCursor !== null) {
+      visitMessageRef.current.setSelectionRange(visitMessageCursor, visitMessageCursor);
+    }
+  }, [data.visitMessageTemplate, visitMessageCursor]);
+
+  React.useEffect(() => {
+    if (roomInquiryRef.current && roomInquiryCursor !== null) {
+      roomInquiryRef.current.setSelectionRange(roomInquiryCursor, roomInquiryCursor);
+    }
+  }, [data.roomInquiryMessageTemplate, roomInquiryCursor]);
+
   // AUTO-MIGRATION: Detect legacy placeholders and swap them based on context
   React.useEffect(() => {
     const updates: Partial<WhatsAppData> = {};
     
-    let welcomeMsg = data.welcomeMessage || '';
+    let welcomeMsg = restoreEmojis(data.welcomeMessage || '');
     let productMsg = data.productInquiryText || '';
 
     // Base migration
@@ -204,6 +252,17 @@ export default React.memo(function WhatsAppPanel({
     }
     if (productMsg.includes('Urban Living')) {
       productMsg = productMsg.replaceAll('Urban Living', '{store_name}');
+    }
+
+    // Cafe Specific Migration
+    if (isCafe) {
+      if (welcomeMsg === 'Hi {store_name},\n\nI would like to make a reservation.\n\nPlease share the available slots and menu.' || 
+          welcomeMsg === 'Hi {cafe_name},\n\nI would like to request a table reservation.' ||
+          welcomeMsg === 'Hi {cafe_name},\n\nI would like to request a table reservation.\n\n{reservation_details}') {
+        welcomeMsg = 'Hi {cafe_name},\n\nI would like to request a table reservation.\n\n1. Name: {name}\n2. Party Size: {party_size}\n3. Date: {date}\n4. Time: {time}';
+      } else if (welcomeMsg.includes('{store_name}')) {
+        welcomeMsg = welcomeMsg.replaceAll('{store_name}', '{cafe_name}');
+      }
     }
 
     // Real Estate Specific Migration
@@ -509,10 +568,15 @@ export default React.memo(function WhatsAppPanel({
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pre-filled Visit Message</span>
                 </div>
                 <textarea
+                  ref={visitMessageRef}
                   value={data.visitMessageTemplate || DEFAULT_VISIT_MSG}
-                  onChange={(e) => onChange({ visitMessageTemplate: e.target.value })}
+                  onChange={(e) => {
+                    setVisitMessageCursor(e.target.selectionStart);
+                    onChange({ visitMessageTemplate: e.target.value });
+                  }}
                   rows={4}
                   className={`${subtleInputClass} resize-none text-[12px] leading-relaxed py-3 bg-emerald-50/10 border-emerald-100`}
+                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}
                   placeholder={DEFAULT_VISIT_MSG}
                 />
                 <div className="flex flex-wrap items-center gap-1.5 text-[9px] text-slate-400 italic">
@@ -573,10 +637,15 @@ export default React.memo(function WhatsAppPanel({
                   Pre-filled Chat Message
                 </label>
                 <textarea
+                  ref={roomInquiryRef}
                   value={data.roomInquiryMessageTemplate || ''}
-                  onChange={(e) => onChange({ roomInquiryMessageTemplate: e.target.value })}
+                  onChange={(e) => {
+                    setRoomInquiryCursor(e.target.selectionStart);
+                    onChange({ roomInquiryMessageTemplate: e.target.value });
+                  }}
                   rows={4}
                   className={`${subtleInputClass} resize-none text-[12px] leading-relaxed py-3 bg-slate-50/50`}
+                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}
                   placeholder={DEFAULT_ROOM_INQUIRY_MSG}
                 />
                 <div className="flex flex-wrap items-center gap-1.5 text-[9px] text-slate-400 italic">
@@ -628,14 +697,19 @@ export default React.memo(function WhatsAppPanel({
               <>
                 {/* General Inquiry */}
                 <div className="space-y-1.5">
-                  <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400">3.1 General Inquiry</p>
+                  <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400">{isCafe ? "3.1 Table Reservation" : "3.1 General Inquiry"}</p>
                   <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-3.5 shadow-sm">
-                    <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
-                      {(data.welcomeMessage || "Hi {company_name}, I'm interested...")
+                    <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}>
+                      {(restoreEmojis(data.welcomeMessage || '') || (isCafe ? "Hi {cafe_name},\n\nI would like to request a table reservation.\n\n1. Name: {name}\n2. Party Size: {party_size}\n3. Date: {date}\n4. Time: {time}" : "Hi {company_name}, I'm interested..."))
                         .replaceAll('{company_name}', storeName || 'Company Identity')
                         .replaceAll('{store_name}', storeName || 'Company Identity')
+                        .replaceAll('{cafe_name}', storeName || 'Cafe Name')
                         .replaceAll('{category}', 'SOFA')
-                        .replaceAll('Urban Living', storeName || 'Company Identity')}
+                        .replaceAll('Urban Living', storeName || 'Company Identity')
+                        .replaceAll('{name}', 'John Doe')
+                        .replaceAll('{party_size}', '2')
+                        .replaceAll('{date}', new Date().toISOString().split('T')[0])
+                        .replaceAll('{time}', '07:30 PM')}
                     </p>
                     <div className="mt-1.5 flex items-center justify-end gap-1 opacity-40">
                       <CheckCheck size={11} className="text-blue-600" />
@@ -644,10 +718,11 @@ export default React.memo(function WhatsAppPanel({
                 </div>
 
                 {/* Product Inquiry */}
+                {!isCafe && (
                 <div className="space-y-1.5">
                   <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400">3.2 Product Intent</p>
                   <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-3.5 shadow-sm">
-                    <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
+                    <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}>
                       {(data.productInquiryText || '')
                         .replaceAll('{company_name}', storeName || 'Company Identity')
                         .replaceAll('{store_name}', storeName || 'Company Identity')
@@ -661,6 +736,7 @@ export default React.memo(function WhatsAppPanel({
                     </div>
                   </div>
                 </div>
+                )}
               </>
             )}
 
@@ -683,7 +759,7 @@ export default React.memo(function WhatsAppPanel({
 
                 {/* Final concierge message */}
                 <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-3.5 shadow-sm">
-                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
+                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}>
                     {(conciergeOptions[0]?.message || data.conciergeMessageTemplate || DEFAULT_CONCIERGE_MSG)
                       .replaceAll('{company_name}', storeName || 'Company Identity')
                       .replaceAll('{store_name}', storeName || 'Company Identity')
@@ -710,7 +786,7 @@ export default React.memo(function WhatsAppPanel({
 
                 {/* Final visit message */}
                 <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-3.5 shadow-sm">
-                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
+                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}>
                     {(data.visitMessageTemplate || DEFAULT_VISIT_MSG)
                       .replaceAll('{company_name}', storeName || 'Company Identity')
                       .replaceAll('{store_name}', storeName || 'Company Identity')
@@ -726,7 +802,7 @@ export default React.memo(function WhatsAppPanel({
                 {/* Final room explorer inquiry message */}
                 <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-400 pt-4 border-t border-slate-200/50">Room Explorer Inquiry</p>
                 <div className="bg-[#DCF8C6] ml-auto max-w-[85%] rounded-2xl rounded-tr-none p-3.5 shadow-sm">
-                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
+                  <p className="text-[10px] leading-relaxed text-slate-800 font-medium whitespace-pre-wrap" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}>
                     {(data.roomInquiryMessageTemplate || `Hello {company_name},\n\nI am currently exploring the {room_name} inside the {residence_name}.\n\nPlease share the detailed floorplans, pricing, and availability for this residence.`)
                       .replaceAll('{company_name}', storeName || 'Company Identity')
                       .replaceAll('{room_name}', 'Master Suite')
@@ -774,25 +850,51 @@ export default React.memo(function WhatsAppPanel({
 
             <div className="space-y-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="space-y-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">3.1 General Inquiry Message</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{isCafe ? "3.1 Table Reservation Message" : "3.1 General Inquiry Message"}</span>
                 <textarea
-                  value={data.welcomeMessage}
-                  onChange={(e) => onChange({ welcomeMessage: e.target.value })}
+                  ref={welcomeMessageRef}
+                  value={restoreEmojis(data.welcomeMessage || '')}
+                  onChange={(e) => {
+                    setWelcomeMessageCursor(e.target.selectionStart);
+                    onChange({ welcomeMessage: e.target.value });
+                  }}
                   rows={8}
                   className={`${subtleInputClass} resize-none text-[12px] leading-relaxed py-4 bg-slate-50/50`}
-                  placeholder="Write a conversion-focused welcome message..."
+                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}
+                  placeholder={isCafe ? "Hi {cafe_name},\n\nI would like to request a table reservation.\n\n1. Name: {name}\n2. Party Size: {party_size}\n3. Date: {date}\n4. Time: {time}" : "Write a conversion-focused welcome message..."}
                 />
+                {isCafe && (
+                  <div className="flex flex-col gap-2 text-[10px] text-slate-400 italic mt-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span>Available placeholders:</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{cafe_name}"}</code>
+                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{name}"}</code>
+                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{party_size}"}</code>
+                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{date}"}</code>
+                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{time}"}</code>
+                    </div>
+                  </div>
+                )}
               </div>
 
+              {!isCafe && (
+              <>
               <div className="h-px bg-slate-100" />
 
               <div className="space-y-4">
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">3.2 Product Intent Template</span>
                 <textarea
-                  value={data.productInquiryText}
-                  onChange={(e) => onChange({ productInquiryText: e.target.value })}
+                  ref={productInquiryRef}
+                  value={data.productInquiryText || ''}
+                  onChange={(e) => {
+                    setProductInquiryCursor(e.target.selectionStart);
+                    onChange({ productInquiryText: e.target.value });
+                  }}
                   rows={8}
                   className={`${subtleInputClass} resize-none text-[12px] leading-relaxed py-4 border-emerald-100 bg-emerald-50/10`}
+                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"' }}
                   placeholder="Write a conversion-focused product inquiry..."
                 />
                 <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400 italic leading-loose">
@@ -805,6 +907,8 @@ export default React.memo(function WhatsAppPanel({
                   <span>for dynamic text.</span>
                 </div>
               </div>
+              </>
+              )}
             </div>
           </section>
         </>

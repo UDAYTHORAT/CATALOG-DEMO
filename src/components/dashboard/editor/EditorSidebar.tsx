@@ -1,11 +1,12 @@
 import React from 'react';
-import { Building2, LayoutGrid, MapPin, MessageCircle, Package, Settings, Type, ChevronRight, Zap } from 'lucide-react';
+import { Building2, LayoutGrid, MapPin, MessageCircle, Package, Settings, Type, ChevronRight, Zap, UtensilsCrossed } from 'lucide-react';
 import type { Section, SectionId, TabId } from './types';
 
 const defaultSectionMeta: Record<SectionId, { label: string; icon: React.ElementType }> = {
   content: { label: 'Hero Landing', icon: Type },
   categories: { label: 'Collections', icon: LayoutGrid },
   products: { label: 'Product Showcase', icon: Package },
+  menu: { label: 'Full Menu', icon: UtensilsCrossed },
   testimonials: { label: 'Customer Reviews', icon: MessageCircle },
   location: { label: 'Studio Location', icon: MapPin },
   whatsapp: { label: 'WhatsApp Support', icon: MessageCircle },

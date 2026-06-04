@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getProducts } from '@/app/actions/products';
 import FunnelAdFurnitureEditor from '@/components/dashboard/templates/FunnelAdFurnitureEditor';
 import FunnelAdRealEstateEditor from '@/components/dashboard/templates/FunnelAdRealEstateEditor';
+import FunnelAdCafeEditor from '@/components/dashboard/templates/FunnelAdCafeEditor';
 
 export default async function EditFunnelPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,6 +32,8 @@ export default async function EditFunnelPage({ params }: { params: Promise<{ id:
   const templateId = funnel?.story_mode_data?.[0]?.templateId as string | undefined;
   const EditorComponent = templateId === 'funnelad-elite-real-estate'
     ? FunnelAdRealEstateEditor
+    : templateId === 'funnelad-elite-cafe'
+    ? FunnelAdCafeEditor
     : FunnelAdFurnitureEditor;
 
   return (

@@ -387,6 +387,123 @@ export const MASTER_TEMPLATES: FunnelTemplate[] = [
       },
     },
   },
+  // ━━━ 2. ELITE CAFE & RESTAURANT FUNNEL ━━━
+  {
+    id: 'funnelad-elite-cafe',
+    name: 'Elite Cafe & Restaurant Funnel',
+    category: 'Restaurant',
+    industry: 'restaurant',
+    theme: 'minimal',
+    icon: '☕',
+    accentColor: '#2C1810',
+    bgGradient: 'from-[#FBF9F6] via-[#F5F0E8] to-[#E8E1D5]',
+    badge: 'NEW',
+    description: 'A rustic-luxury, high-converting menu and reservation experience.',
+
+    hero: {
+      headline: 'The Oldest Eatery in Town',
+      subheadline: 'Delicious traditional dishes served with generosity.',
+      ctaLabel: 'Menu',
+      ctaColor: '#2C1810',
+    },
+    goal: 'booking',
+
+    trust: {
+      title: 'Built for authentic dining',
+      items: ['Fresh Ingredients', 'Traditional Recipes', 'Instant Reservation', 'Premium Ambience'],
+      stats: '10,000+ happy guests',
+    },
+    testimonial: {
+      text: 'The most authentic and cozy cafe I have ever visited.',
+      author: 'Sarah L.',
+      role: 'Tourist',
+    },
+
+    questions: [],
+
+    resultDefault: {
+      title: 'Ready to dine?',
+      description: 'Reserve your table instantly via WhatsApp.',
+      ctaLabel: 'Reserve Table',
+      ctaType: 'whatsapp',
+    },
+    resultRules: [],
+
+    urgency: {
+      headline: 'Weekend slots filling fast',
+      subtext: 'Reserve now to guarantee your spot.',
+      type: 'slots',
+    },
+
+    enquiryFields: [],
+    enquiryHeadline: 'WhatsApp first, always',
+    enquirySub: 'Reservations within minutes.',
+
+    features: ['Cinematic hero', 'Menu categories', 'Chef recommendations', 'WhatsApp reservations'],
+    stats: { convRate: '45%', avgLeads: '300/mo' },
+
+    faq: [
+      { q: 'Can I customize the menu?', a: 'Yes, add your categories and items easily.' },
+    ],
+
+    funnelad: {
+      landing: {
+        kicker: 'The Cafe Experience',
+        title: 'Kaffestuggu',
+        subtitle: 'The Oldest Eatery in Town.',
+        ratingLine: '4.9 rating - 10,000+ happy guests',
+        categories: [
+          { key: 'coffee', label: 'Artisanal Coffee', icon: '☕', matchers: ['coffee', 'drink', 'beverage'] },
+          { key: 'pastries', label: 'Fresh Pastries', icon: '🥐', matchers: ['pastry', 'cake', 'dessert'] },
+          { key: 'meals', label: 'Hearty Meals', icon: '🍲', matchers: ['meal', 'food', 'lunch', 'dinner'] },
+        ],
+        trustBullets: ['Est. 1914', 'Fresh Ingredients', 'Guest Rating 4.9'],
+        ctaHelper: 'Dine-in, Takeaway & Delivery',
+        ctaLabel: 'Menu',
+        mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1822.427773229605!2d11.383186216124707!3d62.57564798363717!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x466ce98a287c9dc9%3A0x6b198c66e92cbbd4!2sKaffestuggu!5e0!3m2!1sen!2sno!4v1709212000000!5m2!1sen!2sno',
+        mapAddress: 'Kjerkgata 18, 7374 Røros',
+      },
+      products: {
+        headerKicker: 'Our Signature',
+        slots: [
+          {
+            badge: 'House Special',
+            ctaLabel: 'Reserve',
+            highlight: true,
+            benefitsFallback: ['Single-origin Arabica', 'Locally sourced'],
+          },
+          {
+            badge: 'Bestseller',
+            ctaLabel: 'Check Availability',
+            highlight: false,
+            benefitsFallback: ['Traditional recipe', 'Comfort food'],
+          },
+          {
+            badge: 'Chef\'s Pick',
+            ctaLabel: 'Reserve',
+            highlight: false,
+            benefitsFallback: ['Premium ingredients', 'Daily limited'],
+          },
+        ],
+        extraTitle: 'Need a table?',
+        extraSubtitle: 'Reserve instantly on WhatsApp',
+      },
+      whatsapp: {
+        messageWithProduct:
+          'Hi, I am interested in:\n• {product_name}\n\nCould you please confirm its availability today?',
+        messageNoProduct:
+          'Hi, I would like to make a reservation.\n\nPlease share the available slots and menu.',
+      },
+      theme: {
+        background: '#FBF9F6',
+        text: '#2C1810',
+        card: '#ffffff',
+        accent: '#C4713B',
+        accentText: '#ffffff',
+        whatsapp: '#25d366',
+      },
+    },
+  },
 ];
 
 export const TEMPLATE_CATEGORIES = ['All', ...Array.from(new Set(MASTER_TEMPLATES.map(t => t.category)))];
