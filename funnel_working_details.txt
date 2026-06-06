@@ -1,0 +1,101 @@
+FUNNELLINK: COMPLETE PLATFORM ARCHITECTURE & USER JOURNEY
+================================================================================
+
+This document provides a micro-detailed breakdown of how the FunnelLink application works, from the initial landing page to the final WhatsApp lead conversion, including all code paths, UI states, and database interactions.
+
+---
+SECTION 1: THE PUBLIC FACING WEBSITE (Landing & Auth)
+---
+
+1. Landing Page (/)
+   - Entry point: `src/app/page.tsx`
+   - Components: Navbar, Hero, Features, TrustBanner, HowItWorks, DemoPreview, Pricing, FAQ, Footer.
+   - Flow: Visitors learn about the 3 core industry templates (Furniture, Real Estate, Cafe). The `DemoPreview` component allows them to interactively click through simulated mobile flows for each industry.
+   - Action: The user clicks "Get started free" or "Login", redirecting them to the authentication flow.
+
+2. Authentication (/login & /signup)
+   - Entry points: `src/app/(auth)/login/page.tsx` & `src/app/(auth)/signup/page.tsx`
+   - UI: A sleek, dark-themed interface with indigo brand accents.
+   - Mechanics: Uses Supabase Auth via server actions (`src/app/actions/auth.ts`).
+   - Flow: User enters email, password, and name. Upon successful signup/login, the system redirects the user to `/dashboard`.
+
+---
+SECTION 2: THE MERCHANT DASHBOARD & FUNNEL CREATION
+---
+
+1. Dashboard Overview (/dashboard)
+   - Entry point: `src/app/(dashboard)/dashboard/page.tsx`
+   - Displays key metrics (Total Leads, Total Views, Conversion Rate) fetched from the `funnels` and `leads` Supabase tables.
+
+2. Funnels Management (/dashboard/funnels)
+   - Entry point: `src/app/(dashboard)/dashboard/funnels/page.tsx` & `FunnelsClient.tsx`
+   - UI: Lists all existing funnels as cards. Each card shows the funnel's name, slug, views, leads, status (Live/Draft), and allows the user to Edit, Copy Link, or Delete.
+   - Creation Flow: Clicking "+ Create Funnel" opens the `CreateFunnelModal.tsx`.
+
+3. The Funnel Creation Process (CreateFunnelModal.tsx)
+   - Step A: The user is presented with Industry Templates loaded from `src/data/funnelTemplates.ts`. The primary templates are:
+     1. Elite Furniture Sales Funnel (funnelad-elite-furniture)
+     2. Luxury Property Funnel System (funnelad-elite-real-estate)
+     3. Elite Cafe & Restaurant Funnel (funnelad-elite-cafe)
+   - Step B: The user inputs a "Campaign Name" and a unique "Link/Slug" (e.g., my-store).
+   - Step C: The modal submits a FormData object to the `createFunnel` server action (`src/app/actions/funnels.ts`).
+   - Step D (Database): The system creates a new record in the `funnels` table. CRITICALLY, it copies the entire template configuration (colors, default products, categories, trust badges, WhatsApp message formats) into a JSONB column called `story_mode_data`.
+   - Step E: The user is redirected to the Funnel Editor: `/dashboard/funnels/[id]/edit`.
+
+---
+SECTION 3: THE FUNNEL EDITOR EXPERIENCE
+---
+
+1. Editor Initialization (/dashboard/funnels/[id]/edit)
+   - Entry point: `src/app/(dashboard)/dashboard/funnels/[id]/edit/page.tsx`
+   - Logic: It reads the `templateId` from `story_mode_data[0].templateId`. Based on this ID, it renders the specific editor:
+     - 'funnelad-elite-furniture' -> `FunnelAdFurnitureEditor.tsx`
+     - 'funnelad-elite-real-estate' -> `FunnelAdRealEstateEditor.tsx`
+     - 'funnelad-elite-cafe' -> `FunnelAdCafeEditor.tsx`
+
+2. The Editor UI & Mechanics (e.g., FunnelAdCafeEditor.tsx)
+   - Structure: A split-screen layout. Left side is the Settings Sidebar with tabs; Right side is the Live Interactive Preview (switchable between Mobile, Tablet, Desktop).
+   - State Management: Uses `useEditorHistory` hook (Immer-based) to manage Drafts, Undo, Redo, and live changes.
+   - Auto-Save: Changes are instantly saved to `localStorage` (e.g., `funnel_draft_123`) so no data is lost on refresh. A debounced auto-save function periodically syncs the draft to the Supabase database.
+   
+3. Editor Tabs & Customization:
+   - Store Profile Tab: Edits `storeName`, `whatsappNumber`, `logoUrl`.
+   - Hero Splash Tab: Edits the Welcome Title, Subtitle, Trust Bullets (e.g., "Est. 1914", "Fresh Ingredients"), and Background Images.
+   - Atmosphere/Categories Tab: Defines the routing choices the visitor will see (e.g., "Sunny Garden Patio", "Cozy Indoor").
+   - Products/Showcase Tab: Manages the actual items shown. Enforces limits (e.g., max 3 products per category) to ensure high conversion rates without overwhelming the buyer. The merchant can upload images, set price labels, and add urgency tags ("Only 2 left").
+   - Location Tab: Adds a Google Maps embed URL and physical address.
+   - WhatsApp Settings Tab: Configures the exact text format of the message that will be sent to the merchant's phone.
+
+---
+SECTION 4: THE PUBLIC VISITOR JOURNEY (THE "SMART LINK")
+---
+
+1. Loading the Funnel (/[slug])
+   - Entry point: `src/app/[slug]/page.tsx`
+   - The user clicks the link (e.g., on an Instagram bio or ad) and lands on `yourdomain.com/my-store`.
+   - The server fetches the `funnel` record from Supabase using the slug.
+   - It checks `story_mode_data` to find the correct `templateId` and passes the data to `FunnelClient.tsx`.
+   - `FunnelClient.tsx` logs a "View" via the `incrementFunnelView` server action (stored in `sessionStorage` to prevent refreshing from counting as multiple views).
+   - It renders the final template (e.g., `EliteFurnitureTemplate.tsx`).
+
+2. The Visitor Experience (e.g., Elite Furniture Template)
+   - Step A (The Hook): The visitor sees a highly visual, mobile-first Hero screen. It displays the Store Logo, Welcome Title ("Urban Living"), Trust Badges, and a call-to-action ("Visit Our Studio").
+   - Step B (The Selection): The visitor is presented with Categories (e.g., Sofas, Beds, Dining). They tap "Sofas".
+   - Step C (The Showcase): The funnel transitions smoothly to show the 3 curated Signature Sofas. Each product card has high-res images, pricing, materials, and a prominent CTA button like "Get Factory Price".
+   - Step D (The Decision): The visitor taps "Get Factory Price" on the "Milano 3-Seater Sofa".
+
+3. The Lead Capture & WhatsApp Handoff
+   - Event Trigger: The moment the CTA is tapped, two things happen simultaneously in the background inside `EliteFurnitureTemplate.tsx`.
+   - Action 1 (Silent Analytics): The app calls the `createLead` server action (`src/app/actions/leads.ts`). It logs a new row in the `leads` table in Supabase. It records: Funnel ID, Store ID, Visitor Name ("Visitor"), and JSON metadata containing the exact category ("Sofas"), product name ("Milano 3-Seater Sofa"), and the interaction type ("cta_click").
+   - Action 2 (The Handoff): The app dynamically constructs a WhatsApp message using the template defined by the merchant. 
+     Example: "Hi Urban Living, I'm interested in this: Product: Milano 3-Seater Sofa. Please share: 1. Best final factory price 2. Customization options 3. Delivery time to my city."
+   - Action 3 (Execution): The app executes `window.open('https://wa.me/<merchant_number>?text=<encoded_message>', '_blank')`.
+   - The Result: The visitor is instantly dropped into their WhatsApp app, with a fully typed, highly specific message. They just press "Send".
+
+---
+SUMMARY OF DATA FLOW
+---
+1. Template Data -> Database `funnels.story_mode_data`
+2. Editor -> Mutates `story_mode_data` JSON structure -> Auto-saves to Database.
+3. Public Page -> Reads `story_mode_data` -> Renders interactive React components.
+4. Visitor Clicks -> Writes to Database `leads` table & Opens `wa.me` URL.

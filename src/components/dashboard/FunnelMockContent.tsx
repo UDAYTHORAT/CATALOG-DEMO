@@ -1,6 +1,6 @@
 'use client';
 import { MessageCircle, Star, ChevronDown, Check, HelpCircle, Shield, ArrowRight } from 'lucide-react';
-import FunnelClient from '@/app/s/[slug]/FunnelClient';
+import FunnelClient from '@/app/[slug]/FunnelClient';
 
 export function FunnelMockContent({ template, isMobile }: { template: any; isMobile: boolean }) {
   if (template?.funnelad || template?.id === 'funnelad-elite-furniture') {

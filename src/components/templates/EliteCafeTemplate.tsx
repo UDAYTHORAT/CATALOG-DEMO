@@ -333,6 +333,7 @@ export default React.memo(function EliteCafeTemplate({
           base.preTitle = sec.data.preTitle;
           base.title = sec.data.title;
           base.subTitle = sec.data.subTitle;
+          base.marqueeText = sec.data.marqueeText;
         } else if (sec.id === 'testimonials') {
           base.testimonials = sec.data.testimonials;
         } else if (sec.id === 'location') {
@@ -429,6 +430,7 @@ export default React.memo(function EliteCafeTemplate({
       preTitle: base.preTitle || "Our Signature",
       title: base.title || "",
       subTitle: base.subTitle || "Handpicked recommendations just for you.",
+      marqueeText: base.marqueeText !== undefined ? base.marqueeText : "Fresh · Crisp · Bold ·",
       whatsapp: base.whatsapp || defaultWhatsAppData,
       sections: savedContent?.sections || []
     };
@@ -439,7 +441,7 @@ export default React.memo(function EliteCafeTemplate({
   }, [content.sections]);
 
   const menuData = useMemo(() => {
-    return menuSection?.data || {};
+    return (menuSection?.data || {}) as any;
   }, [menuSection]);
 
   const menuTitle = menuData.title || 'Our Signature';
@@ -479,7 +481,31 @@ export default React.memo(function EliteCafeTemplate({
     const num = content.whatsappNumber?.replace(/\D/g, '') || '';
     if (!num) { alert('WhatsApp number not configured.'); return; }
     
-    await createLead(funnel?.id || 'preview', store?.id || 'preview', 'Visitor', '', JSON.stringify({ type: 'cta_click', source: intent_type, productId: product?.id }), product?.id);
+    // Get traffic tracking info from session
+    const getTrafficData = () => {
+      if (typeof window === 'undefined') return {};
+      return {
+        traffic_source: sessionStorage.getItem('funnel_traffic_source') || '',
+        traffic_referrer: sessionStorage.getItem('funnel_traffic_referrer') || '',
+        traffic_medium: sessionStorage.getItem('funnel_traffic_medium') || '',
+        traffic_campaign: sessionStorage.getItem('funnel_traffic_campaign') || '',
+      };
+    };
+    const traffic = getTrafficData();
+
+    await createLead(
+      funnel?.id || 'preview',
+      store?.id || 'preview',
+      'Visitor',
+      '',
+      JSON.stringify({ 
+        type: 'cta_click', 
+        source: intent_type, 
+        productId: product?.id, 
+        productName: product?.name,
+        ...traffic
+      })
+    );
 
     const formatReservationText = (text: string) => {
       if (!text) return text;
@@ -1043,16 +1069,18 @@ export default React.memo(function EliteCafeTemplate({
                 onClick={(e) => handleEdit('products', e)}
               >
                 {/* Marquee text band */}
-                <div className="absolute top-10 left-0 w-full overflow-hidden opacity-[0.06] pointer-events-none select-none flex">
-                  <motion.div 
-                    animate={{ x: ["0%", "-50%"] }} 
-                    transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
-                    className="font-serif italic text-[14rem] leading-none text-[#3A2211] whitespace-nowrap flex"
-                  >
-                    <span className="pr-12">Fresh · Crisp · Bold ·</span>
-                    <span className="pr-12">Fresh · Crisp · Bold ·</span>
-                  </motion.div>
-                </div>
+                {content.marqueeText && content.marqueeText.trim() !== '' && (
+                  <div className="absolute top-10 left-0 w-full overflow-hidden opacity-[0.06] pointer-events-none select-none flex">
+                    <motion.div 
+                      animate={{ x: ["0%", "-50%"] }} 
+                      transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
+                      className="font-serif italic text-[14rem] leading-none text-[#3A2211] whitespace-nowrap flex"
+                    >
+                      <span className="pr-12">{content.marqueeText}</span>
+                      <span className="pr-12">{content.marqueeText}</span>
+                    </motion.div>
+                  </div>
+                )}
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
                   <motion.div 

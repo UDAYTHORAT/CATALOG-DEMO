@@ -29,11 +29,11 @@ export default function DashboardShell({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8fafc]">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#f0f1ff]">
       <Sidebar user={user} />
       <div className="flex-1 flex flex-col min-w-0 relative">
         <TopBar />
-        <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 lg:py-10">
+        <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 lg:py-10 scroll-smooth">
           <div className="max-w-[1400px] mx-auto">{children}</div>
         </main>
       </div>

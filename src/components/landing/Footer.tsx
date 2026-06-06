@@ -30,14 +30,14 @@ export default function Footer() {
       {/* Final CTA */}
       <section className="relative py-24 lg:py-32 overflow-hidden" style={{ background: 'linear-gradient(165deg, #1a3a4a 0%, #0f2d3d 100%)' }}>
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-        <div className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-[#d2e823]/[0.04] blur-[100px]" />
+        <div className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.04] blur-[100px]" />
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 lg:px-10 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6">
               Jumpstart your sales
               <br />
-              <span className="text-[#d2e823]">funnel today</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">funnel today</span>
             </h2>
             <p className="text-white/55 text-lg mb-10 max-w-lg mx-auto">
               Create your first funnel in 2 minutes. Free forever — no credit card needed.
@@ -57,14 +57,13 @@ export default function Footer() {
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-2.5 mb-5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366f1] to-[#a855f7] flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
+                <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-white p-0.5 flex items-center justify-center border border-white/10">
+                    <img src="/logo.jpeg" alt="FunnelLink Logo" className="max-w-full max-h-full object-contain" />
+                  </div>
                 </div>
                 <span className="text-lg font-extrabold text-white">
-                  Funnel<span className="text-[#d2e823]">Link</span>
+                  Funnel<span className="text-indigo-400">Link</span>
                 </span>
               </Link>
               <p className="text-sm text-white/40 leading-relaxed max-w-xs">

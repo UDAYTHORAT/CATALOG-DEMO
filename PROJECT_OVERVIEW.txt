@@ -1,93 +1,147 @@
 ================================================================================
-PROJECT: AURELIAN STUDIO - PREMIUM FURNITURE CATALOG
+AURELIAN & ELITE FUNNEL BUILDER SYSTEM — COMPLETE PROJECT DOCUMENTATION
 ================================================================================
 
-1. PROJECT IDENTITY & IDEA
---------------------------
-Aurelian Studio is a high-end, immersive digital brochure/catalog designed to 
-elevate furniture browsing into a cinematic experience. Unlike traditional 
-e-commerce sites, it focuses on the "story of craft"—moving from initial 
-sketch to raw materials, joinery, and finally the finished product in a 
-lifestyle setting.
+1. THE CORE PROJECT IDEA & MARKETING PHILOSOPHY
+--------------------------------------------------------------------------------
+The Elite Funnel Builder System is designed around a single core idea: "Traditional websites are conversion killers for high-value or experiential products." 
 
-Core Tech Stack:
-- Framework: Next.js 16 (App Router)
-- Styling: Tailwind CSS v4
-- Animation: Framer Motion
-- Components: Lucide React (Icons)
-- Deployment: Optimized for Vercel
+For custom furniture, luxury apartments, or signature dining spots, a standard e-commerce grid layout or multi-page corporate website creates decision fatigue. Window shoppers click around, get lost in menus, and drop off before taking action. 
 
-2. DIRECTORY STRUCTURE & FILE DETAILS
--------------------------------------
-src/
-├── app/
-│   ├── layout.tsx         # Root layout with fonts, smooth scroll, and global UI.
-│   ├── page.tsx           # Landing Page: Features a Day-to-Night transition.
-│   ├── globals.css        # Tailwind CSS v4 design system and theme tokens.
-│   ├── catalog/
-│   │   ├── page.tsx       # Main Catalog spread view.
-│   │   └── [id]/
-│   │       └── page.tsx   # Story Mode: Cinematic intro sequence for each product.
-│   ├── collection/
-│   │   └── page.tsx       # Grouped collection overview.
-│   └── compare/
-│       └── page.tsx       # Product comparison interface.
-│
-├── components/
-│   ├── Catalog.tsx        # The core interactive spread-based catalog engine.
-│   ├── LiveCatalog.tsx    # Responsive/mobile version of the catalog browsing.
-│   ├── EnquireModal.tsx   # High-end lead generation form for product inquiries.
-│   ├── Header.tsx         # Persistent navigation with brand identity.
-│   ├── Footer.tsx         # Site footer with social/contact links.
-│   ├── CustomCursor.tsx   # Interactive cursor enhancing the premium feel.
-│   ├── SmoothScroll.tsx   # Lenis or custom scroll orchestration.
-│   └── ui/
-│       ├── image-gallery.tsx # Sophisticated gallery for product details.
-│       └── demo.tsx       # Testing/demo components for new UI ideas.
-│
-├── data/
-│   └── catalog.ts         # Central Source of Truth for all products and stories.
-│                          # Defines Types: Product, Spread, IntroPhase, Dimensions.
-│
-└── lib/
-    └── utils.ts           # Shared utility functions (class merging, etc.)
+This project solves that by replacing traditional browsing with highly structured, single-focus landing funnels that guide visitors through a curated decision pathway:
+- Mobile-First & Kinetic: Over 85% of social ad traffic is mobile. The system uses fluid, responsive vertical containers, separation of concerns via clear stages, and active micro-animations to mimic native apps.
+- The 3-Second Decision Hero: The very first screen presents a bold statement, key trust points, and a single call-to-action (e.g. "Menu" or "See Available Units") to establish intent immediately.
+- Eliminating Form Friction: Instead of long registration forms, emails, and passwords, the platform captures the lead context (date, name, product interest) and instantly routes the user to a pre-filled WhatsApp conversation.
+- Psychology-Driven Conversion Tactics:
+  * Reciprocity: Showing signature items or floor plans first makes the buyer more likely to submit their details.
+  * Scarcity & Urgency: Embedded status bars (e.g., "Tower 3 is almost sold out", "Weekend slots filling fast") nudge visitors to reserve immediately.
+  * Social Proof: Built-in testimonials and rating badges directly support the buying decision close to CTAs.
 
-3. CORE WORKFLOWS
------------------
-A. The Cinematic Entry:
-   - User lands on / (page.tsx).
-   - Experience: An 8-second slow transition from Day (hero-day.jpeg) to 
-     Night (hero-night.jpeg) occurs, symbolizing the timeless nature of the pieces.
-   - Action: User enters the "Archive" (Catalog).
+Key Technology Stack:
+- Core Framework: Next.js 15+ (App Router, Server Actions, Dynamic Routing)
+- UI Library: React 19
+- Styling: Tailwind CSS v4 (incorporating inline customized CSS variables)
+- Animations: Framer Motion (for smooth micro-animations, transitions, and scroll indicators)
+- Icons: Lucide React
+- Backend/Database: Supabase (saves JSON templates, routes analytics, and persists leads)
 
-B. The Discovery Phase:
-   - User navigates through spreads in Catalog.tsx.
-   - Experience: Horizontal/Spread-based layout mimicking a physical luxury magazine.
-   - Interactive Hotspots: Clicking hotspots on room images reveals product cards.
 
-C. Story Mode (Genesis):
-   - Clicking a product enters its specific Story Mode (/catalog/[id]).
-   - Workflow: The site plays a scroll-driven or timed sequence defined in 
-     the `introSequence` of the data.
-     (Canvas/Room -> Blueprint/Sketch -> Skeleton/Build -> Vision/Compose -> Masterpiece/Reveal).
+2. COMPLETE SYSTEM DIRECTORY ARCHITECTURE & FILE MAP
+--------------------------------------------------------------------------------
+d:\Product-catelog - Copy\
+├── public/                 # Static assets (images, icons, default assets)
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx      # Configures Google Fonts, root metadata, smooth scroll, and dark mode cursor.
+│   │   ├── page.tsx        # Day-to-night hero landing page. Main entry for Aurelian Studio.
+│   │   ├── globals.css     # Tailwinds import, global typography, glassmorphism templates, and keyframes.
+│   │   │
+│   │   ├── (dashboard)/    # Admin panel dashboard (requires user login session)
+│   │   │   └── dashboard/
+│   │   │       ├── page.tsx       # Main analytics page displaying lead counts, views, and conversion rates.
+│   │   │       ├── funnels/       # Sub-interface for listing, creating, and naming funnels.
+│   │   │       ├── leads/         # Inquiries dashboard rendering pre-orders and reservations in real-time.
+│   │   │       └── products/      # Inventory manager to add, delete, and modify active inventory items.
+│   │   │
+│   │   ├── s/
+│   │   │   └── [slug]/     # Dynamic public folder for rendering generated live client funnels.
+│   │   │       └── page.tsx       # Fetches the funnel structure from Supabase and mounts the respective template.
+│   │   │
+│   │   └── actions/        # Server Actions communicating with database layers.
+│   │
+│   ├── components/
+│   │   ├── templates/      # The 3 Live Client Templates (Visitor view)
+│   │   │   ├── EliteCafeTemplate.tsx       # Restaurant/Café table booking & pre-order layout.
+│   │   │   ├── EliteFurnitureTemplate.tsx  # Interactive catalog hotspot and design catalog.
+│   │   │   └── EliteRealEstateTemplate.tsx # Multi BHK blueprint real estate planner.
+│   │   │
+│   │   ├── dashboard/      # Admin Console Components
+│   │   │   ├── templates/  # Orchestrators bridging admin inputs with the visual preview
+│   │   │   │   ├── FunnelAdCafeEditor.tsx       # Cafe customizer editor layout.
+│   │   │   │   ├── FunnelAdFurnitureEditor.tsx  # Furniture catalog editor controller.
+│   │   │   │   └── FunnelAdRealEstateEditor.tsx # Real estate customizer dashboard.
+│   │   │   │
+│   │   │   └── editor/     # Granular form panels for editing section items
+│   │   │       ├── WizardMode.tsx               # Left-sidebar step-by-step editor tutorial guides.
+│   │   │       └── sections/
+│   │   │           ├── BrandingPanel.tsx        # Edits logos, color themes, kicking subtitles, and headers.
+│   │   │           ├── CafeMenuPanel.tsx        # Handles adding items, categories, and prices.
+│   │   │           ├── LocationPanel.tsx        # Edits Google Maps embeds, addresses, hours, and navigation.
+│   │   │           ├── ShowcasePanel.tsx        # Manages room specifications, layout slots, and images.
+│   │   │           └── WhatsAppPanel.tsx        # Builds WhatsApp templates, text fields, and chat previews.
+│   │   │
+│   │   ├── Catalog.tsx     # Fullscreen magazine slider component.
+│   │   ├── LiveCatalog.tsx # Responsive catalog display grids.
+│   │   └── EnquireModal.tsx# Standard fallback dialogue routing traffic to email, calls, or chat.
+│   │
+│   ├── data/
+│   │   └── catalog.ts      # Offline fallback content, templates, and prefilled static arrays.
+│   │
+│   └── lib/
+│       └── utils.ts        # Dynamic className merges and color utility helpers.
 
-D. Product Deep-Dive & Lead Gen:
-   - After the story, the user reaches the product detail page.
-   - Experience: High-res galleries, technical specs (Weight, Lead Time, 
-     Craft Notes), and "Designed For" context.
-   - Action: Clicking "Enquire" opens the EnquireModal to capture user interest.
 
-4. TECHNICAL HIGHLIGHTS
------------------------
-- Tailwind CSS v4: Uses modern CSS-first configuration in globals.css.
-- Framer Motion: Used for complex page transitions and "reveal" effects 
-  in the Story Mode.
-- Data Modeling: Highly structured products with metadata for craft, 
-  materials, and construction phases.
+3. THE ADMIN DASHBOARD FEATURES & CORE MODULES
+--------------------------------------------------------------------------------
+The dashboard is the central workstation for managing and customizing active funnels. It consists of the following key interfaces:
 
-5. CONTENT MANAGEMENT
----------------------
-To add or update products, edit `src/data/catalog.ts`. The structure allows 
-for easy extension of the "introSequence" to add more storytelling layers 
-to any piece of furniture.
+- Main Analytics Console:
+  Shows total views, CTR (click-through rate), leads created, and a conversion graph.
+- Lead Manager:
+  Allows exporting lead files. Displays user submitted items like dates, names, party sizes, and selected pre-orders.
+- Catalog Inventory Manager:
+  Stores products in a master repository that can be assigned to different funnels.
+
+The Editor Framework (Wizard Mode vs. Customizer Mode):
+- Customizer Mode:
+  Presents a full tabbed layout allowing instant access to all section panels (Branding, Showcase, Automation, Location).
+- Wizard Mode:
+  A guided checklist with descriptive instructions, pro tips, and placeholders to help new users set up their funnel step-by-step.
+- Live Mobile Preview:
+  A simulated mobile device on the right side of the screen displaying real-time updates as properties are modified in the editor sidebar.
+
+Granular Editor Sections:
+- BrandingPanel.tsx: Sets global accent colors, primary typography, brand slogans, and logo uploads.
+- ShowcasePanel.tsx: Configures the main offerings (e.g. signature dishes for Cafe, apartments/suites for Real Estate, or furniture lines).
+- WhatsAppPanel.tsx: Configures automated chat triggers, concierge options, welcome messages, and pre-filled inquiry text. Contains custom ref handles to prevent cursor jumping on state updates, and forces emoji system-font rendering fallback.
+- LocationPanel.tsx: Manages addresses, opening hours, and embeds maps using parsed Google Map links.
+
+
+4. THE THREE CLIENT-FACING CONVERSION TEMPLATES
+--------------------------------------------------------------------------------
+
+[A] ELITE CAFE & RESTAURANT TEMPLATE (EliteCafeTemplate.tsx)
+Focuses on capturing table reservations and pre-orders.
+- 3-Second Hero Header: Displays reservation triggers, tagline, and a prominent "Menu" button.
+- Experience Center: An elegant photo scroller capturing the interior atmosphere of the café.
+- Interactive Table Reservation Panel:
+  * Visually beautiful Guest Count increment/decrement toggles.
+  * Clock-style time selector showing hour and minute overlays.
+  * Calendar selector for reserving slots.
+- Menu Pre-Order Grid: Allows guests to browse categories (e.g. coffee, desserts) and add items directly to their WhatsApp message queue.
+- WhatsApp Direct CTA: Formats the entire booking summary with dynamic replacements and opens a prefilled WhatsApp link. Special filters convert legacy emoji representations or database-corrupted characters directly into numbers.
+
+[B] ELITE FURNITURE & RETAIL TEMPLATE (EliteFurnitureTemplate.tsx)
+Optimized for premium product showrooms, catalog items, and retail creators.
+- Image Hotspot Overlays: Places custom pulsing gold buttons on room photos. Clicking a dot opens a modal detailing the product.
+- Scroll-Driven Sketch Story: A sequential transition section. Shows sketches/blueprints, raw materials, and finalized products as the user scrolls.
+- Concierge Request Panel: Allows inputting custom wood finishes, sizing, or fabrics.
+
+[C] ELITE REAL ESTATE TEMPLATE (EliteRealEstateTemplate.tsx)
+Designed for builders, agents, and luxury property marketing.
+- BHK Selectors: Simple toggles to switch between 2BHK, 3BHK, and 4BHK.
+- Symmetrical Location Section: A beautifully aligned layout featuring a full-width header, and a side-by-side balanced grid displaying navigation details next to a Google Maps embed container.
+- Interactive Floor Plan Viewer: Users click on rooms inside the blueprint to view specifications (e.g. Master Bedroom size, floor finish) instantly.
+
+
+5. DATA FLOW & INTEGRATIONS
+--------------------------------------------------------------------------------
+- Supabase Integration:
+  Funnels are read and written as JSON payloads in the database. The database records active values like page titles, images, and coordinates.
+- Lead Capture Action:
+  Before redirecting users to WhatsApp, the template triggers `createLead` which logs the visitor's intent, timestamp, and metadata in the dashboard database.
+- Dynamic String Formatter:
+  Replaces brackets (e.g. `{name}`, `{date}`, `{time}`, `{party_size}`) inside pre-configured templates with actual guest inputs.
+- Safe Number Formatting:
+  Converts characters like `👤`, `👥`, `📅`, and `🕒` (which often turn into `?` or `` in standard databases) into a clean numbered list (`1. Name:`, `2. Party Size:`, etc.) for seamless cross-platform communication.
 ================================================================================

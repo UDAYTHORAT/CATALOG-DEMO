@@ -1,32 +1,71 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Link2, MousePointerClick, MessageCircle } from 'lucide-react';
+import { Link2, MousePointerClick, ShoppingBag, MessageCircle, ArrowDown } from 'lucide-react';
 
-const steps = [
+const journey = [
   {
-    number: '01',
+    step: '1',
     icon: Link2,
-    title: 'Create Your Funnel',
-    description: 'Set up your products, categories, and budget ranges. Get a single smart link in under 2 minutes.',
-    color: '#6366f1',
-    bg: '#eef2ff',
+    title: 'Visitor clicks your link',
+    detail: 'From your Instagram bio, WhatsApp status, Facebook ad, or QR code.',
+    visual: (
+      <div className="bg-slate-100 rounded-xl p-3 text-center">
+        <div className="bg-white rounded-lg border border-slate-200 px-4 py-2.5 inline-flex items-center gap-2">
+          <span className="text-indigo-600 text-xs font-mono">yoursite.com/my-store</span>
+        </div>
+      </div>
+    ),
+    color: '#3b82f6',
   },
   {
-    number: '02',
+    step: '2',
     icon: MousePointerClick,
-    title: 'Guide Your Visitors',
-    description: 'Visitors answer 2–3 quick questions. No typing, no forms — just taps. We show them the perfect products.',
-    color: '#a855f7',
-    bg: '#faf5ff',
+    title: 'Picks their category',
+    detail: 'Sofas, Beds, 3 BHK, Coffee — they tap what they want. Zero typing.',
+    visual: (
+      <div className="space-y-1.5">
+        {[{ e: '🛋️', l: 'Luxury Sofas', a: true }, { e: '🛏️', l: 'Beds', a: false }].map((o) => (
+          <div key={o.l} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${o.a ? 'bg-blue-50 border border-blue-200 text-blue-700' : 'bg-white border border-slate-100 text-gray-500'}`}>
+            <span>{o.e}</span>{o.l}
+            {o.a && <span className="ml-auto text-blue-500">✓</span>}
+          </div>
+        ))}
+      </div>
+    ),
+    color: '#6366f1',
   },
   {
-    number: '03',
+    step: '3',
+    icon: ShoppingBag,
+    title: 'Sees your best products',
+    detail: 'A curated showcase of 2-3 products with photos, prices, and urgency tags.',
+    visual: (
+      <div className="bg-white rounded-xl border border-slate-100 p-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-lg shrink-0">🛋️</div>
+          <div>
+            <p className="text-[11px] font-bold text-gray-800">Milano 3-Seater</p>
+            <p className="text-[10px] text-blue-600 font-semibold">₹42,000</p>
+          </div>
+        </div>
+      </div>
+    ),
+    color: '#8b5cf6',
+  },
+  {
+    step: '4',
     icon: MessageCircle,
-    title: 'Convert on WhatsApp',
-    description: 'The visitor lands in your WhatsApp with a structured message: product, budget, and preference included.',
-    color: '#22c55e',
-    bg: '#f0fdf4',
+    title: 'Taps "Get Price" → WhatsApp opens',
+    detail: 'A pre-written message with product name, budget, and requirements lands in your WhatsApp.',
+    visual: (
+      <div className="bg-[#dcf8c6]/30 border border-[#25d366]/20 rounded-xl p-2.5 text-[10px] text-gray-700 leading-relaxed">
+        <p className="font-semibold">Hi Urban Living,</p>
+        <p className="mt-1">I want a quote for <span className="font-semibold">Milano 3-Seater Sofa</span></p>
+        <p className="mt-1">1. Final factory price<br />2. Customization options<br />3. Delivery time</p>
+      </div>
+    ),
+    color: '#25d366',
   },
 ];
 
@@ -40,74 +79,69 @@ export default function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16 lg:mb-20"
+          className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 bg-[#6366f1]/10">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#6366f1]">Simple Process</span>
-          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#1a1a2e]">
-            How it <span className="text-[#6366f1]">works</span>
+            The complete funnel journey
           </h2>
-          <p className="text-gray-500 mt-4 text-lg max-w-xl mx-auto">
-            Three steps. Under two minutes. Start converting visitors into qualified WhatsApp leads.
+          <p className="text-gray-500 mt-3 text-base max-w-lg mx-auto">
+            This is exactly what happens when someone clicks your FunnelLink — start to finish in under 10 seconds.
           </p>
         </motion.div>
 
-        {/* Steps */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {steps.map((step, i) => (
+        {/* Journey steps */}
+        <div className="max-w-2xl mx-auto">
+          {journey.map((step, i) => (
             <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 30 }}
+              key={step.step}
+              initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-              className="group"
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
             >
-              <div
-                className="rounded-[1.5rem] p-8 lg:p-10 h-full transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-xl border border-transparent group-hover:border-gray-100"
-                style={{ background: step.bg }}
-              >
-                {/* Number + Icon */}
-                <div className="flex items-center gap-4 mb-6">
+              <div className="flex gap-5">
+                {/* Timeline */}
+                <div className="flex flex-col items-center">
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-lg"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm shrink-0"
                     style={{ background: step.color }}
                   >
-                    <step.icon size={24} className="text-white" />
+                    <step.icon size={18} className="text-white" />
                   </div>
-                  <span
-                    className="text-5xl font-extrabold opacity-15 group-hover:opacity-25 transition-opacity"
-                    style={{ color: step.color }}
-                  >
-                    {step.number}
-                  </span>
+                  {i < journey.length - 1 && (
+                    <div className="w-0.5 flex-1 my-2 rounded-full" style={{ background: `linear-gradient(to bottom, ${step.color}40, ${journey[i + 1].color}40)` }} />
+                  )}
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold text-[#1a1a2e] mb-3">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                <div className="pb-8 flex-1">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-xs font-bold text-gray-300">Step {step.step}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-[#1a1a2e] mb-1">{step.title}</h3>
+                  <p className="text-sm text-gray-500 mb-3">{step.detail}</p>
+                  <div className="max-w-[280px]">
+                    {step.visual}
+                  </div>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Result Callout */}
+        {/* Result callout */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="mt-14 text-center"
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="max-w-2xl mx-auto mt-4"
         >
-          <div className="inline-flex items-center gap-3 bg-[#25d366]/10 border border-[#25d366]/20 rounded-full px-6 py-3">
-            <span className="text-2xl">💬</span>
+          <div className="bg-[#25d366]/[0.06] border border-[#25d366]/15 rounded-2xl p-6 text-center">
+            <p className="text-sm font-bold text-[#1a1a2e] mb-1">The result?</p>
             <p className="text-sm text-gray-600">
-              Instead of <span className="text-gray-400 line-through">&quot;price?&quot;</span>{' '}
-              your seller gets:{' '}
-              <span className="text-[#1a1a2e] font-semibold italic">
-                &quot;Looking for 3-seater sofa under ₹50k, liked option 2&quot;
-              </span>
+              You get a <span className="font-semibold text-[#1a1a2e]">ready-to-close lead</span> on WhatsApp — 
+              with the exact product, their budget, and what they need. Just reply and sell.
             </p>
           </div>
         </motion.div>

@@ -762,7 +762,7 @@ export default function FunnelAdCafeEditor({
 
   const handleCopyLink = useCallback(() => {
     if (!funnel?.slug) return;
-    void navigator.clipboard.writeText(`${window.location.origin}/s/${funnel.slug}`);
+    void navigator.clipboard.writeText(`${window.location.origin}/${funnel.slug}`);
     setCopied(true);
     if (copyTimer.current) clearTimeout(copyTimer.current);
     copyTimer.current = setTimeout(() => setCopied(false), 1200);
@@ -1683,7 +1683,7 @@ export default function FunnelAdCafeEditor({
       <PublishModal
         isOpen={showPublishModal}
         onClose={() => setShowPublishModal(false)}
-        funnelUrl={typeof window !== 'undefined' ? `${window.location.origin}/s/${funnel?.slug}` : ''}
+        funnelUrl={typeof window !== 'undefined' ? `${window.location.origin}/${funnel?.slug}` : ''}
         onCopy={handleCopyLink}
         copied={copied}
       />

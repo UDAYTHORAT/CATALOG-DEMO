@@ -107,7 +107,8 @@ export default React.memo(function ProductsPanel({
       )}
 
       {/* Catalog Explorer - Simplified */}
-      <div className="rounded-[2rem] border border-slate-200 bg-slate-50/30 p-1">
+      {allProducts.length > 0 && (
+        <div className="rounded-[2rem] border border-slate-200 bg-slate-50/30 p-1">
         <div className="p-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <LayoutList size={14} className="text-slate-400" />
@@ -117,44 +118,39 @@ export default React.memo(function ProductsPanel({
         </div>
         
         <div className="max-h-[300px] overflow-y-auto space-y-1 p-2 pt-0 scrollbar-thin">
-          {allProducts.length === 0 ? (
-            <div className="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-200">
-              <p className="text-xs font-bold text-slate-400 italic">Catalog is empty.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-1">
-              {allProducts.map((product) => {
-                const isSelected = products.some(p => p.id === product.id);
-                return (
-                  <button
-                    key={product.id}
-                    onClick={() => onAddFromCatalog(product)}
-                    disabled={isSelected || isDefaultCatFull}
-                    className={`flex items-center gap-3 rounded-xl border p-2 text-left transition-all ${
-                      isSelected 
-                        ? 'border-transparent bg-slate-100 opacity-40' 
-                        : isDefaultCatFull
-                        ? 'border-slate-50 bg-slate-50 opacity-50 cursor-not-allowed'
-                        : 'border-white bg-white hover:border-slate-200 hover:shadow-sm'
-                    }`}
-                  >
-                    <div className="h-10 w-10 overflow-hidden rounded-lg border border-slate-100 shadow-inner">
-                      <img src={product.image_url || FALLBACK_PRODUCT_IMAGE} className="h-full w-full object-cover" alt="" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[11px] font-bold text-slate-900">{product.name}</p>
-                      <p className="text-[9px] font-bold text-slate-400 tracking-wide">{formatProductPrice(product.price)}</p>
-                    </div>
-                    <div className={`h-6 w-6 flex items-center justify-center rounded-full ${isSelected ? 'text-emerald-500' : isDefaultCatFull ? 'text-slate-300' : 'bg-slate-50 text-slate-400'}`}>
-                      {isSelected ? <CheckCircle2 size={14} /> : isDefaultCatFull ? <X size={14} /> : <Plus size={14} />}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <div className="grid grid-cols-1 gap-1">
+            {allProducts.map((product) => {
+              const isSelected = products.some(p => p.id === product.id);
+              return (
+                <button
+                  key={product.id}
+                  onClick={() => onAddFromCatalog(product)}
+                  disabled={isSelected || isDefaultCatFull}
+                  className={`flex items-center gap-3 rounded-xl border p-2 text-left transition-all ${
+                    isSelected 
+                      ? 'border-transparent bg-slate-100 opacity-40' 
+                      : isDefaultCatFull
+                      ? 'border-slate-50 bg-slate-50 opacity-50 cursor-not-allowed'
+                      : 'border-white bg-white hover:border-slate-200 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="h-10 w-10 overflow-hidden rounded-lg border border-slate-100 shadow-inner">
+                    <img src={product.image_url || FALLBACK_PRODUCT_IMAGE} className="h-full w-full object-cover" alt="" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[11px] font-bold text-slate-900">{product.name}</p>
+                    <p className="text-[9px] font-bold text-slate-400 tracking-wide">{formatProductPrice(product.price)}</p>
+                  </div>
+                  <div className={`h-6 w-6 flex items-center justify-center rounded-full ${isSelected ? 'text-emerald-500' : isDefaultCatFull ? 'text-slate-300' : 'bg-slate-50 text-slate-400'}`}>
+                    {isSelected ? <CheckCircle2 size={14} /> : isDefaultCatFull ? <X size={14} /> : <Plus size={14} />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
+      )}
 
       {/* Selected Showcase List */}
       <div className="space-y-4">

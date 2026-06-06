@@ -7,27 +7,31 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     q: 'What is FunnelLink?',
-    a: 'FunnelLink is a smart link-in-bio tool designed for sellers. Instead of a static page, your visitors go through a quick visual decision flow — selecting what they want, their budget, and preferences — then land on your WhatsApp with a structured, ready-to-buy message.',
+    a: 'FunnelLink is a WhatsApp-first conversion engine. You create a single smart link with a visual product catalog, and visitors tap through category preferences to land on your WhatsApp with a structured, ready-to-buy message — including their exact product choice, budget, and requirements.',
+  },
+  {
+    q: 'What industries does FunnelLink support?',
+    a: 'FunnelLink ships with three conversion-optimized templates: Furniture & E-Commerce (product catalogs with custom sizing and pricing), Luxury Real Estate (floor plans, BHK configurations, RERA info, and location maps), and Café & Restaurant (menu showcases, table reservations, and pre-ordering). Each template is fully customizable in the visual editor.',
   },
   {
     q: 'How long does it take to set up?',
-    a: 'Under 2 minutes. Just add your products, set categories and budget ranges, and share your link. No coding, no complex setup. It works on any platform — Instagram bio, WhatsApp status, Facebook, or anywhere you can paste a link.',
+    a: 'Under 2 minutes. Pick a template, customize your listings and prices in the visual editor, set your WhatsApp number, and publish. You get a shareable link immediately — no coding, no app installation required.',
   },
   {
     q: 'Is it really free?',
     a: 'Yes! The Free plan includes 1 funnel, 3 products, and 50 leads per month — forever. When you\'re ready to scale, upgrade to Pro for unlimited everything. No credit card required to start.',
   },
   {
-    q: 'How does the WhatsApp handoff work?',
-    a: 'After a visitor completes the funnel, we generate a pre-filled WhatsApp message that includes their product preference, budget range, and any other details. They tap one button and land in your WhatsApp — no typing needed.',
+    q: 'How does the WhatsApp conversion work?',
+    a: 'When a visitor completes the funnel flow (choosing a category, browsing your catalog, and selecting a product), FunnelLink generates a pre-filled WhatsApp message containing their exact choice. For example: "Hi, I want the floor plan and pricing for Sky Villa (4 BHK). Please share availability." They tap one button and land directly in your WhatsApp chat.',
   },
   {
-    q: 'What makes FunnelLink different from a regular link-in-bio?',
-    a: 'Regular link-in-bio tools just list your links. FunnelLink actively guides visitors through a decision flow, qualifying them before they reach you. Instead of getting "price?" messages, you get leads like "Looking for a 3-seater sofa under ₹50k, liked the Milano."',
+    q: 'Can I customize the funnel editor?',
+    a: 'Absolutely. The visual campaign editor lets you customize every element: hero images, product listings, pricing labels, category names, customer testimonials, Google Maps integration, and even the WhatsApp message templates. Changes preview in real-time on mobile, tablet, and desktop viewports.',
   },
   {
-    q: 'Can I use FunnelLink for any type of business?',
-    a: 'Absolutely. FunnelLink works for furniture stores, fashion boutiques, electronics shops, beauty salons, real estate, restaurants, and any business that sells products or services and uses WhatsApp for communication.',
+    q: 'Where do I share my FunnelLink?',
+    a: 'Anywhere! Instagram bio, WhatsApp status, Facebook ads, Google Ads, QR codes, email signatures, or any platform where you can paste a link. Each funnel gets a unique URL like yoursite.com/your-slug that works on all devices.',
   },
 ];
 

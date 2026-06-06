@@ -432,8 +432,33 @@ export default React.memo(function EliteFurnitureTemplate({
     
     const categoryToUse = selectedCategoryOverride ?? activeCategory;
 
+    // Get traffic tracking info from session
+    const getTrafficData = () => {
+      if (typeof window === 'undefined') return {};
+      return {
+        traffic_source: sessionStorage.getItem('funnel_traffic_source') || '',
+        traffic_referrer: sessionStorage.getItem('funnel_traffic_referrer') || '',
+        traffic_medium: sessionStorage.getItem('funnel_traffic_medium') || '',
+        traffic_campaign: sessionStorage.getItem('funnel_traffic_campaign') || '',
+      };
+    };
+    const traffic = getTrafficData();
+
     // Log to Supabase leads
-    await createLead(funnel?.id || 'preview', store?.id || 'preview', 'Visitor', '', JSON.stringify({ type: 'cta_click', source: intent_type, category: categoryToUse?.label, productId: product?.id, productName: product?.name }), product?.id);
+    await createLead(
+      funnel?.id || 'preview',
+      store?.id || 'preview',
+      'Visitor',
+      '',
+      JSON.stringify({
+        type: 'cta_click',
+        source: intent_type,
+        category: categoryToUse?.label,
+        productId: product?.id,
+        productName: product?.name,
+        ...traffic
+      })
+    );
 
     const whatsappSettings = (content as any).whatsapp;
     

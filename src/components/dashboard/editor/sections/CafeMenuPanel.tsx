@@ -92,6 +92,15 @@ export default React.memo(function CafeMenuPanel({
                 className={subtleInputClass}
               />
             </div>
+            <div className="col-span-2">
+              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 ml-0.5">Background Marquee Text</span>
+              <input
+                value={data.marqueeText ?? 'Fresh · Crisp · Bold ·'}
+                onChange={(e) => onUpdate(-1, { marqueeText: e.target.value } as any)}
+                placeholder="e.g. Fresh · Crisp · Bold ·"
+                className={subtleInputClass}
+              />
+            </div>
           </div>
         </div>
       </div>

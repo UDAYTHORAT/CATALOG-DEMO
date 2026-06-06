@@ -45,7 +45,7 @@ function LoginForm() {
               required
               autoComplete="email"
               placeholder="you@example.com"
-              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-[#d2e823]/50 focus:ring-1 focus:ring-[#d2e823]/30 transition-all"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
             />
           </div>
 
@@ -55,7 +55,7 @@ function LoginForm() {
               <label htmlFor="password" className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
                 Password
               </label>
-              <a href="#" className="text-xs text-[#d2e823]/80 hover:text-[#d2e823] transition-colors font-medium">
+              <a href="#" className="text-xs text-indigo-400/80 hover:text-indigo-400 transition-colors font-medium">
                 Forgot password?
               </a>
             </div>
@@ -67,7 +67,7 @@ function LoginForm() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-[#d2e823]/50 focus:ring-1 focus:ring-[#d2e823]/30 transition-all pr-12"
+                className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all pr-12"
               />
               <button
                 type="button"
@@ -126,7 +126,7 @@ function LoginForm() {
       {/* Sign up link */}
       <p className="text-center mt-8 text-sm text-white/40">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="text-[#d2e823] font-semibold hover:text-[#e4f73a] transition-colors">
+        <Link href="/signup" className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors">
           Sign up free
         </Link>
       </p>

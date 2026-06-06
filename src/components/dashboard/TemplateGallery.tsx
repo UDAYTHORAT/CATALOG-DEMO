@@ -31,18 +31,18 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-7 h-7 rounded-lg bg-linear-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-md">
-            <Zap size={14} className="text-white" />
+          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md text-white">
+            <Zap size={14} className="fill-white" />
           </div>
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-[0.15em]">
-            Proven · Psychological · High-Converting
+          <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.15em]">
+            Optimized · Conversational · High-Performance
           </span>
         </div>
         <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-1">
-          Killer Funnel Templates
+          Campaign Blueprints
         </h2>
         <p className="text-sm text-slate-400 max-w-lg">
-          Every template is battle-tested with conversion psychology — scarcity, social proof, authority, and loss aversion built in. Pick, deploy, convert.
+          Every blueprint is engineered to capture high-intent leads and direct visitors into focused product booking conversations. Deploy, configure, and convert.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
       {/* Template Count */}
       <div className="flex items-center gap-2 text-xs text-slate-400">
         <Flame size={12} className="text-orange-500" />
-        <span><span className="font-bold text-slate-700">{filtered.length}</span> templates available</span>
+        <span><span className="font-bold text-slate-700">{filtered.length}</span> blueprints available</span>
       </div>
 
       {/* Template Grid */}

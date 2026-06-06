@@ -72,7 +72,7 @@ export default function SignupPage() {
               required
               autoComplete="name"
               placeholder="John Doe"
-              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-[#d2e823]/50 focus:ring-1 focus:ring-[#d2e823]/30 transition-all"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
             />
           </div>
 
@@ -88,7 +88,7 @@ export default function SignupPage() {
               required
               autoComplete="email"
               placeholder="you@example.com"
-              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-[#d2e823]/50 focus:ring-1 focus:ring-[#d2e823]/30 transition-all"
+              className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
             />
           </div>
 
@@ -107,7 +107,7 @@ export default function SignupPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-[#d2e823]/50 focus:ring-1 focus:ring-[#d2e823]/30 transition-all pr-12"
+                className="w-full px-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all pr-12"
               />
               <button
                 type="button"
@@ -170,7 +170,7 @@ export default function SignupPage() {
       {/* Login link */}
       <p className="text-center mt-8 text-sm text-white/40">
         Already have an account?{' '}
-        <Link href="/login" className="text-[#d2e823] font-semibold hover:text-[#e4f73a] transition-colors">
+        <Link href="/login" className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors">
           Log in
         </Link>
       </p>

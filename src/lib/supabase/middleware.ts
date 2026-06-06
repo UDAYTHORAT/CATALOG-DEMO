@@ -29,6 +29,16 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
+  const path = request.nextUrl.pathname;
+
+  const isAuthRoute = path.startsWith('/login') || path.startsWith('/signup');
+  const isDashboardRoute = path.startsWith('/dashboard');
+  const isPublicRoute = !isDashboardRoute && !isAuthRoute;
+
+  if (isPublicRoute) {
+    return supabaseResponse;
+  }
+
   // IMPORTANT: Do not add logic between createServerClient and supabase.auth.getUser().
   // A simple mistake could make it very hard to debug.
   const {
@@ -36,14 +46,14 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protect /dashboard routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!user && path.startsWith('/dashboard')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
   // Redirect authenticated users away from auth pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup')) {
+  if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

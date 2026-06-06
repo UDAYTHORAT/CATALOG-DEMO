@@ -330,7 +330,7 @@ export function TemplatePreviewModal({ isOpen, onClose, template, onSelect }: Te
                     <div className="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-inner"/>
                     <div className="w-3 h-3 rounded-full bg-[#27c93f] shadow-inner"/>
                   </div>
-                  <div className="flex-1 mx-6"><div className="bg-white/50 backdrop-blur-sm border border-black/5 rounded-lg px-3 py-1 text-[10px] text-slate-400 text-center font-medium truncate">funnellink.co/s/{template.id}</div></div>
+                  <div className="flex-1 mx-6"><div className="bg-white/50 backdrop-blur-sm border border-black/5 rounded-lg px-3 py-1 text-[10px] text-slate-400 text-center font-medium truncate">funnellink.co/{template.id}</div></div>
                 </div>
               )}
               <div id="mobile-scroll-container" className={`relative overflow-y-auto overflow-x-hidden no-scrollbar z-10 ${view==='desktop'?'h-[calc(100%-40px)]':'h-full'}`} style={{ transform: 'translate3d(0,0,0)' }}>

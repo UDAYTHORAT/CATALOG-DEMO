@@ -735,7 +735,7 @@ export default function FunnelAdFurnitureEditor({
 
   const handleCopyLink = useCallback(() => {
     if (!funnel?.slug) return;
-    void navigator.clipboard.writeText(`${window.location.origin}/s/${funnel.slug}`);
+    void navigator.clipboard.writeText(`${window.location.origin}/${funnel.slug}`);
     setCopied(true);
     if (copyTimer.current) clearTimeout(copyTimer.current);
     copyTimer.current = setTimeout(() => setCopied(false), 1200);
@@ -1731,7 +1731,7 @@ export default function FunnelAdFurnitureEditor({
                     </div>
                     <div className="flex items-center justify-between gap-4 rounded-xl bg-white p-3 shadow-sm border border-slate-100">
                       <span className="truncate text-sm font-medium text-slate-600">
-                        {window.location.origin}/s/{funnel.slug}
+                        {window.location.origin}/{funnel.slug}
                       </span>
                       <button
                         onClick={handleCopyLink}
@@ -1745,7 +1745,7 @@ export default function FunnelAdFurnitureEditor({
 
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Link
-                      href={`/s/${funnel.slug}`}
+                      href={`/${funnel.slug}`}
                       target="_blank"
                       className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 py-4 text-[14px] font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all active:scale-[0.98]"
                     >

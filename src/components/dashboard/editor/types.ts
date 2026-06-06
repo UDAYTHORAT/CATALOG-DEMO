@@ -117,6 +117,7 @@ export interface ProductsData {
   preTitle?: string;
   title?: string;
   subTitle?: string;
+  marqueeText?: string;
 }
 
 export interface TestimonialsData {

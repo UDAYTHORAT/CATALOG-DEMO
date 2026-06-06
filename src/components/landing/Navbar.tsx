@@ -37,16 +37,15 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6366f1] to-[#a855f7] flex items-center justify-center shadow-md shadow-indigo-500/20">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
+            <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-200">
+              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white p-0.5 flex items-center justify-center border border-slate-200 shadow-sm">
+                <img src="/logo.jpeg" alt="FunnelLink Logo" className="max-w-full max-h-full object-contain" />
+              </div>
             </div>
             <span className={`text-xl font-extrabold transition-colors duration-300 ${
               scrolled ? 'text-[#1a1a2e]' : 'text-white'
             }`}>
-              Funnel<span className="text-[#d2e823]">Link</span>
+              Funnel<span className={scrolled ? 'text-indigo-600' : 'text-indigo-400'}>Link</span>
             </span>
           </Link>
 

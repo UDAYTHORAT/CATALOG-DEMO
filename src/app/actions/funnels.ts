@@ -11,6 +11,7 @@ export interface Funnel {
   slug: string;
   theme: string;
   leads_count: number;
+  views_count: number;
   is_active: boolean;
   welcome_title: string | null;
   welcome_description: string | null;

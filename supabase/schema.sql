@@ -231,3 +231,12 @@ DROP POLICY IF EXISTS "Auth Delete" ON storage.objects;
 CREATE POLICY "Auth Delete" ON storage.objects FOR DELETE USING (
   bucket_id = 'product-images' AND auth.uid() = owner
 );
+
+-- ============================================
+-- 9. PERFORMANCE INDEXES
+-- ============================================
+CREATE INDEX IF NOT EXISTS idx_leads_store_id ON public.leads(store_id);
+CREATE INDEX IF NOT EXISTS idx_leads_funnel_id ON public.leads(funnel_id);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_funnels_store_id ON public.funnels(store_id);
+CREATE INDEX IF NOT EXISTS idx_products_store_id ON public.products(store_id);

@@ -171,7 +171,7 @@ export function CreateFunnelModal({ isOpen, onClose, selectedTemplate }: CreateF
                 </label>
                 <div className="flex rounded-xl overflow-hidden border border-gray-200 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all bg-white">
                   <span className="flex items-center px-3 bg-gray-50 text-gray-400 border-r border-gray-200 text-xs font-bold">
-                    /s/
+                    /
                   </span>
                   <input
                     type="text"

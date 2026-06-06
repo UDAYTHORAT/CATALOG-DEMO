@@ -452,13 +452,30 @@ export default function EliteRealEstateTemplate({
       if (!number) return;
 
       if (!isPreview) {
+        // Get traffic tracking info from session
+        const getTrafficData = () => {
+          if (typeof window === 'undefined') return {};
+          return {
+            traffic_source: sessionStorage.getItem('funnel_traffic_source') || '',
+            traffic_referrer: sessionStorage.getItem('funnel_traffic_referrer') || '',
+            traffic_medium: sessionStorage.getItem('funnel_traffic_medium') || '',
+            traffic_campaign: sessionStorage.getItem('funnel_traffic_campaign') || '',
+          };
+        };
+        const traffic = getTrafficData();
+
         await createLead(
           funnel?.id || 'preview',
           store?.id || 'preview',
           'Visitor',
           '',
-          JSON.stringify({ type: 'cta_click', source: intent, productId: product?.id }),
-          product?.id
+          JSON.stringify({ 
+            type: 'cta_click', 
+            source: intent, 
+            productId: product?.id, 
+            productName: product?.name,
+            ...traffic 
+          }),
         );
       }
 

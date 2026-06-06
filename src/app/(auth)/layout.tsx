@@ -20,7 +20,7 @@ export default function AuthLayout({
             </svg>
           </div>
           <span className="text-xl font-extrabold text-white">
-            Funnel<span className="text-[#d2e823]">Link</span>
+            Funnel<span className="text-indigo-400">Link</span>
           </span>
         </Link>
       </header>
