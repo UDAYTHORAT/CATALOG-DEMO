@@ -1,993 +1,833 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageCircle, AlertTriangle, ArrowRight, Sparkles, 
-  ShieldCheck, CheckCheck, Play, Pause, ChevronRight,
-  ChevronLeft, Sofa, Coffee, Building, Eye, RefreshCw
-} from 'lucide-react';
-import Link from 'next/link';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
+import { MessageCircle, Star, ArrowDown, Play, MapPin, MousePointer2, Check, Filter, Heart, Send, Bookmark, MoreHorizontal, ChevronRight, Menu, X, Search, ShoppingCart, HelpCircle, Package, Clock, TrendingDown } from 'lucide-react';
 
-// Custom CSS declarations injected
-const INJECTED_STYLES = `
-  .bg-grid-theme {
-      background-size: 50px 50px;
-      background-image: 
-          linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
-  }
+const InstagramIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.181a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
+  </svg>
+);
 
-  .premium-depth-card {
-      background: linear-gradient(145deg, #0d1222 0%, #04060c 100%);
-      box-shadow: 
-          0 40px 100px -20px rgba(0, 0, 0, 0.9),
-          inset 0 1px 2px rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-  }
+const FacebookIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
 
-  .iphone-bezel {
-      background-color: #111;
-      box-shadow: 
-          inset 0 0 0 2px #52525B, 
-          inset 0 0 0 7px #000, 
-          0 40px 80px -15px rgba(0,0,0,0.9);
-      transform-style: preserve-3d;
-  }
+const YoutubeIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
 
-  .hardware-btn {
-      background: linear-gradient(90deg, #404040 0%, #171717 100%);
-      box-shadow: -2px 0 5px rgba(0,0,0,0.8);
-  }
+const GoogleMapsIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 16 8 16s8-10.75 8-16c0-4.42-3.58-8-8-8zm0 11.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 4.5 12 4.5 15.5 6.07 15.5 8s-1.57 3.5-3.5 3.5z"/>
+  </svg>
+);
 
-  .screen-glare {
-      background: linear-gradient(110deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 45%);
-  }
-`;
+const HeroTransitionZone = () => {
+  const container = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ['start start', 'end end'],
+  });
 
-interface Scene {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  color: string;
-}
-
-const CINEMA_SCENES: Scene[] = [
-  {
-    id: 1,
-    title: "Scene 1: The Chaos",
-    subtitle: "A barrage of raw, unqualified 'price?' messages floods your phone.",
-    description: "Every single ad click goes straight to WhatsApp. Leads ask identical questions about price, dimensions, and materials, then ghost before you can answer.",
-    color: "text-red-400"
-  },
-  {
-    id: 2,
-    title: "Scene 2: The Switch",
-    subtitle: "Reroute incoming Instagram ad traffic to a FunnelLink page.",
-    description: "Toggle on the pre-qualification filter. Instead of throwing raw leads into a chaotic chat, buyers are guided to browse specifications first.",
-    color: "text-amber-400"
-  },
-  {
-    id: 3,
-    title: "Scene 3: The Transformation",
-    subtitle: "Buyers visually select custom wood, dimensions & fabrics.",
-    description: "Before starting a chat, buyers build trust by selecting configuration specs. They understand the product details, options, and pricing automatically.",
-    color: "text-blue-400"
-  },
-  {
-    id: 4,
-    title: "Scene 4: The Qualified Lead",
-    subtitle: "Receive pre-filled, highly detailed purchase specs in chat.",
-    description: "Instead of generic price questions, you get a clean order breakdown carrying exact sizes, colors, and shipping locations ready to invoice.",
-    color: "text-emerald-400"
-  }
-];
-
-export default function Home() {
-  // Cinema Theatre states
-  const [activeScene, setActiveScene] = useState<number>(1);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [progress, setProgress] = useState<number>(0);
-
-  // Industry tabs
-  const [activeDemoTab, setActiveDemoTab] = useState<'furniture' | 'cafe' | 'realestate'>('furniture');
-
-  // Live Demo customization variables
-  const [furnWood, setFurnWood] = useState<string>('Teakwood');
-  const [furnSize, setFurnSize] = useState<string>('8 Ft');
-  const [furnFabric, setFurnFabric] = useState<string>('Beige');
-  const [cafeItems, setCafeItems] = useState<string[]>(['Croissant', 'Latte']);
-  const [cafeSeats, setCafeSeats] = useState<string>('2 People');
-  const [reBhk, setReBhk] = useState<string>('3 BHK');
-  const [reLocation, setReLocation] = useState<string>('Aurelia Sky Villa');
-
-  // Scene 1: Chaos message states
-  const [chaosChats, setChaosChats] = useState<string[]>([]);
+  const scale1 = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
+  const rotate1 = useTransform(scrollYProgress, [0, 1], [0, -4]);
+  const opacity1 = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
+  const borderRadius1 = useTransform(scrollYProgress, [0, 1], [0, 40]);
   
-  // Manage timeline timer for the cinema player
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    setProgress(0);
-    const intervalTime = 50; // ms
-    const duration = 6000; // 6s per scene
-    const step = (intervalTime / duration) * 100;
-
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setActiveScene((current) => (current === 4 ? 1 : current + 1));
-          return 0;
-        }
-        return prev + step;
-      });
-    }, intervalTime);
-
-    return () => clearInterval(timer);
-  }, [isPlaying, activeScene]);
-
-  // Handle Scene 1 text spawning loop
-  useEffect(() => {
-    if (activeScene !== 1) {
-      setChaosChats([]);
-      return;
-    }
-    const messages = ["Price?", "Location?", "Is it Sheesham wood?", "Delivery cost?", "Warranty?"];
-    let idx = 0;
-    const chatInterval = setInterval(() => {
-      setChaosChats((prev) => {
-        if (idx >= messages.length) {
-          idx = 0;
-          return [];
-        }
-        const next = [...prev, messages[idx]];
-        idx++;
-        return next;
-      });
-    }, 1100);
-
-    return () => clearInterval(chatInterval);
-  }, [activeScene]);
-
-  const handleNext = () => {
-    setActiveScene((prev) => (prev === 4 ? 1 : prev + 1));
-    setProgress(0);
-  };
-
-  const handleBack = () => {
-    setActiveScene((prev) => (prev === 1 ? 4 : prev - 1));
-    setProgress(0);
-  };
+  const scale2 = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
+  const rotate2 = useTransform(scrollYProgress, [0, 1], [4, 0]);
+  const borderRadius2 = useTransform(scrollYProgress, [0, 1], [40, 0]);
 
   return (
-    <main className="min-h-screen bg-[#070b14] text-white overflow-x-hidden font-sans antialiased relative selection:bg-indigo-500 selection:text-white pb-16">
-      <style dangerouslySetInnerHTML={{ __html: INJECTED_STYLES }} />
-      <div className="bg-grid-theme absolute inset-0 z-0 pointer-events-none opacity-40" />
+    <div ref={container} className="relative h-[200vh] bg-[#0A0A0A]">
+      {/* SECTION 1: HERO */}
+      <motion.div 
+        style={{ scale: scale1, rotate: rotate1, opacity: opacity1, borderRadius: borderRadius1 }}
+        className="sticky top-0 h-screen w-full bg-white flex flex-col overflow-hidden transform-gpu origin-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-0"
+      >
+        <Navbar />
+        
+        <section className="relative flex-1 flex flex-col items-center justify-center text-center px-6">
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+          <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-violet-500/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
-      {/* Glow Backdrops */}
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/[0.02] blur-[120px] pointer-events-none" />
-      <div className="absolute top-2/3 right-1/4 w-[500px] h-[500px] bg-emerald-500/[0.02] blur-[150px] pointer-events-none" />
 
-      {/* NAVBAR */}
-      <nav className="relative z-30 max-w-[1280px] mx-auto px-6 py-5 flex items-center justify-between border-b border-white/5">
-        <div className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg overflow-hidden bg-white p-0.5 flex items-center justify-center border border-white/10 shadow-md">
-            <img src="/logo.jpeg" alt="FunnelLink Logo" className="max-w-full max-h-full object-contain" />
-          </div>
-          <span className="font-extrabold text-lg tracking-tight text-white">
-            Funnel<span className="text-indigo-400">Link</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-xs sm:text-sm font-bold text-neutral-400 hover:text-white transition-colors">
-            Login
-          </Link>
-          <Link href="/signup" className="text-xs sm:text-sm font-bold bg-white text-slate-950 hover:bg-neutral-200 transition-colors px-4 py-2 rounded-full">
-            Start Free
-          </Link>
-        </div>
-      </nav>
-
-      {/* SECTION 1 — THE HOOK */}
-      <section className="relative z-10 pt-20 pb-12 text-center max-w-4xl mx-auto px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 mb-6"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-          <span className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Cinematic Presentation</span>
-        </motion.div>
-
-        <h1 className="text-4xl sm:text-6xl font-black leading-[1.08] tracking-tight text-white mb-6">
-          Stop Sending Every Instagram Click Directly To WhatsApp.
-        </h1>
-
-        <p className="text-neutral-400 text-sm sm:text-lg max-w-2xl mx-auto font-light leading-relaxed mb-8">
-          Most businesses waste hours answering the same questions, chasing unqualified leads, and losing customers before the sale starts.
-        </p>
-
-        <div className="flex justify-center">
-          <a 
-            href="#cinema" 
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-3.5 rounded-full text-sm shadow-lg shadow-indigo-600/10 transition-all cursor-pointer"
+          <motion.h1 
+            initial={{ opacity: 0, y: 30, filter: "blur(10px)", scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="text-[54px] leading-[1.05] md:text-[96px] font-extrabold tracking-[-0.04em] text-[#0A0A0A]"
           >
-            See How It Works
-            <ArrowRight size={14} />
-          </a>
+            Turn Traffic <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-violet-600 to-purple-600">Into Customers.</span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="mt-8 text-lg md:text-2xl text-slate-500 max-w-3xl font-medium leading-relaxed tracking-tight"
+          >
+            Transform traffic from Instagram, Google Maps, Facebook, WhatsApp, QR codes, and ads into interactive customer journeys that drive reservations, bookings, site visits, and sales.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="mt-12 flex flex-col sm:flex-row items-center gap-4 relative z-10"
+          >
+            <button className="bg-[#0A0A0A] text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-1 flex items-center gap-2 group">
+              Create Free Funnel
+              <ArrowDown size={18} className="text-slate-400 group-hover:text-white transition-colors group-hover:translate-x-1 -rotate-90" />
+            </button>
+            <button 
+              onClick={() => document.getElementById('flow-engine')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-white border border-slate-200 text-[#0A0A0A] px-8 py-4 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm flex items-center gap-2 hover:-translate-y-1 group"
+            >
+              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <ArrowDown size={12} className="text-slate-600" />
+              </div>
+              See How It Works
+            </button>
+          </motion.div>
+        </section>
+      </motion.div>
+
+      {/* SECTION 2: ONE LINER (Slides up over the hero) */}
+      <motion.div 
+        style={{ scale: scale2, rotate: rotate2, borderTopLeftRadius: borderRadius2, borderTopRightRadius: borderRadius2 }}
+        className="relative h-screen bg-slate-50 z-10 flex flex-col justify-center items-center transform-gpu origin-top shadow-[0_-20px_50px_rgba(0,0,0,0.3)]"
+      >
+        <div className="max-w-5xl mx-auto text-center px-6">
+          <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-tight text-[#0A0A0A] leading-[1.1]">
+            Every Business Has Traffic.<br />
+            <span className="text-slate-400">Very Few Have A Customer Journey.</span>
+          </h2>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default function AttioLandingPage() {
+  return (
+    <div className="bg-[#0A0A0A] min-h-screen text-[#111] font-sans selection:bg-blue-100">
+      <HeroTransitionZone />
+      
+      <div className="bg-slate-50 relative z-20">
+
+      {/* 5. THE TRADITIONAL WAY (STICKY MOCKUP SCROLL) */}
+      <StorySection />
+
+      {/* 2. HUB AND SPOKE ARCHITECTURE FLOW (ATTIO STYLE) */}
+      <section id="flow-engine" className="py-20 border-y border-slate-100 overflow-hidden relative bg-slate-50/50">
+        <div className="text-center mb-10 px-6 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0A0A0A]">The FunnelLink Engine</h2>
+          <p className="mt-4 text-xl text-slate-500 font-light max-w-2xl mx-auto">
+            Route raw traffic into highly structured customer journeys.
+          </p>
+        </div>
+
+        {/* Scalable Container for Absolute Positioning */}
+        <div className="w-full flex justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="relative w-[1000px] h-[750px] shrink-0 font-sans" 
+            style={{ transformOrigin: 'top center', transform: 'scale(min(1, max(0.4, calc(100vw / 1000))))' }}
+          >
+            {/* BACKGROUNDS */}
+            <div className="absolute top-0 left-0 right-0 h-[350px] bg-white border-b border-blue-500/10" style={{ backgroundImage: 'linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+            <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-slate-50/50" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
+            {/* SVG CONNECTING LINES */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+              {/* Lines from Top Pills to Center Logo */}
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2 }} d="M 500 120 L 500.01 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.3 }} d="M 250 170 C 250 250, 480 250, 480 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.4 }} d="M 750 170 C 750 250, 520 250, 520 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.5 }} d="M 230 250 C 350 250, 440 320, 460 320" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.6 }} d="M 770 250 C 650 250, 560 320, 540 320" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+
+              {/* Lines from Center to Bottom Cards */}
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.7 }} d="M 500 400 L 500.01 450" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.8 }} d="M 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.8 }} d="M 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.9 }} d="M 500.01 450 L 500.02 620" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              
+              {/* Highlight Overlays (Animating pulses for top paths) */}
+              <motion.path d="M 500 120 L 500.01 300" stroke="url(#roseGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0 }} />
+              <motion.path d="M 250 170 C 250 250, 480 250, 480 300" stroke="url(#pinkGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0.4 }} />
+              <motion.path d="M 750 170 C 750 250, 520 250, 520 300" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0.8 }} />
+              <motion.path d="M 230 250 C 350 250, 440 320, 460 320" stroke="url(#emeraldGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 1.2 }} />
+              <motion.path d="M 770 250 C 650 250, 560 320, 540 320" stroke="url(#redGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 1.6 }} />
+
+              {/* Highlight Overlays (Animating pulses for bottom paths) */}
+              <motion.path d="M 500 400 L 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.0 }} />
+              <motion.path d="M 500 400 L 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.4 }} />
+              <motion.path d="M 500 400 L 500.01 620" stroke="url(#greenGrad)" strokeWidth="4" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.8 }} />
+
+              <defs>
+                <linearGradient id="roseGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f43f5e" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#f43f5e" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#f43f5e" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="pinkGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ec4899" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#ec4899" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#3b82f6" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="emeraldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#10b981" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#10b981" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#ef4444" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22c55e" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#22c55e" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity="0"/>
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* --- TOP PILLS (TRAFFIC SOURCES) --- */}
+            <div className="absolute top-[100px] left-[500px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<MousePointer2/>} text="Website Ads" borderColor="border-slate-200" iconColor="text-slate-600" />
+            </div>
+            <div className="absolute top-[150px] left-[250px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<InstagramIcon/>} text="Instagram" borderColor="border-pink-200" iconColor="text-pink-600" />
+            </div>
+            <div className="absolute top-[150px] left-[750px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<FacebookIcon/>} text="Facebook" borderColor="border-blue-200" iconColor="text-blue-600" />
+            </div>
+            <div className="absolute top-[250px] left-[150px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<GoogleMapsIcon/>} text="Google Maps" borderColor="border-emerald-200" iconColor="text-emerald-600" />
+            </div>
+            <div className="absolute top-[250px] left-[850px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<YoutubeIcon/>} text="YouTube" borderColor="border-red-200" iconColor="text-red-600" />
+            </div>
+
+            {/* --- CENTER HUB (FUNNELLINK) --- */}
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', damping: 20, delay: 0.5 }}
+              className="absolute top-[350px] left-[500px] -translate-x-1/2 -translate-y-1/2 z-20"
+            >
+              <div className="w-28 h-28 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-2 border-slate-100 flex items-center justify-center relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-violet-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <img src="/logo.jpeg" className="w-14 h-14 object-contain mix-blend-multiply relative z-10" alt="FunnelLink" />
+              </div>
+            </motion.div>
+
+            {/* --- BOTTOM CARDS (OUTCOMES) --- */}
+            <div className="absolute top-[500px] left-[250px] -translate-x-1/2 z-10">
+              <DataCard 
+                icon={<Star fill="currentColor" />} 
+                title="Experience" 
+                tag="Step 1" 
+                value="Product Catalog" 
+                desc="Instantly educates customers on pricing, location, and store details."
+              />
+            </div>
+            <div className="absolute top-[500px] left-[750px] -translate-x-1/2 z-10">
+              <DataCard 
+                icon={<Check />} 
+                title="Build Trust" 
+                tag="Step 2" 
+                value="Intent Captured" 
+                desc="Answers questions automatically, establishing brand credibility."
+              />
+            </div>
+            <div className="absolute top-[620px] left-[500px] -translate-x-1/2 z-20">
+              <DataCard 
+                icon={<MessageCircle fill="currentColor" />} 
+                title="Increased Sales" 
+                tag="Conversion" 
+                value="Ready-to-Buy Leads" 
+                desc="Sales conversion rate skyrockets with highly qualified WhatsApp messages."
+                border="border-[#25D366]/40" 
+                highlight="text-[#25D366] bg-[#25D366]/10" 
+              />
+            </div>
+
+          </motion.div>
         </div>
       </section>
 
-      {/* THE CINEMATIC THEATRE (SECTIONS 2, 3, 4, 5 consolidated as a movie console) */}
-      <section id="cinema" className="relative z-10 py-12 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <span className="text-xs uppercase font-bold text-indigo-400 tracking-widest block mb-1">Interactive Theater</span>
-          <h2 className="text-3xl font-black text-white">Watch The FunnelLink Movie</h2>
-        </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Outer Director\'s Console */}
-        <div className="premium-depth-card rounded-[2.5rem] p-6 lg:p-12 relative border border-white/5 overflow-visible">
+// ATTIO STYLE FLOATING PILL COMPONENT
+function Pill({ icon, text, borderColor, iconColor = "text-slate-500" }: { icon: React.ReactNode, text: string, borderColor: string, iconColor?: string }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className={`bg-white px-5 py-3 rounded-full border-[2.5px] ${borderColor} shadow-sm flex items-center gap-2.5 font-bold text-slate-800 text-sm hover:-translate-y-1 transition-transform cursor-default relative group`}
+    >
+      <div className={`${iconColor} group-hover:scale-110 transition-transform`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 18 })}</div>
+      {text}
+    </motion.div>
+  )
+}
+
+// ATTIO STYLE DATA CARD COMPONENT
+function DataCard({ icon, title, tag, value, desc, border="border-slate-200", highlight="text-blue-600 bg-blue-50" }: any) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className={`bg-white rounded-[24px] border border-slate-200 ${border !== 'border-slate-200' ? border : ''} shadow-[0_10px_30px_rgba(0,0,0,0.04)] w-[280px] p-5 hover:-translate-y-1 transition-transform`}
+    >
+      <div className="flex items-center justify-between mb-5">
+        <div className={`flex items-center gap-2.5 font-bold text-slate-800 text-sm`}>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${highlight}`}>
+            {React.cloneElement(icon as React.ReactElement<any>, { size: 16 })}
+          </div>
+          {title}
+        </div>
+        <div className="bg-slate-100 text-slate-500 text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest">{tag}</div>
+      </div>
+      <div className="flex flex-col gap-1.5 border-b border-slate-100 pb-4 mb-4">
+        <div className="text-[17px] font-black text-slate-900 tracking-tight">{value}</div>
+      </div>
+      <p className="text-[12px] font-medium text-slate-500 leading-relaxed">
+        {desc}
+      </p>
+    </motion.div>
+  )
+}
+
+function Navbar() {
+  return (
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50">
+      <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-10">
+          <div className="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-pointer">
+            <div className="w-8 h-8 rounded-md flex items-center justify-center overflow-hidden">
+              <img src="/logo.jpeg" alt="FunnelLink Logo" className="w-full h-full object-contain mix-blend-multiply" />
+            </div>
+            FunnelLink
+          </div>
+          <div className="hidden md:flex items-center gap-7 text-sm font-bold text-slate-600">
+            <span className="hover:text-black cursor-pointer transition-colors">Platform</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Resources</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Customers</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Pricing</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-5 text-sm font-bold">
+          <button className="text-slate-600 hover:text-black transition-colors hidden sm:block">Sign in</button>
+          <button className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white px-5 py-2.5 rounded-lg transition-all shadow-sm shadow-blue-500/20">
+            Start for free
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// THE TRADITIONAL WAY - SCROLLING MOCKUP COMPONENT
+function StorySection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-80%"]);
+
+  const [activeScene, setActiveScene] = useState(1);
+
+  useEffect(() => {
+    return scrollYProgress.onChange((latest) => {
+      // Trigger animations slightly early so they start playing exactly as the slide comes into view
+      if (latest > 0.80) setActiveScene(4);
+      else if (latest > 0.60) setActiveScene(3);
+      else if (latest > 0.35) setActiveScene(2);
+      else setActiveScene(1);
+    });
+  }, [scrollYProgress]);
+
+  return (
+    <div ref={containerRef} className="h-[600vh] bg-slate-50 relative border-t border-slate-100">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
+        
+        <motion.div style={{ x }} className="flex w-[500vw] h-full items-center">
           
-          {/* Cinema Header Timeline */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/5 pb-6 mb-8">
-            <div className="flex items-center gap-2">
-              <span className="text-red-500 animate-ping font-extrabold text-xs">●</span>
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest font-mono">Theater Active</span>
-            </div>
-            
-            {/* Steps Navigator */}
-            <div className="flex gap-2.5">
-              {CINEMA_SCENES.map((scene) => (
-                <button
-                  key={scene.id}
-                  onClick={() => { setActiveScene(scene.id); setProgress(0); }}
-                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
-                    activeScene === scene.id 
-                      ? 'bg-indigo-600 text-white shadow-md' 
-                      : 'bg-white/5 text-neutral-400 hover:text-white'
-                  }`}
-                >
-                  Scene {scene.id}
-                </button>
-              ))}
-            </div>
+          {/* SLIDE 1: Intro Text */}
+          <div className="w-[100vw] h-full flex flex-col items-center justify-center px-6 text-center">
+             <span className="text-sm md:text-base font-bold tracking-widest text-slate-400 uppercase mb-6 block">The Traditional Trap</span>
+             <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-tight text-[#0A0A0A] leading-[1.05] max-w-4xl">
+               Why sending traffic straight to WhatsApp or a generic website fails.
+             </h2>
           </div>
 
-          {/* Theater Screen Grid */}
-          <div className="grid lg:grid-cols-12 gap-10 items-center">
-            
-            {/* Left Movie Script description */}
-            <div className="lg:col-span-6 text-left space-y-6">
-              <span className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-widest font-black ${CINEMA_SCENES[activeScene - 1].color}`}>
-                🎬 {CINEMA_SCENES[activeScene - 1].title}
-              </span>
-              
-              <h3 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
-                {CINEMA_SCENES[activeScene - 1].subtitle}
-              </h3>
-
-              <p className="text-neutral-400 text-sm leading-relaxed font-light">
-                {CINEMA_SCENES[activeScene - 1].description}
-              </p>
-
-              {/* Cinema Control Bar */}
-              <div className="pt-6 border-t border-white/5 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white cursor-pointer transition-all"
-                  >
-                    {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-                  </button>
-                  <button 
-                    onClick={handleBack}
-                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-neutral-400 hover:text-white cursor-pointer transition-all"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button 
-                    onClick={handleNext}
-                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-neutral-400 hover:text-white cursor-pointer transition-all"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-
-                {/* Progress bar timeline */}
-                <div className="flex-1 max-w-[200px]">
-                  <div className="flex justify-between text-[9px] text-neutral-500 mb-1 font-mono">
-                    <span>TIMELINE</span>
-                    <span>{Math.round(progress)}%</span>
-                  </div>
-                  <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-indigo-500 transition-all duration-75"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Centerpiece Phone Screen */}
-            <div className="lg:col-span-6 flex justify-center items-center relative">
-              
-              {/* iPhone bezel structure (300px wide, 600px high) */}
-              <div className="relative w-[300px] h-[600px] rounded-[3.3rem] iphone-bezel p-2 z-10 transition-transform duration-300">
-                <div className="absolute top-[120px] -left-[3px] w-[3px] h-[28px] hardware-btn rounded-l-md" aria-hidden="true" />
-                <div className="absolute top-[165px] -left-[3px] w-[3px] h-[48px] hardware-btn rounded-l-md" aria-hidden="true" />
-                <div className="absolute top-[225px] -left-[3px] w-[3px] h-[48px] hardware-btn rounded-l-md" aria-hidden="true" />
-                <div className="absolute top-[175px] -right-[3px] w-[3px] h-[75px] hardware-btn rounded-r-md scale-x-[-1]" aria-hidden="true" />
-
-                {/* Screen wrapper */}
-                <div className="absolute inset-[8px] bg-[#050914] rounded-[2.9rem] overflow-hidden shadow-[inset_0_0_15px_rgba(0,0,0,1)] text-white z-10">
-                  <div className="absolute inset-0 screen-glare z-45 pointer-events-none" aria-hidden="true" />
-
-                  {/* Notch */}
-                  <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-[90px] h-[24px] bg-black rounded-full z-50 flex items-center justify-center border border-white/5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse mr-2" />
-                    <span className="text-[6px] text-neutral-400 font-bold tracking-widest font-mono">SCENE 0{activeScene}</span>
-                  </div>
-
-                  {/* Inside Screen Content based on scene id */}
-                  <div className="relative w-full h-full pt-10 pb-4 text-[10px] text-white">
-                    <AnimatePresence mode="wait">
-
-                      {/* SCENE 1: WHATSAPP CHAOS */}
-                      {activeScene === 1 && (
-                        <motion.div
-                          key="scene1"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="absolute inset-0 p-5 flex flex-col justify-between bg-[#0a0e1a]"
-                        >
-                          <div>
-                            <div className="border-b border-white/5 pb-2 mb-2 flex justify-between items-center text-[7.5px]">
-                              <span className="font-bold text-white">WhatsApp Inbox</span>
-                              <span className="text-red-400 font-bold">12 UNREAD</span>
-                            </div>
-                            
-                            <div className="space-y-2.5 pt-1 text-left">
-                              {chaosChats.map((c, i) => (
-                                <motion.div 
-                                  key={i} 
-                                  initial={{ opacity: 0, x: -10 }} 
-                                  animate={{ opacity: 1, x: 0 }} 
-                                  className="bg-neutral-800 rounded-lg p-2 max-w-[85%] text-[8.5px] border border-white/5 shadow-md"
-                                >
-                                  <p className="text-red-400 font-bold text-[6px]">Buyer:</p>
-                                  <p className="text-white mt-0.5">{c}</p>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-center">
-                            <p className="font-black text-red-400 text-[9px] uppercase tracking-wider animate-pulse">❌ Typing Manual Prices...</p>
-                            <p className="text-[7px] text-neutral-400 mt-0.5 leading-snug">Chats ghosted because of delays.</p>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {/* SCENE 2: THE SWITCH */}
-                      {activeScene === 2 && (
-                        <motion.div
-                          key="scene2"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="absolute inset-0 p-5 flex flex-col justify-between bg-[#050914] text-center"
-                        >
-                          <div className="border-b border-white/5 pb-2.5 flex justify-between items-center">
-                            <span className="text-[7.5px] text-neutral-400 font-mono">Routing System</span>
-                            <span className="text-[7px] bg-indigo-600 text-white px-1.5 rounded">FILTER</span>
-                          </div>
-
-                          <div className="space-y-4 my-auto">
-                            <span className="text-[7px] text-neutral-500 font-black uppercase tracking-widest block">System Path</span>
-                            
-                            {/* Visual toggle switch */}
-                            <div className="flex flex-col items-center">
-                              <motion.div 
-                                animate={{ scale: [1, 1.05, 1] }} 
-                                transition={{ repeat: Infinity, duration: 2 }}
-                                className="w-24 h-11 bg-emerald-500 border border-emerald-400/40 rounded-full p-1 flex items-center justify-end shadow-lg shadow-emerald-500/15"
-                              >
-                                <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center font-black text-[9px] text-[#070b14]">ON</div>
-                              </motion.div>
-                              <span className="text-[8px] text-emerald-400 font-bold mt-2 uppercase tracking-wide">FunnelLink Connected</span>
-                            </div>
-
-                            <div className="bg-white/5 border border-white/5 rounded-xl p-2.5 text-[7px] text-neutral-400 leading-normal">
-                              Instagram Ads ──► FunnelLink Filter ──► WhatsApp
-                            </div>
-                          </div>
-
-                          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl py-2.5 text-center">
-                            <span className="text-[8.5px] text-emerald-400 font-black">Pre-Qualification Enabled</span>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {/* SCENE 3: THE TRANSFORMATION */}
-                      {activeScene === 3 && (
-                        <motion.div
-                          key="scene3"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="absolute inset-0 p-5 flex flex-col justify-between bg-[#FAF9F5] text-neutral-800"
-                        >
-                          <div>
-                            <div className="border-b border-gray-150 pb-1.5 flex justify-between items-center text-[7px] text-gray-400">
-                              <span>funnellink.com/urban-living</span>
-                              <span>🔒</span>
-                            </div>
-
-                            <p className="font-black text-neutral-900 text-[11px] mt-2.5">Milano 3-Seater Sofa</p>
-                            
-                            {/* Visual Options configured */}
-                            <div className="space-y-3 mt-3 flex-1 text-left">
-                              <div>
-                                <span className="text-[6.5px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Wood Finish</span>
-                                <div className="grid grid-cols-2 gap-1.5">
-                                  <div className="border border-indigo-600 bg-indigo-50/50 rounded-lg py-1 text-center font-bold text-[7.5px] text-indigo-700 shadow-sm">Teakwood Finish ✓</div>
-                                  <div className="border border-gray-200 rounded-lg py-1 text-center text-[7.5px] text-gray-400">Sheesham Finish</div>
-                                </div>
-                              </div>
-
-                              <div>
-                                <span className="text-[6.5px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Sizing Selection</span>
-                                <div className="grid grid-cols-3 gap-1">
-                                  <div className="border border-gray-200 rounded-lg py-1 text-center text-[7px] text-gray-400">6 Ft</div>
-                                  <div className="border border-indigo-600 bg-indigo-50/50 rounded-lg py-1 text-center font-bold text-[7.5px] text-indigo-700 shadow-sm">8 Ft ✓</div>
-                                  <div className="border border-gray-200 rounded-lg py-1 text-center text-[7px] text-gray-400">10 Ft</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="bg-[#25d366] text-white font-extrabold text-center py-2.5 rounded-xl text-[8px] flex items-center justify-center gap-1 shadow-md">
-                            <MessageCircle size={10} />
-                            <span>Submit Custom Order</span>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {/* SCENE 4: QUALIFIED INCOMING LEAD */}
-                      {activeScene === 4 && (
-                        <motion.div
-                          key="scene4"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="absolute inset-0 p-5 flex flex-col justify-between bg-[#0a0e1a] text-left"
-                        >
-                          <div>
-                            <div className="border-b border-white/5 pb-2 mb-2 flex justify-between items-center text-[7.5px]">
-                              <span className="font-bold text-white">WhatsApp Chat</span>
-                              <span className="text-emerald-400 font-bold">1 NEW MESSAGE</span>
-                            </div>
-
-                            <div className="bg-[#050812] border border-[#25d366]/20 rounded-xl p-3 text-[8px] font-mono text-neutral-300 leading-normal space-y-1 mt-2">
-                              <p className="text-emerald-400 font-bold">// Order Specifications</p>
-                              <p>Hi,</p>
-                              <p>Interested in <span className="text-white font-bold">Milano Sofa</span>.</p>
-                              <p className="text-neutral-400">
-                                Selection:<br />
-                                • Wood: Teakwood<br />
-                                • Sizing: 8 Feet<br />
-                                • Fabric: Beige
-                              </p>
-                              <p className="text-white pt-1">Please confirm price.</p>
-                            </div>
-                          </div>
-
-                          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl py-3 text-center">
-                            <span className="text-[8.5px] text-emerald-400 font-black">✓ Read and Ready to Invoice</span>
-                          </div>
-                        </motion.div>
-                      )}
-
-                    </AnimatePresence>
-                    
-                    {/* Home Indicator line */}
-                    <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-white/20 rounded-full z-45" />
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
+          {/* SLIDE 2: The Hook */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2 flex flex-col justify-center">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The Hook</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed">
+                  You run an ad. It works perfectly. The customer loves the product and clicks your Call to Action.
+                </p>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={1} overrideScene={1} />
+             </div>
           </div>
 
-          {/* Subtitles Cinema Card */}
-          <div className="mt-8 bg-black/40 border border-white/5 rounded-2xl p-4 text-center">
-            <span className="text-[8px] text-indigo-400 font-mono block mb-1">CINEMATIC SUBTITLES</span>
-            <p className="text-xs sm:text-sm text-neutral-200 font-medium">
-              &quot;{CINEMA_SCENES[activeScene - 1].subtitle}&quot;
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* SECTION 6 — PROBLEMS WE SOLVE */}
-      <section className="relative z-10 py-16 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase font-bold text-indigo-400 tracking-widest block mb-2">Key Value Pillars</span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">Problems We Solve</h2>
-          <p className="text-neutral-400 text-xs sm:text-sm mt-2">Engineered to eliminate high-ticket ad dropoffs</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-indigo-500/30 transition-all duration-300">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-indigo-400 mb-4">
-              <MessageCircle size={20} />
-            </div>
-            <h4 className="text-sm font-bold text-white mb-2">Repetitive Questions</h4>
-            <p className="text-neutral-400 text-xs leading-relaxed font-light">
-              Stop answering the same things all day. Sizing, prices, materials, and warranty are visually laid out instantly.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-indigo-500/30 transition-all duration-300">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-indigo-400 mb-4">
-              <Sparkles size={20} />
-            </div>
-            <h4 className="text-sm font-bold text-white mb-2">Low Quality Leads</h4>
-            <p className="text-neutral-400 text-xs leading-relaxed font-light">
-              Get serious buyers. Filtering out casual tire-kickers ensures only qualified purchase intent reaches your inbox.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-indigo-500/30 transition-all duration-300">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-indigo-400 mb-4">
-              <AlertTriangle size={20} />
-            </div>
-            <h4 className="text-sm font-bold text-white mb-2">WhatsApp Chaos</h4>
-            <p className="text-neutral-400 text-xs leading-relaxed font-light">
-              Know who wants what. Filter lead threads so you can reply with exact invoices in seconds instead of descriptive typing.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-indigo-500/30 transition-all duration-300">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-indigo-400 mb-4">
-              <ShieldCheck size={20} />
-            </div>
-            <h4 className="text-sm font-bold text-white mb-2">No Trust</h4>
-            <p className="text-neutral-400 text-xs leading-relaxed font-light">
-              Build confidence before conversation starts. Clear visual spec filters, photos, and warranties build professional buyer trust.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 7 — INDUSTRIES */}
-      <section id="industries" className="relative z-10 py-16 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase font-bold text-indigo-400 tracking-widest block mb-2">Built-in Abstractions</span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">Custom-Built Industries</h2>
-          <p className="text-neutral-400 text-xs sm:text-sm mt-2">Tap any industry to load its interactive preview configuration below</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Furniture Card */}
-          <button
-            onClick={() => setActiveDemoTab('furniture')}
-            className={`p-6 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
-              activeDemoTab === 'furniture'
-                ? 'bg-indigo-950/20 border-indigo-500 shadow-lg shadow-indigo-500/10'
-                : 'bg-white/5 border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#3b82f6]/10 border border-[#3b82f6]/20 flex items-center justify-center text-blue-400 mb-4">
-              <Sofa size={20} />
-            </div>
-            <h4 className="text-lg font-bold text-white mb-1">Furniture Funnel</h4>
-            <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
-              Configure sizing, materials, and fabric selections visually.
-            </p>
-            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-              Preview Demo <ArrowRight size={10} />
-            </span>
-          </button>
-
-          {/* Cafe Card */}
-          <button
-            onClick={() => setActiveDemoTab('cafe')}
-            className={`p-6 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
-              activeDemoTab === 'cafe'
-                ? 'bg-indigo-950/20 border-indigo-500 shadow-lg shadow-indigo-500/10'
-                : 'bg-white/5 border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#c4713b]/10 border border-[#c4713b]/20 flex items-center justify-center text-orange-400 mb-4">
-              <Coffee size={20} />
-            </div>
-            <h4 className="text-lg font-bold text-white mb-1">Cafe Funnel</h4>
-            <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
-              Bundle table reservation slots with signature item pre-orders.
-            </p>
-            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-              Preview Demo <ArrowRight size={10} />
-            </span>
-          </button>
-
-          {/* Real Estate Card */}
-          <button
-            onClick={() => setActiveDemoTab('realestate')}
-            className={`p-6 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
-              activeDemoTab === 'realestate'
-                ? 'bg-indigo-950/20 border-indigo-500 shadow-lg shadow-indigo-500/10'
-                : 'bg-white/5 border-white/10 hover:border-white/20'
-            }`}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#9A7B44]/10 border border-[#9A7B44]/20 flex items-center justify-center text-yellow-500 mb-4">
-              <Building size={20} />
-            </div>
-            <h4 className="text-lg font-bold text-white mb-1">Real Estate Funnel</h4>
-            <p className="text-neutral-400 text-xs font-light leading-relaxed mb-4">
-              Qualify BHK preferences and display floorplans with location maps.
-            </p>
-            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-              Preview Demo <ArrowRight size={10} />
-            </span>
-          </button>
-        </div>
-      </section>
-
-      {/* SECTION 8 — LIVE DEMO */}
-      <section id="demo" className="relative z-10 py-16 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <span className="text-xs uppercase font-bold text-indigo-400 tracking-widest block mb-2">Interactive Preview</span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">Live Interactive Demo</h2>
-          <p className="text-neutral-400 text-xs sm:text-sm mt-2">Test the actual funnel interface. Tap choices to watch the WhatsApp format update.</p>
-        </div>
-
-        <div className="premium-depth-card rounded-[2.5rem] p-6 lg:p-10 grid md:grid-cols-12 gap-8 items-stretch max-w-4xl mx-auto relative overflow-hidden">
-          
-          {/* Interactive Screen Preview */}
-          <div className="md:col-span-7 bg-[#FAF9F5] text-neutral-800 rounded-3xl p-6 text-left flex flex-col justify-between min-h-[360px] shadow-lg">
-            <div>
-              <div className="border-b border-gray-150 pb-1.5 flex justify-between items-center text-[7px] text-gray-400">
-                <span>demo.funnellink.com/urban-living</span>
-                <span>🔒</span>
-              </div>
-
-              {activeDemoTab === 'furniture' && (
-                <div className="space-y-4 mt-3">
-                  <h3 className="font-black text-neutral-900 text-lg leading-none">Milano 3-Seater Sofa</h3>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Wood Finish</span>
-                      <div className="grid grid-cols-2 gap-2">
-                        {['Teakwood', 'Sheesham'].map((w) => (
-                          <button 
-                            key={w} 
-                            onClick={() => setFurnWood(w)}
-                            className={`border py-1.5 rounded-lg text-center font-bold text-[8.5px] cursor-pointer transition-all ${
-                              furnWood === w ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {w} {furnWood === w && '✓'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Custom Length</span>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['6 Ft', '8 Ft', '10 Ft'].map((s) => (
-                          <button 
-                            key={s} 
-                            onClick={() => setFurnSize(s)}
-                            className={`border py-1 rounded-lg text-center font-bold text-[8px] cursor-pointer transition-all ${
-                              furnSize === s ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {s} {furnSize === s && '✓'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Fabric Color</span>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['Beige', 'Velvet Grey', 'Royal Blue'].map((f) => (
-                          <button 
-                            key={f} 
-                            onClick={() => setFurnFabric(f)}
-                            className={`border py-1 rounded-lg text-center font-bold text-[8px] cursor-pointer transition-all ${
-                              furnFabric === f ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {f}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeDemoTab === 'cafe' && (
-                <div className="space-y-4 mt-3">
-                  <h3 className="font-black text-neutral-900 text-lg leading-none">Coffee & Croissants Pre-Order</h3>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Select Menu Items</span>
-                      <div className="grid grid-cols-2 gap-2">
-                        {['Croissant', 'Latte', 'Avocado Toast', 'Cold Brew'].map((item) => {
-                          const isAdded = cafeItems.includes(item);
-                          return (
-                            <button
-                              key={item}
-                              onClick={() => {
-                                setCafeItems(prev => 
-                                  isAdded ? prev.filter(i => i !== item) : [...prev, item]
-                                );
-                              }}
-                              className={`border py-1.5 rounded-lg text-center font-bold text-[8.5px] cursor-pointer transition-all ${
-                                isAdded ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                              }`}
-                            >
-                              {item} {isAdded ? '✓' : '+'}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Table Reservation Sizing</span>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['2 People', '4 People', '6+ Group'].map((s) => (
-                          <button 
-                            key={s} 
-                            onClick={() => setCafeSeats(s)}
-                            className={`border py-1.5 rounded-lg text-center font-bold text-[8px] cursor-pointer transition-all ${
-                              cafeSeats === s ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeDemoTab === 'realestate' && (
-                <div className="space-y-4 mt-3">
-                  <h3 className="font-black text-neutral-900 text-lg leading-none">Aurelia Residences</h3>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Property BHK Configuration</span>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['2 BHK', '3 BHK', '4 BHK Villa'].map((bhk) => (
-                          <button 
-                            key={bhk} 
-                            onClick={() => setReBhk(bhk)}
-                            className={`border py-1.5 rounded-lg text-center font-bold text-[8.5px] cursor-pointer transition-all ${
-                              reBhk === bhk ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {bhk}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-[8px] text-gray-400 font-bold block mb-1 uppercase tracking-wider">Select Residence Block</span>
-                      <div className="grid grid-cols-2 gap-2">
-                        {['Aurelia Sky Villa', 'East wing tower', 'Aurelia Penthouse'].map((loc) => (
-                          <button 
-                            key={loc} 
-                            onClick={() => setReLocation(loc)}
-                            className={`border py-1.5 rounded-lg text-center font-bold text-[8px] cursor-pointer transition-all ${
-                              reLocation === loc ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-400 bg-transparent'
-                            }`}
-                          >
-                            {loc}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-[#25d366] text-white font-extrabold text-center py-2.5 rounded-xl text-[9px] flex items-center justify-center gap-1 shadow-sm mt-3">
-              <MessageCircle size={11} />
-              <span>Send Config to WhatsApp</span>
-            </div>
-          </div>
-
-          {/* Qualified Output Message */}
-          <div className="md:col-span-5 bg-[#0a0e1a] rounded-3xl p-5 border border-white/5 flex flex-col justify-between text-left">
-            <div>
-              <span className="text-[7.5px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded-full uppercase mb-3 inline-block">WhatsApp lead generated:</span>
-              
-              <div className="bg-[#050812] border border-white/5 rounded-xl p-3 text-[8.5px] font-mono text-neutral-300 leading-normal space-y-1.5 min-h-[200px]">
-                <p className="text-emerald-400 font-bold">// Incoming Message Format</p>
-                <p>Hi,</p>
+          {/* SLIDE 3: The Reality (WhatsApp) */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The WhatsApp Trap</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed mb-10">
+                  Because they came straight from an image, they have zero context. Messages flood in. You spend hours typing the same answers.
+                </p>
                 
-                {activeDemoTab === 'furniture' && (
-                  <>
-                    <p>Interested in <span className="text-white font-bold">Milano Sofa</span>.</p>
-                    <p className="text-neutral-400">
-                      Selected Specifications:<br />
-                      • Wood: {furnWood}<br />
-                      • Size: {furnSize}<br />
-                      • Fabric: {furnFabric}
-                    </p>
-                  </>
-                )}
-
-                {activeDemoTab === 'cafe' && (
-                  <>
-                    <p>Table pre-order for <span className="text-white font-bold">{cafeSeats}</span>.</p>
-                    <p className="text-neutral-400">
-                      Items Basket:<br />
-                      {cafeItems.map(i => `• ${i}`).join('\n')}
-                    </p>
-                  </>
-                )}
-
-                {activeDemoTab === 'realestate' && (
-                  <>
-                    <p>Interested in <span className="text-white font-bold">{reLocation}</span>.</p>
-                    <p className="text-neutral-400">
-                      Configuration:<br />
-                      • BHK: {reBhk} Floorplan
-                    </p>
-                  </>
-                )}
-
-                <p className="pt-2 text-white">Please send quotation.</p>
-              </div>
-            </div>
-
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2.5 text-center mt-3 text-[8px] text-emerald-400 font-bold">
-              ✓ Leads formatted automatically
-            </div>
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Multiple chat windows
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Customers stop replying
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Stressful & Chaotic
+                  </div>
+                </div>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={activeScene} overrideScene={2} />
+             </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* SECTION 9 — SIMPLE DASHBOARD */}
-      <section className="relative z-10 py-16 px-6 max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <span className="text-xs uppercase font-bold text-indigo-400 tracking-widest block mb-2">Metrics Console</span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">Simple Dashboard</h2>
-          <p className="text-neutral-400 text-xs sm:text-sm mt-2">Track views, clicks, and conversion rates cleanly. No bloat.</p>
-        </div>
-
-        {/* Dashboard Grid Panel */}
-        <div className="premium-depth-card rounded-[2rem] p-6 lg:p-8 max-w-xl mx-auto grid grid-cols-3 gap-4 border border-white/5">
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-            <span className="text-[9px] text-neutral-400 uppercase tracking-widest font-mono">Views</span>
-            <p className="text-xl sm:text-3xl font-black text-white mt-1">1,240</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-            <span className="text-[9px] text-neutral-400 uppercase tracking-widest font-mono">Clicks</span>
-            <p className="text-xl sm:text-3xl font-black text-white mt-1">420</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-indigo-500/10 to-emerald-500/10 rounded-2xl p-4 border border-indigo-500/10 text-center">
-            <span className="text-[9px] text-neutral-300 uppercase tracking-widest font-mono">Leads</span>
-            <p className="text-xl sm:text-3xl font-black text-emerald-400 mt-1">142</p>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 10 — PRICING */}
-      <section id="pricing" className="relative z-10 py-16 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase font-bold text-[#6366f1] tracking-widest block mb-2">Flat Industry Billing</span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">Simple Pricing</h2>
-          <p className="text-neutral-400 text-xs sm:text-sm mt-2">Simple plans. Cancel or upgrade anytime.</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Furniture plan */}
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 text-left flex flex-col justify-between min-h-[280px]">
-            <div>
-              <h3 className="text-md font-bold text-white mb-1">Furniture Funnel</h3>
-              <p className="text-neutral-400 text-[11px] leading-relaxed mb-4">Complete configuration layout for visual e-commerce.</p>
-              <div className="flex items-end gap-1 mb-4">
-                <span className="text-3xl sm:text-4xl font-black text-white">₹499</span>
-                <span className="text-xs text-neutral-400 mb-1">/ month</span>
-              </div>
-            </div>
-            <Link href="/signup" className="block w-full py-2.5 rounded-full text-center text-xs font-bold bg-white text-slate-900 hover:bg-neutral-200 transition-all shadow-md cursor-pointer">
-              Choose Furniture
-            </Link>
+          {/* SLIDE 4: The Reality (Website) */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The Website Trap</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed mb-10">
+                  You send them to a standard e-commerce website. It looks okay, but it is not optimized to capture highly impulsive social media traffic.
+                </p>
+                
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Standard Layout
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Expected Behavior
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Customer starts browsing
+                  </div>
+                </div>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={activeScene} overrideScene={3} />
+             </div>
           </div>
 
-          {/* Cafe plan */}
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 text-left flex flex-col justify-between min-h-[280px]">
-            <div>
-              <h3 className="text-md font-bold text-white mb-1">Cafe Funnel</h3>
-              <p className="text-neutral-400 text-[11px] leading-relaxed mb-4">Reservation calendar and signature coffee pre-order options.</p>
-              <div className="flex items-end gap-1 mb-4">
-                <span className="text-3xl sm:text-4xl font-black text-white">₹499</span>
-                <span className="text-xs text-neutral-400 mb-1">/ month</span>
-              </div>
-            </div>
-            <Link href="/signup" className="block w-full py-2.5 rounded-full text-center text-xs font-bold bg-white text-slate-900 hover:bg-neutral-200 transition-all shadow-md cursor-pointer">
-              Choose Cafe
-            </Link>
+          {/* SLIDE 5: The Aftermath */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The Aftermath</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed mb-10">
+                  Whether they wait hours for a reply on WhatsApp, or get overwhelmed by a generic website—friction leads to frustration. The customer bounces, and you lose the lead.
+                </p>
+                
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                      <Clock size={20} className="text-red-500" />
+                    </div>
+                    Slow replies kill impulse buying
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                      <HelpCircle size={20} className="text-orange-500" />
+                    </div>
+                    Information overload causes confusion
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                      <TrendingDown size={20} className="text-slate-500" />
+                    </div>
+                    High friction leads to lost sales
+                  </div>
+                </div>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={activeScene} overrideScene={4} />
+             </div>
           </div>
 
-          {/* Real estate plan */}
-          <div className="p-6 rounded-3xl bg-white/5 border border-white/10 text-left flex flex-col justify-between min-h-[280px]">
-            <div>
-              <h3 className="text-md font-bold text-white mb-1">Real Estate Funnel</h3>
-              <p className="text-neutral-400 text-[11px] leading-relaxed mb-4">Unlimited BHK layout showcases, interactive map nodes & high tier lead filter.</p>
-              <div className="flex items-end gap-1 mb-4">
-                <span className="text-3xl sm:text-4xl font-black text-white">₹999</span>
-                <span className="text-xs text-neutral-400 mb-1">/ month</span>
-              </div>
-            </div>
-            <Link href="/signup" className="block w-full py-2.5 rounded-full text-center text-xs font-bold bg-white text-slate-900 hover:bg-neutral-200 transition-all shadow-md cursor-pointer">
-              Choose Real Estate
-            </Link>
-          </div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
 
-      {/* SECTION 11 — FINAL CTA & FOOTER */}
-      <section className="relative z-10 py-16 px-6 max-w-4xl mx-auto text-center border-t border-white/5 mt-10">
-        <h2 className="text-3xl sm:text-5xl font-black text-white mb-4">
-          Turn Instagram Clicks Into Qualified WhatsApp Leads.
-        </h2>
-        <p className="text-neutral-400 text-xs sm:text-sm max-w-md mx-auto mb-8 font-light">
-          Set up your visual selection pre-qualification link in 2 minutes. Focus on closing sales instead of typing details.
-        </p>
+function PhoneMockup({ activeScene, overrideScene }: { activeScene: number, overrideScene?: number }) {
+  const displayScene = overrideScene || activeScene;
+  const [messages, setMessages] = useState<string[]>([]);
+  
+  const allMessages = [
+    { text: "Price?", time: "10:01 AM" },
+    { text: "Available?", time: "10:02 AM" },
+    { text: "Any discount?", time: "10:05 AM" },
+    { text: "What's the delivery time?", time: "10:12 AM" },
+    { text: "Do you have this in blue?", time: "10:15 AM" },
+    { text: "Location?", time: "10:22 AM" },
+    { text: "Warranty?", time: "10:28 AM" },
+    { text: "Custom size possible?", time: "10:30 AM" }
+  ];
 
-        <div className="flex flex-col items-center">
-          <Link 
-            href="/signup" 
-            className="inline-flex items-center gap-2.5 bg-white text-slate-950 hover:bg-neutral-200 font-extrabold px-8 py-3.5 rounded-full text-sm transition-all shadow-lg cursor-pointer"
+  useEffect(() => {
+    if (displayScene === 2 && activeScene === 2) {
+      setMessages([]);
+      let timeouts: NodeJS.Timeout[] = [];
+      allMessages.forEach((msg, idx) => {
+        const t = setTimeout(() => {
+          setMessages(prev => {
+            if (!prev.includes(msg.text)) return [...prev, msg.text];
+            return prev;
+          });
+        }, idx * 600 + 200);
+        timeouts.push(t);
+      });
+      return () => timeouts.forEach(clearTimeout);
+    } else {
+      setMessages([]);
+    }
+  }, [activeScene, displayScene]);
+
+  return (
+    <div className="relative w-[340px] h-[680px] bg-white rounded-[44px] shadow-[0_20px_60px_rgba(0,0,0,0.1)] border-[10px] border-slate-900 overflow-hidden flex flex-col bg-slate-50 shrink-0">
+      <AnimatePresence mode="wait">
+        {displayScene === 1 && (
+          <motion.div 
+            key="header-ad"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 shrink-0"
           >
-            Create My Funnel
-            <ArrowRight size={15} />
-          </Link>
-          <span className="text-[10px] text-neutral-500 mt-2 font-mono">No card required · Cancel anytime</span>
-        </div>
-
-        {/* Minimal Footer with logo */}
-        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-neutral-500 text-[10px] sm:text-xs">
-          <div className="flex items-center gap-2 mb-4 sm:mb-0">
-            <div className="w-6 h-6 rounded-md overflow-hidden bg-white p-0.5 flex items-center justify-center border border-white/5">
-              <img src="/logo.jpeg" alt="FunnelLink Logo" className="max-w-full max-h-full object-contain" />
+            <div className="font-bold text-xl tracking-tighter text-slate-900" style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}>Instagram</div>
+            <div className="flex gap-4">
+               <Heart size={22} className="text-slate-900" />
+               <Send size={22} className="text-slate-900" />
             </div>
-            <p>© 2026 FunnelLink. All rights reserved.</p>
-          </div>
-          <div className="flex gap-4 mt-2 sm:mt-0">
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          </div>
-        </div>
-      </section>
-    </main>
+          </motion.div>
+        )}
+        {displayScene === 2 && (
+          <motion.div 
+            key="header-wa"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-16 bg-[#075E54] flex items-center px-4 gap-3 shrink-0 text-white shadow-sm z-10"
+          >
+            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center overflow-hidden"><MessageCircle size={18}/></div>
+            <div>
+              <div className="text-sm font-bold leading-tight">Customer</div>
+              <div className="text-[10px] text-white/80">online</div>
+            </div>
+          </motion.div>
+        )}
+        {(displayScene === 3 || displayScene === 4) && (
+          <motion.div 
+            key="header-web"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 shrink-0"
+          >
+            <Menu size={24} className="text-slate-700" />
+            <div className="font-extrabold text-lg text-slate-900 tracking-tight">URBAN</div>
+            <div className="flex gap-3">
+              <Search size={20} className="text-slate-700" />
+              <ShoppingCart size={20} className="text-slate-700" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 relative overflow-hidden flex flex-col bg-white">
+        <AnimatePresence mode="wait">
+          {displayScene === 1 && (
+            <motion.div 
+              key="body-ad"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 flex flex-col bg-white overflow-y-auto no-scrollbar"
+            >
+              {/* Ad Header */}
+              <div className="h-[60px] flex items-center justify-between px-3 shrink-0">
+                 <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-fuchsia-600 p-[2px]">
+                       <div className="w-full h-full bg-white rounded-full border-[1.5px] border-white overflow-hidden">
+                          <img src="/logo.jpeg" alt="Brand Logo" className="w-full h-full object-cover" />
+                       </div>
+                    </div>
+                    <div className="flex flex-col">
+                       <span className="text-[13px] font-bold text-slate-900 leading-tight">urbanliving.sofas</span>
+                       <span className="text-[11px] text-slate-500 leading-tight">Sponsored</span>
+                    </div>
+                 </div>
+                 <MoreHorizontal size={20} className="text-slate-900" />
+              </div>
+
+              {/* Ad Image */}
+              <div className="w-full aspect-square bg-slate-100 relative shrink-0">
+                <img 
+                  src="/sofa/blue-sofa.jpeg" 
+                  alt="Sofa" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Ad CTA Bar */}
+              <div className="bg-[#f0f4f8] border-b border-slate-100 px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-blue-100/50 transition-colors shrink-0">
+                 <div className="flex flex-col">
+                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">WhatsApp</span>
+                    <span className="text-[15px] font-bold text-blue-900 leading-tight">Send Message</span>
+                 </div>
+                 <ChevronRight size={20} className="text-blue-600" />
+              </div>
+
+              {/* Engagement & Caption */}
+              <div className="p-3 shrink-0">
+                 <div className="flex items-center justify-between mb-3">
+                    <div className="flex gap-4">
+                       <Heart size={24} className="text-slate-900" />
+                       <MessageCircle size={24} className="text-slate-900 transform scale-x-[-1]" />
+                       <Send size={24} className="text-slate-900" />
+                    </div>
+                    <Bookmark size={24} className="text-slate-900" />
+                 </div>
+                 
+                 <div className="text-[13px] font-semibold text-slate-900 mb-1.5">
+                    1,204 likes
+                 </div>
+
+                 <div className="text-[13px] text-slate-800 leading-snug">
+                    <span className="font-semibold text-slate-900 mr-2">urbanliving.sofas</span>
+                    Upgrade your living room with the Premium Milano 3-Seater. Teakwood frame & premium fabric. Limited stock! 🛋️✨ #homedecor #sofa #interiordesign
+                 </div>
+              </div>
+            </motion.div>
+          )}
+          {displayScene === 2 && (
+            <motion.div 
+              key="body-wa"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 bg-[#E5DDD5] p-4 flex flex-col gap-3 overflow-y-auto no-scrollbar"
+            >
+              <div className="flex flex-col gap-2 justify-end min-h-full pb-4">
+                {allMessages.map((msg, i) => (
+                  <AnimatePresence key={i}>
+                    {messages.includes(msg.text) && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 15, originX: 0 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        className="bg-white px-3.5 py-2.5 rounded-[18px] rounded-tl-sm text-slate-800 text-[13px] w-max max-w-[85%] shadow-sm relative self-start"
+                      >
+                        {msg.text}
+                        <span className="text-[9px] text-slate-400 ml-3 float-right mt-1.5">{msg.time}</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                ))}
+              </div>
+            </motion.div>
+          )}
+          {(displayScene === 3 || displayScene === 4) && (
+            <motion.div 
+              key="body-web"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 bg-white overflow-y-auto no-scrollbar"
+            >
+              {/* Bloated Generic Website Mockup */}
+              <div className="w-full h-[220px] relative flex flex-col items-center justify-center text-center px-6 shrink-0">
+                <div className="absolute inset-0">
+                   <img src="/sofa/sofa-model.jpeg" className="w-full h-full object-cover" />
+                   <div className="absolute inset-0 bg-slate-900/60"></div>
+                </div>
+                <div className="relative z-10 flex flex-col items-center">
+                   <span className="text-white font-black text-2xl tracking-tighter mb-2">Welcome to URBAN</span>
+                   <span className="text-slate-200 text-[11px] leading-relaxed max-w-[260px]">Providing quality home solutions and lifestyle inspirations for modern families since 1999.</span>
+                   <button className="mt-4 border border-white text-white px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest shadow-sm">Read Our Story</button>
+                </div>
+              </div>
+
+              <div className="px-4 py-6 shrink-0">
+                 <h3 className="font-bold text-slate-800 text-sm mb-3">Browse by Category</h3>
+                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/blue-sofa.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Living</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/dining%20table/full%20dining%20table.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Dining</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/blue-angle-3.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Office</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/green-sofa.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Outdoor</span>
+                   </div>
+                 </div>
+              </div>
+
+              <div className="bg-slate-50 px-4 py-6 border-t border-b border-slate-100 shrink-0">
+                 <h3 className="font-bold text-slate-800 text-sm mb-3">Latest from the Blog</h3>
+                 <div className="bg-white border border-slate-200 p-2.5 flex gap-3 mb-2.5 shadow-sm">
+                    <div className="w-14 h-14 bg-slate-100 shrink-0 border border-slate-200 overflow-hidden rounded-md">
+                       <img src="/sofa/sofa-sketch.jpeg" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                       <span className="text-[11px] font-bold text-slate-800 leading-tight mb-0.5">Top 5 Trends in 2024</span>
+                       <span className="text-[9px] text-slate-500 line-clamp-2 leading-relaxed">Read about the latest interior design trends taking over homes...</span>
+                    </div>
+                 </div>
+                 <div className="bg-white border border-slate-200 p-2.5 flex gap-3 shadow-sm">
+                    <div className="w-14 h-14 bg-slate-100 shrink-0 border border-slate-200 overflow-hidden rounded-md">
+                       <img src="/dining%20table/chair.jpeg" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                       <span className="text-[11px] font-bold text-slate-800 leading-tight mb-0.5">Wood Maintenance 101</span>
+                       <span className="text-[9px] text-slate-500 line-clamp-2 leading-relaxed">Learn how to properly care for your teakwood furniture...</span>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="px-4 py-8 text-center bg-slate-900 text-white mt-auto shrink-0">
+                 <h3 className="font-bold text-[12px] uppercase tracking-widest mb-2">Join our Newsletter</h3>
+                 <span className="text-[10px] text-slate-400 block mb-4">Get 5% off your first purchase!</span>
+                 <input type="text" placeholder="Enter your email address" className="w-full bg-white/10 border border-white/20 px-3 py-2.5 text-[11px] text-white outline-none mb-3 rounded-none placeholder:text-white/40" />
+                 <button className="w-full bg-white text-slate-900 py-2.5 text-[10px] font-bold uppercase tracking-widest">Subscribe</button>
+              </div>
+
+              {/* Confused Question Popups */}
+              {displayScene === 4 && activeScene === 4 && (
+                <div className="absolute inset-0 z-40 pointer-events-none">
+                  {/* Popup 1: Location */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 1.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[20%] left-4 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <MapPin size={14} className="text-red-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Where is the store?</span>
+                  </motion.div>
+
+                  {/* Popup 2: Details */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 2.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[45%] right-4 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <HelpCircle size={14} className="text-orange-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Does it fit my room?</span>
+                  </motion.div>
+
+                  {/* Popup 3: Options */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 3.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[70%] left-8 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <Package size={14} className="text-blue-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Is this in stock?</span>
+                  </motion.div>
+                </div>
+              )}
+
+              {/* Slide 5 Chaos Overlay (Active only when displayScene === 4) */}
+              {displayScene === 4 && activeScene === 4 && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 1 }}
+                  className="absolute inset-0 bg-red-900/10 backdrop-blur-[1px] z-30 pointer-events-none flex flex-col items-center justify-center"
+                >
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 1, type: "spring" }}
+                    className="bg-white px-6 py-4 rounded-2xl shadow-2xl border-2 border-red-500 text-center"
+                  >
+                     <div className="text-red-600 font-black text-4xl mb-1 tracking-tighter">98%</div>
+                     <div className="text-slate-800 font-bold text-[10px] tracking-widest uppercase">Bounce Rate</div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Confused cursor animation */}
+              {displayScene === 4 && activeScene === 4 && (
+                <motion.div 
+                  initial={{ x: 150, y: 300, opacity: 0 }}
+                  animate={{ 
+                    x: [150, 50, 250, 100, 300, 150],
+                    y: [300, 150, 200, 400, 100, 300],
+                    opacity: [0, 1, 1, 1, 1, 0]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute z-50 pointer-events-none"
+                >
+                  <MousePointer2 size={36} fill="white" className="text-red-500 drop-shadow-2xl" />
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-20 pointer-events-none">
+        <div className="w-[120px] h-6 bg-slate-900 rounded-b-3xl"></div>
+      </div>
+      <div className="absolute bottom-2 inset-x-0 h-1 flex justify-center z-20 pointer-events-none">
+        <div className="w-[120px] h-1.5 bg-slate-900/20 rounded-full"></div>
+      </div>
+    </div>
   );
 }
