@@ -73,7 +73,7 @@ export default function FunnelEngine() {
           <span>Engine</span>
         </h2>
         <p className="mt-3 md:mt-4 text-sm md:text-base lg:text-lg font-light max-w-3xl mx-auto text-slate-600">
-          Route raw traffic into highly structured customer journeys — automatically.
+          Every click arrives with questions. FunnelLink delivers the answers.
         </p>
       </motion.div>
 
@@ -86,7 +86,7 @@ export default function FunnelEngine() {
             scale: isActivated ? 1 : 0.9
           }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-[900px] h-[650px] md:w-[1000px] md:h-[750px] shrink-0 font-sans mx-auto" 
+          className="relative w-[900px] h-[800px] md:w-[1000px] md:h-[850px] shrink-0 font-sans mx-auto" 
           style={{ 
             transformOrigin: 'center center', 
             transform: 'scale(min(1.0, max(0.4, min(calc(100vw / 1050), calc(100vh / 850)))))' 
@@ -116,7 +116,7 @@ export default function FunnelEngine() {
                 <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 1.8 }} d="M 500 395 L 500.01 450" stroke="#94a3b8" strokeWidth="2" fill="none" />
                 <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 2.0 }} d="M 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
                 <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 2.0 }} d="M 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
-                <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 2.2 }} d="M 500.01 450 L 500.02 620" stroke="#94a3b8" strokeWidth="2" fill="none" />
+                <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 2.2 }} d="M 500.01 450 L 500.02 660" stroke="#94a3b8" strokeWidth="2" fill="none" />
                 
                 {/* Highlight Overlays (Animating pulses for top paths) */}
                 <motion.path d="M 500 120 L 500.01 285" stroke="url(#roseGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0.8 }} />
@@ -128,7 +128,7 @@ export default function FunnelEngine() {
                 {/* Highlight Overlays (Animating pulses for bottom paths) */}
                 <motion.path d="M 500 395 L 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.8 }} />
                 <motion.path d="M 500 395 L 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 3.2 }} />
-                <motion.path d="M 500 395 L 500.01 620" stroke="url(#greenGrad)" strokeWidth="4" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 3.6 }} />
+                <motion.path d="M 500 395 L 500.01 660" stroke="url(#greenGrad)" strokeWidth="4" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 3.6 }} />
               </>
             )}
 
@@ -265,10 +265,10 @@ export default function FunnelEngine() {
             >
               <DataCard 
                 icon={<Star fill="currentColor" />} 
-                title="Experience" 
+                title="Answers" 
                 tag="Step 1" 
-                value="Product Catalog" 
-                desc="Instantly educates customers on pricing, location, and store details."
+                value="Customer Questions Solved" 
+                desc="Pricing, reviews, photos, location, FAQs, and everything customers need before reaching out."
               />
             </motion.div>
           </div>
@@ -281,15 +281,15 @@ export default function FunnelEngine() {
             >
               <DataCard 
                 icon={<Check />} 
-                title="Build Trust" 
+                title="Trust" 
                 tag="Step 2" 
-                value="Intent Captured" 
-                desc="Answers questions automatically, establishing brand credibility."
+                value="Confidence Built" 
+                desc="Customers understand the business, see proof, and feel ready to move forward."
               />
             </motion.div>
           </div>
 
-          <div className="absolute top-[620px] left-[500px] -translate-x-1/2 z-20">
+          <div className="absolute top-[660px] left-[500px] -translate-x-1/2 z-20">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: isActivated ? 1 : 0, y: isActivated ? 0 : 30 }}
@@ -297,10 +297,10 @@ export default function FunnelEngine() {
             >
               <DataCard 
                 icon={<MessageCircle fill="currentColor" />} 
-                title="Increased Sales" 
+                title="Action" 
                 tag="Conversion" 
-                value="Ready-to-Buy Leads" 
-                desc="Sales conversion rate skyrockets with highly qualified WhatsApp messages."
+                value="Ready-To-Buy Customers" 
+                desc="Conversations begin with informed customers instead of endless questions."
                 border="border-[#25D366]/40" 
                 highlight="text-[#25D366] bg-[#25D366]/10" 
               />
