@@ -1,0 +1,979 @@
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
+import { MessageCircle, Star, ArrowDown, Play, MapPin, MousePointer2, Check, Filter, Heart, Send, Bookmark, MoreHorizontal, ChevronRight, Menu, X, Search, ShoppingCart, HelpCircle, Package, Clock, TrendingDown } from 'lucide-react';
+
+const InstagramIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.181a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
+  </svg>
+);
+
+const FacebookIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const YoutubeIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
+const GoogleMapsIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" height={size} width={size} className={className}>
+    <path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 16 8 16s8-10.75 8-16c0-4.42-3.58-8-8-8zm0 11.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 4.5 12 4.5 15.5 6.07 15.5 8s-1.57 3.5-3.5 3.5z"/>
+  </svg>
+);
+
+const HeroTransitionZone = () => {
+  const container = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ['start start', 'end end'],
+  });
+
+  const scale1 = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
+  const rotate1 = useTransform(scrollYProgress, [0, 1], [0, -4]);
+  const opacity1 = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
+  const borderRadius1 = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  
+  const scale2 = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
+  const rotate2 = useTransform(scrollYProgress, [0, 1], [4, 0]);
+  const borderRadius2 = useTransform(scrollYProgress, [0, 1], [40, 0]);
+
+  return (
+    <div ref={container} className="relative h-[200vh] bg-[#0A0A0A]">
+      {/* SECTION 1: HERO */}
+      <motion.div 
+        style={{ scale: scale1, rotate: rotate1, opacity: opacity1, borderRadius: borderRadius1 }}
+        className="sticky top-0 h-screen w-full bg-white flex flex-col overflow-hidden transform-gpu origin-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-0"
+      >
+        <Navbar />
+        
+        <section className="relative flex-1 flex flex-col items-center justify-center text-center px-6">
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+          <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-violet-500/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 30, filter: "blur(10px)", scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="text-[54px] leading-[1.05] md:text-[96px] font-extrabold tracking-[-0.04em] text-[#0A0A0A]"
+          >
+            Turn Traffic <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-violet-600 to-purple-600">Into Customers.</span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="mt-8 text-lg md:text-2xl text-slate-500 max-w-3xl font-medium leading-relaxed tracking-tight"
+          >
+            Transform traffic from Instagram, Google Maps, Facebook, WhatsApp, QR codes, and ads into interactive customer journeys that drive reservations, bookings, site visits, and sales.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="mt-12 flex flex-col sm:flex-row items-center gap-4 relative z-10"
+          >
+            <button className="bg-[#0A0A0A] text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-1 flex items-center gap-2 group">
+              Create Free Funnel
+              <ArrowDown size={18} className="text-slate-400 group-hover:text-white transition-colors group-hover:translate-x-1 -rotate-90" />
+            </button>
+            <button 
+              onClick={() => document.getElementById('flow-engine')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-white border border-slate-200 text-[#0A0A0A] px-8 py-4 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm flex items-center gap-2 hover:-translate-y-1 group"
+            >
+              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <ArrowDown size={12} className="text-slate-600" />
+              </div>
+              See How It Works
+            </button>
+          </motion.div>
+        </section>
+      </motion.div>
+
+      {/* SECTION 2: ONE LINER (Slides up over the hero) */}
+      <motion.div 
+        style={{ scale: scale2, rotate: rotate2, borderTopLeftRadius: borderRadius2, borderTopRightRadius: borderRadius2 }}
+        className="relative h-screen bg-slate-50 z-10 flex flex-col justify-center items-center transform-gpu origin-top shadow-[0_-20px_50px_rgba(0,0,0,0.3)]"
+      >
+        <div className="max-w-5xl mx-auto text-center px-6">
+          <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-tight text-[#0A0A0A] leading-[1.1]">
+            Every Business Has Traffic.<br />
+            <span className="text-slate-400">Very Few Have A Customer Journey.</span>
+          </h2>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default function AttioLandingPage() {
+  return (
+    <div className="bg-[#0A0A0A] min-h-screen text-[#111] font-sans selection:bg-blue-100">
+      <HeroTransitionZone />
+      
+      <div className="bg-slate-50 relative z-20">
+
+      {/* 5. THE TRADITIONAL WAY (STICKY MOCKUP SCROLL) */}
+      <StorySection />
+
+      {/* NEW: WHITE SCREEN QUESTIONS REVEAL SECTION */}
+      <QuestionsRevealSection />
+
+      {/* 2. HUB AND SPOKE ARCHITECTURE FLOW (ATTIO STYLE) */}
+      <section id="flow-engine" className="py-20 border-y border-slate-100 overflow-hidden relative bg-slate-50/50">
+        <div className="text-center mb-10 px-6 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#0A0A0A]">The FunnelLink Engine</h2>
+          <p className="mt-4 text-xl text-slate-500 font-light max-w-2xl mx-auto">
+            Route raw traffic into highly structured customer journeys.
+          </p>
+        </div>
+
+        {/* Scalable Container for Absolute Positioning */}
+        <div className="w-full flex justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="relative w-[1000px] h-[750px] shrink-0 font-sans" 
+            style={{ transformOrigin: 'top center', transform: 'scale(min(1, max(0.4, calc(100vw / 1000))))' }}
+          >
+            {/* BACKGROUNDS */}
+            <div className="absolute top-0 left-0 right-0 h-[350px] bg-white border-b border-blue-500/10" style={{ backgroundImage: 'linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+            <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-slate-50/50" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
+            {/* SVG CONNECTING LINES */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+              {/* Lines from Top Pills to Center Logo */}
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2 }} d="M 500 120 L 500.01 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.3 }} d="M 250 170 C 250 250, 480 250, 480 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.4 }} d="M 750 170 C 750 250, 520 250, 520 300" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.5 }} d="M 230 250 C 350 250, 440 320, 460 320" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.6 }} d="M 770 250 C 650 250, 560 320, 540 320" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+
+              {/* Lines from Center to Bottom Cards */}
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.7 }} d="M 500 400 L 500.01 450" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.8 }} d="M 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.8 }} d="M 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.9 }} d="M 500.01 450 L 500.02 620" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              
+              {/* Highlight Overlays (Animating pulses for top paths) */}
+              <motion.path d="M 500 120 L 500.01 300" stroke="url(#roseGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0 }} />
+              <motion.path d="M 250 170 C 250 250, 480 250, 480 300" stroke="url(#pinkGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0.4 }} />
+              <motion.path d="M 750 170 C 750 250, 520 250, 520 300" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 0.8 }} />
+              <motion.path d="M 230 250 C 350 250, 440 320, 460 320" stroke="url(#emeraldGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 1.2 }} />
+              <motion.path d="M 770 250 C 650 250, 560 320, 540 320" stroke="url(#redGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 1.6 }} />
+
+              {/* Highlight Overlays (Animating pulses for bottom paths) */}
+              <motion.path d="M 500 400 L 500.01 450 L 270 450 Q 250 450 250 470 L 250 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.0 }} />
+              <motion.path d="M 500 400 L 500.01 450 L 730 450 Q 750 450 750 470 L 750 500" stroke="url(#blueGrad)" strokeWidth="3" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.4 }} />
+              <motion.path d="M 500 400 L 500.01 620" stroke="url(#greenGrad)" strokeWidth="4" fill="none" strokeDasharray="100 1000" animate={{ strokeDashoffset: [1100, -200] }} transition={{ repeat: Infinity, duration: 4, ease: "linear", delay: 2.8 }} />
+
+              <defs>
+                <linearGradient id="roseGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f43f5e" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#f43f5e" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#f43f5e" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="pinkGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ec4899" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#ec4899" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#3b82f6" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="emeraldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#10b981" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#10b981" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#ef4444" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22c55e" stopOpacity="0"/>
+                  <stop offset="50%" stopColor="#22c55e" stopOpacity="1"/>
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity="0"/>
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* --- TOP PILLS (TRAFFIC SOURCES) --- */}
+            <div className="absolute top-[100px] left-[500px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<MousePointer2/>} text="Website Ads" borderColor="border-slate-200" iconColor="text-slate-600" />
+            </div>
+            <div className="absolute top-[150px] left-[250px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<InstagramIcon/>} text="Instagram" borderColor="border-pink-200" iconColor="text-pink-600" />
+            </div>
+            <div className="absolute top-[150px] left-[750px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<FacebookIcon/>} text="Facebook" borderColor="border-blue-200" iconColor="text-blue-600" />
+            </div>
+            <div className="absolute top-[250px] left-[150px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<GoogleMapsIcon/>} text="Google Maps" borderColor="border-emerald-200" iconColor="text-emerald-600" />
+            </div>
+            <div className="absolute top-[250px] left-[850px] -translate-x-1/2 -translate-y-1/2 z-10">
+              <Pill icon={<YoutubeIcon/>} text="YouTube" borderColor="border-red-200" iconColor="text-red-600" />
+            </div>
+
+            {/* --- CENTER HUB (FUNNELLINK) --- */}
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', damping: 20, delay: 0.5 }}
+              className="absolute top-[350px] left-[500px] -translate-x-1/2 -translate-y-1/2 z-20"
+            >
+              <div className="w-28 h-28 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-2 border-slate-100 flex items-center justify-center relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-violet-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <img src="/logo.jpeg" className="w-14 h-14 object-contain mix-blend-multiply relative z-10" alt="FunnelLink" />
+              </div>
+            </motion.div>
+
+            {/* --- BOTTOM CARDS (OUTCOMES) --- */}
+            <div className="absolute top-[500px] left-[250px] -translate-x-1/2 z-10">
+              <DataCard 
+                icon={<Star fill="currentColor" />} 
+                title="Experience" 
+                tag="Step 1" 
+                value="Product Catalog" 
+                desc="Instantly educates customers on pricing, location, and store details."
+              />
+            </div>
+            <div className="absolute top-[500px] left-[750px] -translate-x-1/2 z-10">
+              <DataCard 
+                icon={<Check />} 
+                title="Build Trust" 
+                tag="Step 2" 
+                value="Intent Captured" 
+                desc="Answers questions automatically, establishing brand credibility."
+              />
+            </div>
+            <div className="absolute top-[620px] left-[500px] -translate-x-1/2 z-20">
+              <DataCard 
+                icon={<MessageCircle fill="currentColor" />} 
+                title="Increased Sales" 
+                tag="Conversion" 
+                value="Ready-to-Buy Leads" 
+                desc="Sales conversion rate skyrockets with highly qualified WhatsApp messages."
+                border="border-[#25D366]/40" 
+                highlight="text-[#25D366] bg-[#25D366]/10" 
+              />
+            </div>
+
+          </motion.div>
+        </div>
+      </section>
+
+      </div>
+    </div>
+  );
+}
+
+// ATTIO STYLE FLOATING PILL COMPONENT
+function Pill({ icon, text, borderColor, iconColor = "text-slate-500" }: { icon: React.ReactNode, text: string, borderColor: string, iconColor?: string }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className={`bg-white px-5 py-3 rounded-full border-[2.5px] ${borderColor} shadow-sm flex items-center gap-2.5 font-bold text-slate-800 text-sm hover:-translate-y-1 transition-transform cursor-default relative group`}
+    >
+      <div className={`${iconColor} group-hover:scale-110 transition-transform`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 18 })}</div>
+      {text}
+    </motion.div>
+  )
+}
+
+// ATTIO STYLE DATA CARD COMPONENT
+function DataCard({ icon, title, tag, value, desc, border="border-slate-200", highlight="text-blue-600 bg-blue-50" }: any) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className={`bg-white rounded-[24px] border border-slate-200 ${border !== 'border-slate-200' ? border : ''} shadow-[0_10px_30px_rgba(0,0,0,0.04)] w-[280px] p-5 hover:-translate-y-1 transition-transform`}
+    >
+      <div className="flex items-center justify-between mb-5">
+        <div className={`flex items-center gap-2.5 font-bold text-slate-800 text-sm`}>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${highlight}`}>
+            {React.cloneElement(icon as React.ReactElement<any>, { size: 16 })}
+          </div>
+          {title}
+        </div>
+        <div className="bg-slate-100 text-slate-500 text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest">{tag}</div>
+      </div>
+      <div className="flex flex-col gap-1.5 border-b border-slate-100 pb-4 mb-4">
+        <div className="text-[17px] font-black text-slate-900 tracking-tight">{value}</div>
+      </div>
+      <p className="text-[12px] font-medium text-slate-500 leading-relaxed">
+        {desc}
+      </p>
+    </motion.div>
+  )
+}
+
+function Navbar() {
+  return (
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50">
+      <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-10">
+          <div className="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-pointer">
+            <div className="w-8 h-8 rounded-md flex items-center justify-center overflow-hidden">
+              <img src="/logo.jpeg" alt="FunnelLink Logo" className="w-full h-full object-contain mix-blend-multiply" />
+            </div>
+            FunnelLink
+          </div>
+          <div className="hidden md:flex items-center gap-7 text-sm font-bold text-slate-600">
+            <span className="hover:text-black cursor-pointer transition-colors">Platform</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Resources</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Customers</span>
+            <span className="hover:text-black cursor-pointer transition-colors">Pricing</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-5 text-sm font-bold">
+          <button className="text-slate-600 hover:text-black transition-colors hidden sm:block">Sign in</button>
+          <button className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white px-5 py-2.5 rounded-lg transition-all shadow-sm shadow-blue-500/20">
+            Start for free
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// THE TRADITIONAL WAY - SCROLLING MOCKUP COMPONENT
+function StorySection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
+
+  const [activeScene, setActiveScene] = useState(1);
+
+  useEffect(() => {
+    return scrollYProgress.onChange((latest) => {
+      // Trigger animations slightly early so they start playing exactly as the slide comes into view
+      if (latest > 0.75) setActiveScene(3);
+      else if (latest > 0.45) setActiveScene(2);
+      else setActiveScene(1);
+    });
+  }, [scrollYProgress]);
+
+  return (
+    <div ref={containerRef} className="h-[500vh] bg-slate-50 relative border-t border-slate-100">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
+        
+        <motion.div style={{ x }} className="flex w-[400vw] h-full items-center">
+          
+          {/* SLIDE 1: Intro Text */}
+          <div className="w-[100vw] h-full flex flex-col items-center justify-center px-6 text-center">
+             <span className="text-sm md:text-base font-bold tracking-widest text-slate-400 uppercase mb-6 block">The Traditional Trap</span>
+             <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-tight text-[#0A0A0A] leading-[1.05] max-w-4xl">
+               Why sending traffic straight to WhatsApp or a generic website fails.
+             </h2>
+          </div>
+
+          {/* SLIDE 2: The Hook */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2 flex flex-col justify-center">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The Hook</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed">
+                   You run an ad. It works perfectly. The customer loves the product and clicks your Call to Action.
+                </p>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={1} overrideScene={1} />
+             </div>
+          </div>
+
+          {/* SLIDE 3: The Reality (WhatsApp) */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The WhatsApp Trap</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed mb-10">
+                   Because they came straight from an image, they have zero context. Messages flood in. You spend hours typing the same answers.
+                </p>
+                
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Multiple chat windows
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Customers stop replying
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Stressful & Chaotic
+                  </div>
+                </div>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={activeScene} overrideScene={2} />
+             </div>
+          </div>
+
+          {/* SLIDE 4: The Reality (Website) */}
+          <div className="w-[100vw] h-full flex flex-col lg:flex-row items-center justify-center px-6 md:px-24 gap-12 lg:gap-32">
+             <div className="max-w-lg lg:w-1/2">
+                <h4 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-tight text-slate-900 mb-6">The Website Trap</h4>
+                <p className="text-slate-500 font-medium text-xl md:text-2xl leading-relaxed mb-10">
+                   You send them to a standard e-commerce website. It looks okay, but it is not optimized to capture highly impulsive social media traffic.
+                </p>
+                
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Standard Layout
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Expected Behavior
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-700 text-xl font-bold tracking-tight">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                    Customer starts browsing
+                  </div>
+                </div>
+             </div>
+             <div className="lg:w-1/2 flex items-center justify-center shrink-0 scale-90 md:scale-100">
+                <PhoneMockup activeScene={activeScene} overrideScene={3} />
+             </div>
+          </div>
+
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function QuestionsRevealSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+
+  // 1. Aftermath intro phase: 0.0 to 0.22
+  const aftermathOpacity = useTransform(scrollYProgress, [0.0, 0.04, 0.18, 0.22], [0, 1, 1, 0]);
+  const aftermathY = useTransform(scrollYProgress, [0.0, 0.04, 0.18, 0.22], [30, 0, 0, -30]);
+
+  // 2. Questions header phase: 0.22 to 0.74
+  const qHeaderOpacity = useTransform(scrollYProgress, [0.22, 0.26, 0.70, 0.74], [0, 1, 1, 0]);
+  const qHeaderY = useTransform(scrollYProgress, [0.22, 0.26, 0.70, 0.74], [20, 0, 0, -20]);
+
+  // 3. The 5 questions stagger fade: 0.26 to 0.74
+  const q1Opacity = useTransform(scrollYProgress, [0.26, 0.32, 0.70, 0.74], [0, 1, 1, 0]);
+  const q1Y = useTransform(scrollYProgress, [0.26, 0.32, 0.70, 0.74], [25, 0, 0, -25]);
+
+  const q2Opacity = useTransform(scrollYProgress, [0.35, 0.41, 0.70, 0.74], [0, 1, 1, 0]);
+  const q2Y = useTransform(scrollYProgress, [0.35, 0.41, 0.70, 0.74], [25, 0, 0, -25]);
+
+  const q3Opacity = useTransform(scrollYProgress, [0.44, 0.50, 0.70, 0.74], [0, 1, 1, 0]);
+  const q3Y = useTransform(scrollYProgress, [0.44, 0.50, 0.70, 0.74], [25, 0, 0, -25]);
+
+  const q4Opacity = useTransform(scrollYProgress, [0.53, 0.59, 0.70, 0.74], [0, 1, 1, 0]);
+  const q4Y = useTransform(scrollYProgress, [0.53, 0.59, 0.70, 0.74], [25, 0, 0, -25]);
+
+  const q5Opacity = useTransform(scrollYProgress, [0.62, 0.68, 0.70, 0.74], [0, 1, 1, 0]);
+  const q5Y = useTransform(scrollYProgress, [0.62, 0.68, 0.70, 0.74], [25, 0, 0, -25]);
+
+  // 4. Comparison phase: 0.74 to 0.90
+  const compOpacity = useTransform(scrollYProgress, [0.74, 0.78, 0.88, 0.92], [0, 1, 1, 0]);
+  const compY = useTransform(scrollYProgress, [0.74, 0.78, 0.88, 0.92], [30, 0, 0, -30]);
+
+  // 5. Ultimate problem statement phase: 0.92 to 1.00
+  const finalOpacity = useTransform(scrollYProgress, [0.92, 0.96], [0, 1]);
+  const finalY = useTransform(scrollYProgress, [0.92, 0.96], [30, 0]);
+
+  return (
+    <div ref={containerRef} className="h-[550vh] bg-white relative z-30 border-b border-slate-100">
+      <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-white text-black px-6 md:px-12 lg:px-24">
+        
+        {/* PHASE 1: THE AFTERMATH SCREEN */}
+        <motion.div 
+          style={{ opacity: aftermathOpacity, y: aftermathY }}
+          className="absolute inset-0 flex flex-col items-center justify-center max-w-4xl mx-auto px-6 text-center pointer-events-none"
+        >
+          <span className="text-sm md:text-base font-bold tracking-[0.25em] text-red-500 uppercase mb-4">The Aftermath</span>
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight mb-8">
+            Friction leads to frustration.
+          </h2>
+          <p className="text-slate-500 font-medium text-lg md:text-2xl leading-relaxed mb-12 max-w-3xl">
+            Whether they wait hours for a reply on WhatsApp, or get overwhelmed by a generic website—the customer bounces, and you lose the lead.
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6 w-full text-left mt-4">
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <Clock size={20} className="text-red-500" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-950 text-base leading-snug">Slow replies</h4>
+                <p className="text-slate-500 text-xs mt-1">Kill impulse buying instantly.</p>
+              </div>
+            </div>
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                <HelpCircle size={20} className="text-orange-500" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-950 text-base leading-snug">Information overload</h4>
+                <p className="text-slate-500 text-xs mt-1">Causes friction and confusion.</p>
+              </div>
+            </div>
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <TrendingDown size={20} className="text-slate-500" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-950 text-base leading-snug">High friction</h4>
+                <p className="text-slate-500 text-xs mt-1">Leads directly to lost sales.</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* PHASE 2: QUESTIONS HEADER */}
+        <motion.div 
+          style={{ opacity: qHeaderOpacity, y: qHeaderY }}
+          className="absolute top-16 text-center pointer-events-none"
+        >
+          <span className="text-xs md:text-sm font-bold tracking-[0.25em] text-slate-400 uppercase">Customer Experience</span>
+          <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 mt-2">Questions FunnelLink Solves</h3>
+        </motion.div>
+
+        {/* QUESTIONS REVEAL WRAPPER */}
+        <div className="max-w-3xl w-full flex flex-col gap-6 relative z-10 pointer-events-none">
+          <motion.div style={{ opacity: q1Opacity, y: q1Y }} className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 border-l-4 border-red-500 pl-5">
+            &ldquo;Can I trust this business?&rdquo;
+          </motion.div>
+          
+          <motion.div style={{ opacity: q2Opacity, y: q2Y }} className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 border-l-4 border-orange-500 pl-5">
+            &ldquo;What exactly are they selling?&rdquo;
+          </motion.div>
+
+          <motion.div style={{ opacity: q3Opacity, y: q3Y }} className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 border-l-4 border-yellow-500 pl-5">
+            &ldquo;How much does it cost?&rdquo;
+          </motion.div>
+
+          <motion.div style={{ opacity: q4Opacity, y: q4Y }} className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 border-l-4 border-blue-500 pl-5">
+            &ldquo;What do other customers say?&rdquo;
+          </motion.div>
+
+          <motion.div style={{ opacity: q5Opacity, y: q5Y }} className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 border-l-4 border-emerald-500 pl-5">
+            &ldquo;What happens next?&rdquo;
+          </motion.div>
+        </div>
+
+        {/* PHASE 3: COMPARISON SCREEN */}
+        <motion.div 
+          style={{ opacity: compOpacity, y: compY }}
+          className="absolute inset-0 flex flex-col items-center justify-center max-w-5xl mx-auto px-6 z-20 pointer-events-none"
+        >
+          <div className="text-center mb-10">
+            <span className="text-xs uppercase font-extrabold tracking-[0.25em] text-indigo-600">The Core Solution</span>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-950 mt-2 leading-tight">Trust is the Real Funnel.</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 w-full">
+            <div className="bg-red-50/50 border border-red-100 rounded-[2rem] p-8">
+              <span className="text-xs font-black uppercase text-red-500 tracking-wider">Without FunnelLink</span>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mt-4 leading-snug">
+                Customer asks all these questions inside WhatsApp. Answering them manually leads to chaos and drop-offs.
+              </p>
+            </div>
+            
+            <div className="bg-emerald-50/50 border border-emerald-100 rounded-[2rem] p-8">
+              <span className="text-xs font-black uppercase text-emerald-600 tracking-wider">With FunnelLink</span>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mt-4 leading-snug">
+                The answers come before the conversation. Trust is built in the browser. The chat starts qualified.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* PHASE 4: THE DEEPEST PROBLEM */}
+        <motion.div 
+          style={{ opacity: finalOpacity, y: finalY }}
+          className="absolute inset-0 flex flex-col items-center justify-center max-w-4xl mx-auto px-6 z-20"
+        >
+          <span className="text-xs uppercase font-extrabold tracking-[0.25em] text-slate-400">The Deepest Problem FunnelLink Solves</span>
+          
+          <h2 className="text-3xl sm:text-5xl md:text-[54px] font-black text-slate-950 mt-6 mb-8 text-center leading-[1.1] italic">
+            &ldquo;I like what I see, but I don&apos;t trust enough to take the next step.&rdquo;
+          </h2>
+
+          <div className="text-center max-w-2xl">
+            <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
+              Once trust exists: Price questions decrease · Ghosting decreases · Conversions increase · WhatsApp conversations improve.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Bottom indicator */}
+        <motion.div 
+          style={{ opacity: useTransform(scrollYProgress, [0.95, 0.99], [1, 0]) }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-400 flex flex-col items-center gap-1.5"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest">Scroll to see the FunnelLink Engine</span>
+          <ArrowDown size={14} className="animate-bounce" />
+        </motion.div>
+
+      </div>
+    </div>
+  );
+}
+
+function PhoneMockup({ activeScene, overrideScene }: { activeScene: number, overrideScene?: number }) {
+  const displayScene = overrideScene || activeScene;
+  const [messages, setMessages] = useState<string[]>([]);
+  
+  const allMessages = [
+    { text: "Price?", time: "10:01 AM" },
+    { text: "Available?", time: "10:02 AM" },
+    { text: "Any discount?", time: "10:05 AM" },
+    { text: "What's the delivery time?", time: "10:12 AM" },
+    { text: "Do you have this in blue?", time: "10:15 AM" },
+    { text: "Location?", time: "10:22 AM" },
+    { text: "Warranty?", time: "10:28 AM" },
+    { text: "Custom size possible?", time: "10:30 AM" }
+  ];
+
+  useEffect(() => {
+    if (displayScene === 2 && activeScene === 2) {
+      setMessages([]);
+      let timeouts: NodeJS.Timeout[] = [];
+      allMessages.forEach((msg, idx) => {
+        const t = setTimeout(() => {
+          setMessages(prev => {
+            if (!prev.includes(msg.text)) return [...prev, msg.text];
+            return prev;
+          });
+        }, idx * 600 + 200);
+        timeouts.push(t);
+      });
+      return () => timeouts.forEach(clearTimeout);
+    } else {
+      setMessages([]);
+    }
+  }, [activeScene, displayScene]);
+
+  return (
+    <div className="relative w-[340px] h-[680px] bg-white rounded-[44px] shadow-[0_20px_60px_rgba(0,0,0,0.1)] border-[10px] border-slate-900 overflow-hidden flex flex-col bg-slate-50 shrink-0">
+      <AnimatePresence mode="wait">
+        {displayScene === 1 && (
+          <motion.div 
+            key="header-ad"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 shrink-0"
+          >
+            <div className="font-bold text-xl tracking-tighter text-slate-900" style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}>Instagram</div>
+            <div className="flex gap-4">
+               <Heart size={22} className="text-slate-900" />
+               <Send size={22} className="text-slate-900" />
+            </div>
+          </motion.div>
+        )}
+        {displayScene === 2 && (
+          <motion.div 
+            key="header-wa"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-16 bg-[#075E54] flex items-center px-4 gap-3 shrink-0 text-white shadow-sm z-10"
+          >
+            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center overflow-hidden"><MessageCircle size={18}/></div>
+            <div>
+              <div className="text-sm font-bold leading-tight">Customer</div>
+              <div className="text-[10px] text-white/80">online</div>
+            </div>
+          </motion.div>
+        )}
+        {(displayScene === 3 || displayScene === 4) && (
+          <motion.div 
+            key="header-web"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 shrink-0"
+          >
+            <Menu size={24} className="text-slate-700" />
+            <div className="font-extrabold text-lg text-slate-900 tracking-tight">URBAN</div>
+            <div className="flex gap-3">
+              <Search size={20} className="text-slate-700" />
+              <ShoppingCart size={20} className="text-slate-700" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 relative overflow-hidden flex flex-col bg-white">
+        <AnimatePresence mode="wait">
+          {displayScene === 1 && (
+            <motion.div 
+              key="body-ad"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 flex flex-col bg-white overflow-y-auto no-scrollbar"
+            >
+              {/* Ad Header */}
+              <div className="h-[60px] flex items-center justify-between px-3 shrink-0">
+                 <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-fuchsia-600 p-[2px]">
+                       <div className="w-full h-full bg-white rounded-full border-[1.5px] border-white overflow-hidden">
+                          <img src="/logo.jpeg" alt="Brand Logo" className="w-full h-full object-cover" />
+                       </div>
+                    </div>
+                    <div className="flex flex-col">
+                       <span className="text-[13px] font-bold text-slate-900 leading-tight">urbanliving.sofas</span>
+                       <span className="text-[11px] text-slate-500 leading-tight">Sponsored</span>
+                    </div>
+                 </div>
+                 <MoreHorizontal size={20} className="text-slate-900" />
+              </div>
+
+              {/* Ad Image */}
+              <div className="w-full aspect-square bg-slate-100 relative shrink-0">
+                <img 
+                  src="/sofa/blue-sofa.jpeg" 
+                  alt="Sofa" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Ad CTA Bar */}
+              <div className="bg-[#f0f4f8] border-b border-slate-100 px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-blue-100/50 transition-colors shrink-0">
+                 <div className="flex flex-col">
+                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">WhatsApp</span>
+                    <span className="text-[15px] font-bold text-blue-900 leading-tight">Send Message</span>
+                 </div>
+                 <ChevronRight size={20} className="text-blue-600" />
+              </div>
+
+              {/* Engagement & Caption */}
+              <div className="p-3 shrink-0">
+                 <div className="flex items-center justify-between mb-3">
+                    <div className="flex gap-4">
+                       <Heart size={24} className="text-slate-900" />
+                       <MessageCircle size={24} className="text-slate-900 transform scale-x-[-1]" />
+                       <Send size={24} className="text-slate-900" />
+                    </div>
+                    <Bookmark size={24} className="text-slate-900" />
+                 </div>
+                 
+                 <div className="text-[13px] font-semibold text-slate-900 mb-1.5">
+                    1,204 likes
+                 </div>
+
+                 <div className="text-[13px] text-slate-800 leading-snug">
+                    <span className="font-semibold text-slate-900 mr-2">urbanliving.sofas</span>
+                    Upgrade your living room with the Premium Milano 3-Seater. Teakwood frame & premium fabric. Limited stock! 🛋️✨ #homedecor #sofa #interiordesign
+                 </div>
+              </div>
+            </motion.div>
+          )}
+          {displayScene === 2 && (
+            <motion.div 
+              key="body-wa"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 bg-[#E5DDD5] p-4 flex flex-col gap-3 overflow-y-auto no-scrollbar"
+            >
+              <div className="flex flex-col gap-2 justify-end min-h-full pb-4">
+                {allMessages.map((msg, i) => (
+                  <AnimatePresence key={i}>
+                    {messages.includes(msg.text) && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 15, originX: 0 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                        className="bg-white px-3.5 py-2.5 rounded-[18px] rounded-tl-sm text-slate-800 text-[13px] w-max max-w-[85%] shadow-sm relative self-start"
+                      >
+                        {msg.text}
+                        <span className="text-[9px] text-slate-400 ml-3 float-right mt-1.5">{msg.time}</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                ))}
+              </div>
+            </motion.div>
+          )}
+          {(displayScene === 3 || displayScene === 4) && (
+            <motion.div 
+              key="body-web"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              className="absolute inset-0 bg-white overflow-y-auto no-scrollbar"
+            >
+              {/* Bloated Generic Website Mockup */}
+              <div className="w-full h-[220px] relative flex flex-col items-center justify-center text-center px-6 shrink-0">
+                <div className="absolute inset-0">
+                   <img src="/sofa/sofa-model.jpeg" className="w-full h-full object-cover" />
+                   <div className="absolute inset-0 bg-slate-900/60"></div>
+                </div>
+                <div className="relative z-10 flex flex-col items-center">
+                   <span className="text-white font-black text-2xl tracking-tighter mb-2">Welcome to URBAN</span>
+                   <span className="text-slate-200 text-[11px] leading-relaxed max-w-[260px]">Providing quality home solutions and lifestyle inspirations for modern families since 1999.</span>
+                   <button className="mt-4 border border-white text-white px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest shadow-sm">Read Our Story</button>
+                </div>
+              </div>
+
+              <div className="px-4 py-6 shrink-0">
+                 <h3 className="font-bold text-slate-800 text-sm mb-3">Browse by Category</h3>
+                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/blue-sofa.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Living</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/dining%20table/full%20dining%20table.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Dining</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/blue-angle-3.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Office</span>
+                   </div>
+                   <div className="w-[72px] shrink-0 flex flex-col items-center gap-1.5">
+                     <div className="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                        <img src="/sofa/green-sofa.jpeg" className="w-full h-full object-cover" />
+                     </div>
+                     <span className="text-[10px] text-slate-700 font-semibold">Outdoor</span>
+                   </div>
+                 </div>
+              </div>
+
+              <div className="bg-slate-50 px-4 py-6 border-t border-b border-slate-100 shrink-0">
+                 <h3 className="font-bold text-slate-800 text-sm mb-3">Latest from the Blog</h3>
+                 <div className="bg-white border border-slate-200 p-2.5 flex gap-3 mb-2.5 shadow-sm">
+                    <div className="w-14 h-14 bg-slate-100 shrink-0 border border-slate-200 overflow-hidden rounded-md">
+                       <img src="/sofa/sofa-sketch.jpeg" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                       <span className="text-[11px] font-bold text-slate-800 leading-tight mb-0.5">Top 5 Trends in 2024</span>
+                       <span className="text-[9px] text-slate-500 line-clamp-2 leading-relaxed">Read about the latest interior design trends taking over homes...</span>
+                    </div>
+                 </div>
+                 <div className="bg-white border border-slate-200 p-2.5 flex gap-3 shadow-sm">
+                    <div className="w-14 h-14 bg-slate-100 shrink-0 border border-slate-200 overflow-hidden rounded-md">
+                       <img src="/dining%20table/chair.jpeg" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                       <span className="text-[11px] font-bold text-slate-800 leading-tight mb-0.5">Wood Maintenance 101</span>
+                       <span className="text-[9px] text-slate-500 line-clamp-2 leading-relaxed">Learn how to properly care for your teakwood furniture...</span>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="px-4 py-8 text-center bg-slate-900 text-white mt-auto shrink-0">
+                 <h3 className="font-bold text-[12px] uppercase tracking-widest mb-2">Join our Newsletter</h3>
+                 <span className="text-[10px] text-slate-400 block mb-4">Get 5% off your first purchase!</span>
+                 <input type="text" placeholder="Enter your email address" className="w-full bg-white/10 border border-white/20 px-3 py-2.5 text-[11px] text-white outline-none mb-3 rounded-none placeholder:text-white/40" />
+                 <button className="w-full bg-white text-slate-900 py-2.5 text-[10px] font-bold uppercase tracking-widest">Subscribe</button>
+              </div>
+
+              {/* Confused Question Popups */}
+              {displayScene === 4 && activeScene === 4 && (
+                <div className="absolute inset-0 z-40 pointer-events-none">
+                  {/* Popup 1: Location */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 1.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[20%] left-4 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <MapPin size={14} className="text-red-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Where is the store?</span>
+                  </motion.div>
+
+                  {/* Popup 2: Details */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 2.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[45%] right-4 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <HelpCircle size={14} className="text-orange-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Does it fit my room?</span>
+                  </motion.div>
+
+                  {/* Popup 3: Options */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10], scale: [0.9, 1, 1, 0.9] }}
+                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 3.5, repeat: Infinity, repeatDelay: 1.5 }}
+                    className="absolute top-[70%] left-8 bg-white px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
+                  >
+                    <Package size={14} className="text-blue-500" />
+                    <span className="text-[10px] font-bold text-slate-700">Is this in stock?</span>
+                  </motion.div>
+                </div>
+              )}
+ 
+              {/* Slide 5 Chaos Overlay (Active only when displayScene === 4) */}
+              {displayScene === 4 && activeScene === 4 && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 1 }}
+                  className="absolute inset-0 bg-red-900/10 backdrop-blur-[1px] z-30 pointer-events-none flex flex-col items-center justify-center"
+                >
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 1, type: "spring" }}
+                    className="bg-white px-6 py-4 rounded-2xl shadow-2xl border-2 border-red-500 text-center"
+                  >
+                     <div className="text-red-600 font-black text-4xl mb-1 tracking-tighter">98%</div>
+                     <div className="text-slate-800 font-bold text-[10px] tracking-widest uppercase">Bounce Rate</div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Confused cursor animation */}
+              {displayScene === 4 && activeScene === 4 && (
+                <motion.div 
+                  initial={{ x: 150, y: 300, opacity: 0 }}
+                  animate={{ 
+                    x: [150, 50, 250, 100, 300, 150],
+                    y: [300, 150, 200, 400, 100, 300],
+                    opacity: [0, 1, 1, 1, 1, 0]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute z-50 pointer-events-none"
+                >
+                  <MousePointer2 size={36} fill="white" className="text-red-500 drop-shadow-2xl" />
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-20 pointer-events-none">
+        <div className="w-[120px] h-6 bg-slate-900 rounded-b-3xl"></div>
+      </div>
+      <div className="absolute bottom-2 inset-x-0 h-1 flex justify-center z-20 pointer-events-none">
+        <div className="w-[120px] h-1.5 bg-slate-900/20 rounded-full"></div>
+      </div>
+    </div>
+  );
+}
