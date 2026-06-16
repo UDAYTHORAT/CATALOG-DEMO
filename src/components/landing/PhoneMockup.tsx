@@ -132,12 +132,12 @@ export default function PhoneMockup({ activeScene, overrideScene }: { activeScen
               </div>
 
               {/* Ad CTA Bar */}
-              <div className="bg-[#f0f4f8] border-b border-slate-100 px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-blue-100/50 transition-colors shrink-0">
+              <div className="bg-[#f0f4f8] border-b border-slate-100 px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#2A5BEA]/10 transition-colors shrink-0">
                  <div className="flex flex-col">
-                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">WhatsApp</span>
-                    <span className="text-[15px] font-bold text-blue-900 leading-tight">Send Message</span>
+                    <span className="text-[10px] text-[#2A5BEA] font-bold uppercase tracking-wider mb-0.5">WhatsApp</span>
+                    <span className="text-[15px] font-bold text-[#00154A] leading-tight">Send Message</span>
                  </div>
-                 <ChevronRight size={20} className="text-blue-600" />
+                 <ChevronRight size={20} className="text-[#2A5BEA]" />
               </div>
 
               {/* Engagement & Caption */}
@@ -303,7 +303,7 @@ export default function PhoneMockup({ activeScene, overrideScene }: { activeScen
                      transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1], delay: 3.2, repeat: Infinity, repeatDelay: 1.5 }}
                      className="absolute top-[66%] left-6 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2"
                    >
-                     <Package size={14} className="text-blue-500 shrink-0" />
+                     <Package size={14} className="text-[#2A5BEA] shrink-0" />
                      <span className="text-[10px] font-bold text-slate-700">Is this in stock?</span>
                    </motion.div>
                  </div>

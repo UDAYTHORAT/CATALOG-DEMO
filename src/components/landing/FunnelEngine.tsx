@@ -22,7 +22,7 @@ function Pill({ icon, text, borderColor, iconColor = "text-slate-500" }: { icon:
 }
 
 // ATTIO STYLE DATA CARD COMPONENT
-function DataCard({ icon, title, tag, value, desc, border="border-slate-200", highlight="text-blue-600 bg-blue-50" }: any) {
+function DataCard({ icon, title, tag, value, desc, border="border-slate-200", highlight="text-[#2A5BEA] bg-[#2A5BEA]/10" }: any) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -73,7 +73,7 @@ export default function FunnelEngine() {
           <span>Engine</span>
         </h2>
         <p className="mt-3 md:mt-4 text-sm md:text-base lg:text-lg font-light max-w-3xl mx-auto text-slate-600">
-          Every click arrives with questions. FunnelLink delivers the answers.
+          Every click arrives with questions. <span className="text-[#0A0A0A] font-semibold">Funnel</span><span className="brand-gradient-text">Link</span> delivers the answers.
         </p>
       </motion.div>
 
@@ -93,7 +93,7 @@ export default function FunnelEngine() {
           }}
         >
           {/* BACKGROUNDS */}
-          <div className="absolute top-0 left-0 right-0 h-[350px] bg-white border-b border-blue-500/10" style={{ backgroundImage: 'linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          <div className="absolute top-0 left-0 right-0 h-[350px] bg-white border-b border-[#2A5BEA]/10" style={{ backgroundImage: 'linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-slate-50/50" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
           {/* SVG CONNECTING LINES */}
@@ -144,9 +144,9 @@ export default function FunnelEngine() {
                 <stop offset="100%" stopColor="#ec4899" stopOpacity="0"/>
               </linearGradient>
               <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0"/>
-                <stop offset="50%" stopColor="#3b82f6" stopOpacity="1"/>
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0"/>
+                <stop offset="0%" stopColor="#2A5BEA" stopOpacity="0"/>
+                <stop offset="50%" stopColor="#4E3BDA" stopOpacity="1"/>
+                <stop offset="100%" stopColor="#7A44E8" stopOpacity="0"/>
               </linearGradient>
               <linearGradient id="emeraldGrad" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stopColor="#10b981" stopOpacity="0"/>
@@ -191,7 +191,7 @@ export default function FunnelEngine() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="absolute top-[150px] left-[750px] -translate-x-1/2 -translate-y-1/2 z-10"
           >
-            <Pill icon={<FacebookIcon/>} text="Facebook" borderColor="border-blue-200" iconColor="text-blue-600" />
+            <Pill icon={<FacebookIcon/>} text="Facebook" borderColor="border-[#2A5BEA]/30" iconColor="text-[#2A5BEA]" />
           </motion.div>
           <motion.div 
             animate={{ opacity: isActivated ? 1 : 0, y: isActivated ? 0 : 20 }}
@@ -233,9 +233,9 @@ export default function FunnelEngine() {
                   : '0 0 0px rgba(0,0,0,0)'
               }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="w-28 h-28 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(59,130,246,0.15)] border-2 border-blue-500/20 flex items-center justify-center relative overflow-hidden"
+              className="w-28 h-28 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(42,91,234,0.15)] border-2 border-[#2A5BEA]/20 flex items-center justify-center relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-50"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2A5BEA]/5 to-[#4E3BDA]/5 opacity-50"></div>
               <motion.img 
                 src="/logo.jpeg" 
                 animate={{ scale: isActivated ? 1 : 0.8, opacity: isActivated ? 1 : 0.5 }}
@@ -253,7 +253,7 @@ export default function FunnelEngine() {
               scale: isActivated ? 1.3 : 0.8
             }}
             transition={{ duration: 0.5 }}
-            className="absolute top-[340px] left-[500px] -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-blue-400/20 blur-2xl rounded-full pointer-events-none z-10"
+            className="absolute top-[340px] left-[500px] -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#2A5BEA]/20 blur-2xl rounded-full pointer-events-none z-10"
           />
 
           {/* --- BOTTOM CARDS (OUTCOMES - Reveal dynamically when activated) --- */}

@@ -307,7 +307,7 @@ export function FunnelMockContent({ template, isMobile }: { template: any; isMob
       {/* ── FOOTER ── */}
       <div className={`${px} py-3 text-center border-t ${border}`}>
         <p className={`text-[7px] ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>
-          Powered by FunnelLink
+          Powered by Funnel<span className="brand-gradient-text">Link</span>
         </p>
       </div>
     </div>

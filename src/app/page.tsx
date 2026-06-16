@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import HeroTransitionZone from '@/components/landing/HeroTransitionZone';
 import StorySection from '@/components/landing/StorySection';
 import FunnelEngine from '@/components/landing/FunnelEngine';
+import SplitTransition from '@/components/landing/SplitTransition';
 
 function SmoothScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -31,6 +32,9 @@ export default function AttioLandingPage() {
 
         {/* HUB AND SPOKE ARCHITECTURE FLOW (ATTIO STYLE) */}
         <FunnelEngine />
+
+        {/* CINEMATIC SPLIT REVEAL TRANSITION */}
+        <SplitTransition />
       </div>
     </div>
   );

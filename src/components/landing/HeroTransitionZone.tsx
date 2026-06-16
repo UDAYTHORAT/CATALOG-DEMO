@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
+import Link from 'next/link';
 import Navbar from './Navbar';
 
 export default function HeroTransitionZone() {
@@ -31,7 +32,7 @@ export default function HeroTransitionZone() {
         <Navbar />
         
         <section className="relative flex-1 flex flex-col items-center justify-center text-center px-6">
-          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#2A5BEA]/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
           <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-violet-500/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
           <motion.h1 
@@ -41,7 +42,7 @@ export default function HeroTransitionZone() {
             className="text-[54px] leading-[1.05] md:text-[96px] font-extrabold tracking-[-0.04em] text-[#0A0A0A]"
           >
             Turn Traffic <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 via-violet-600 to-purple-600">Into Customers.</span>
+            <span className="brand-gradient-text">Into Customers.</span>
           </motion.h1>
 
           <motion.p 
@@ -59,10 +60,12 @@ export default function HeroTransitionZone() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
             className="mt-12 flex flex-col sm:flex-row items-center gap-4 relative z-10"
           >
-            <button className="bg-[#0A0A0A] text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-1 flex items-center gap-2 group">
-              Create Free Funnel
-              <ArrowDown size={18} className="text-slate-400 group-hover:text-white transition-colors group-hover:translate-x-1 -rotate-90" />
-            </button>
+            <Link href="/signup">
+              <button className="bg-[#0A0A0A] text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-1 flex items-center gap-2 group">
+                Create Free Funnel
+                <ArrowDown size={18} className="text-slate-400 group-hover:text-white transition-colors group-hover:translate-x-1 -rotate-90" />
+              </button>
+            </Link>
             <button 
               onClick={() => document.getElementById('flow-engine')?.scrollIntoView({ behavior: 'smooth' })}
               className="bg-white border border-slate-200 text-[#0A0A0A] px-8 py-4 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm flex items-center gap-2 hover:-translate-y-1 group"

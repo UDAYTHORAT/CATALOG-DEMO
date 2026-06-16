@@ -1,7 +1,61 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useTransform, useMotionValueEvent, useMotionValue } from 'framer-motion';
+
+// Custom hook to calculate element scroll progress dynamically, immune to layout shifts / scroll triggers
+function useElementScrollProgress(ref: React.RefObject<HTMLDivElement | null>) {
+  const scrollYProgress = useMotionValue(0);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleScroll = () => {
+      if (!ref.current) return;
+      
+      const rect = ref.current.getBoundingClientRect();
+      const currentScrollY = window.scrollY;
+      const elementTop = rect.top + currentScrollY;
+      const elementHeight = rect.height;
+      const viewportHeight = window.innerHeight;
+      
+      const scrollRange = elementHeight - viewportHeight;
+      if (scrollRange <= 0) return;
+      
+      const progress = Math.max(0, Math.min(1, (currentScrollY - elementTop) / scrollRange));
+      scrollYProgress.set(progress);
+    };
+
+    // Setup event listeners
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    
+    // Initial call
+    handleScroll();
+
+    // Setup MutationObserver to watch for layout shifts / dynamic heights
+    const observer = new MutationObserver(handleScroll);
+    if (document.body) {
+      observer.observe(document.body, { 
+        childList: true, 
+        subtree: true,
+        attributes: true 
+      });
+    }
+
+    // A fallback check after a short delay to ensure everything settled
+    const timer = setTimeout(handleScroll, 100);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [ref, scrollYProgress]);
+
+  return scrollYProgress;
+}
 import PhoneMockup from './PhoneMockup';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 
@@ -146,10 +200,7 @@ const QuestionNode = ({
 // ─────────────────────────────────────────────
 export default function StorySection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
+  const scrollYProgress = useElementScrollProgress(containerRef);
 
   // 7 slides → 6 transitions → pause on Slide 6 (index 5, at -71.428%) & Slide 7 (index 6, at -85.714%)
   const x = useTransform(
@@ -173,38 +224,44 @@ export default function StorySection() {
   const slide6TextOpacity = useTransform(scrollYProgress, [0, 0.54, 0.56, 0.57, 0.58, 1.0], [0, 0, 1, 1, 0, 0]);
   const slide6TextScale = useTransform(scrollYProgress, [0, 0.56, 0.58, 1.0], [0.8, 1, 0.8, 0.8]);
 
-  // ─── Slide 7 exit transitions (0.68 to 0.98) ───
-  const slide7Opacity = useTransform(scrollYProgress, [0, 0.68, 0.76, 0.96, 1.0], [0, 0, 1, 1, 0]);
-  const slide7Y = useTransform(scrollYProgress, [0, 0.68, 0.76, 0.96, 1.0], [120, 120, 0, 0, -120]);
+  // ─── Slide 7 exit transitions (0.68 to 1.0) ───
+  const slide7Opacity = useTransform(scrollYProgress, [0, 0.68, 0.76, 0.98, 1.0], [0, 0, 1, 1, 0]);
+  const slide7Y = useTransform(scrollYProgress, [0, 0.68, 0.76, 0.98, 1.0], [120, 120, 0, 0, -120]);
 
   // ─── Slide 7 Level Reveal Animations ───
   // Title fades in early
-  const level7TitleOpacity = useTransform(scrollYProgress, [0.76, 0.79], [0, 1]);
-  const level7TitleY = useTransform(scrollYProgress, [0.76, 0.79], [30, 0]);
+  const level7TitleOpacity = useTransform(scrollYProgress, [0.76, 0.78], [0, 1]);
+  const level7TitleY = useTransform(scrollYProgress, [0.76, 0.78], [30, 0]);
 
-  // Step 1: Questions Unanswered (appears immediately at 0.79 and stays)
-  const step1Opacity = useTransform(scrollYProgress, [0.79, 0.82, 0.96], [0, 1, 1]);
-  const step1X = useTransform(scrollYProgress, [0.79, 0.82], [-50, 0]);
-  const step1Scale = useTransform(scrollYProgress, [0.79, 0.82], [0.8, 1]);
+  // Step 1: Questions Unanswered (appears immediately at 0.78 and stays)
+  const step1Opacity = useTransform(scrollYProgress, [0.78, 0.80, 0.98], [0, 1, 1]);
+  const step1X = useTransform(scrollYProgress, [0.78, 0.80], [-50, 0]);
+  const step1Scale = useTransform(scrollYProgress, [0.78, 0.80], [0.8, 1]);
 
-  // Step 2: No Trust Built (appears at 0.82 and stays)
-  const step2Opacity = useTransform(scrollYProgress, [0.82, 0.85, 0.96], [0, 1, 1]);
-  const step2X = useTransform(scrollYProgress, [0.82, 0.85], [50, 0]);
-  const step2Scale = useTransform(scrollYProgress, [0.82, 0.85], [0.8, 1]);
+  // Step 2: No Trust Built (appears at 0.80 and stays)
+  const step2Opacity = useTransform(scrollYProgress, [0.80, 0.82, 0.98], [0, 1, 1]);
+  const step2X = useTransform(scrollYProgress, [0.80, 0.82], [50, 0]);
+  const step2Scale = useTransform(scrollYProgress, [0.80, 0.82], [0.8, 1]);
 
-  // Step 3: No Conversation (appears at 0.85 and stays)
-  const step3Opacity = useTransform(scrollYProgress, [0.85, 0.88, 0.96], [0, 1, 1]);
-  const step3X = useTransform(scrollYProgress, [0.85, 0.88], [-50, 0]);
-  const step3Scale = useTransform(scrollYProgress, [0.85, 0.88], [0.8, 1]);
+  // Step 3: No Conversation (appears at 0.82 and stays)
+  const step3Opacity = useTransform(scrollYProgress, [0.82, 0.84, 0.98], [0, 1, 1]);
+  const step3X = useTransform(scrollYProgress, [0.82, 0.84], [-50, 0]);
+  const step3Scale = useTransform(scrollYProgress, [0.82, 0.84], [0.8, 1]);
 
-  // Step 4: Revenue Lost (appears at 0.88 and stays)
-  const step4Opacity = useTransform(scrollYProgress, [0.88, 0.91, 0.96], [0, 1, 1]);
-  const step4X = useTransform(scrollYProgress, [0.88, 0.91], [50, 0]);
-  const step4Scale = useTransform(scrollYProgress, [0.88, 0.91], [0.7, 1]);
+  // Step 4: Revenue Lost (appears at 0.84 and stays)
+  const step4Opacity = useTransform(scrollYProgress, [0.84, 0.86, 0.98], [0, 1, 1]);
+  const step4X = useTransform(scrollYProgress, [0.84, 0.86], [50, 0]);
+  const step4Scale = useTransform(scrollYProgress, [0.84, 0.86], [0.7, 1]);
 
-  // Quote reveals last (appears at 0.92)
-  const quoteOpacity = useTransform(scrollYProgress, [0.92, 0.95, 0.98], [0, 1, 1]);
-  const quoteY = useTransform(scrollYProgress, [0.92, 0.95], [40, 0]);
+  // Timeline Container wrapper (fades out and goes display: none)
+  const timelineContainerOpacity = useTransform(scrollYProgress, [0.76, 0.87, 0.90], [1, 1, 0]);
+  const timelineContainerY = useTransform(scrollYProgress, [0.76, 0.87, 0.90], [0, 0, -30]);
+  const timelineDisplay = useTransform(scrollYProgress, [0, 0.899, 0.90, 1], ['block', 'block', 'none', 'none']);
+
+  // Quote reveals last (appears at 0.90 and stays)
+  const quoteOpacity = useTransform(scrollYProgress, [0.90, 0.93, 0.98], [0, 1, 1]);
+  const quoteY = useTransform(scrollYProgress, [0.90, 0.93], [30, 0]);
+  const quoteDisplay = useTransform(scrollYProgress, [0, 0.899, 0.90, 1], ['none', 'none', 'block', 'block']);
 
   return (
     <div ref={containerRef} className="h-[1250vh] bg-slate-50 relative border-t border-slate-100">
@@ -326,7 +383,7 @@ export default function StorySection() {
                 <br />
                 <span className="text-slate-400 font-bold">
                   They were looking for{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 font-black">
+                  <span className="brand-gradient-text">
                     answers.
                   </span>
                 </span>
@@ -406,104 +463,109 @@ export default function StorySection() {
             <div className="relative z-10 flex flex-col items-center max-w-5xl w-full">
               <SlideLabel number="06" label="Cost of Unanswered Questions" />
               
-              <motion.h2 
-                style={{ opacity: level7TitleOpacity, y: level7TitleY }}
-                className="text-4xl md:text-6xl lg:text-[72px] font-black tracking-[-0.03em] text-[#0A0A0A] mb-16 leading-[1.1]"
+              <motion.div
+                style={{ opacity: timelineContainerOpacity, y: timelineContainerY, display: timelineDisplay }}
+                className="w-full flex flex-col items-center"
               >
-                The Cost of <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Unanswered Questions.</span>
-              </motion.h2>
+                <motion.h2 
+                  style={{ opacity: level7TitleOpacity, y: level7TitleY }}
+                  className="text-4xl md:text-6xl lg:text-[72px] font-black tracking-[-0.03em] text-[#0A0A0A] mt-12 mb-16 leading-[1.1]"
+                >
+                  The Cost of <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Unanswered Questions.</span>
+                </motion.h2>
 
-              {/* Zig-Zag Timeline */}
-              <div className="relative w-full max-w-4xl mx-auto mb-16">
-                {/* Vertical Center Line (Desktop Only) */}
-                <div className="absolute left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-slate-200 via-orange-300 to-red-400 -translate-x-1/2 hidden md:block z-0" />
+                {/* Zig-Zag Timeline */}
+                <div className="relative w-full max-w-4xl mx-auto mb-16">
+                  {/* Vertical Center Line (Desktop Only) */}
+                  <div className="absolute left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-slate-200 via-orange-300 to-red-400 -translate-x-1/2 hidden md:block z-0" />
 
-                <div className="flex flex-col gap-10 md:gap-14 relative">
-                  {/* Step 1 - Left */}
-                  <motion.div 
-                    style={{ opacity: step1Opacity, x: step1X, scale: step1Scale }}
-                    className="flex flex-col md:flex-row items-center justify-start w-full relative"
-                  >
-                    {/* Badge */}
-                    <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
-                      01
-                    </div>
-                    {/* Content Card */}
-                    <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
-                      <div
-                        className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
-                      >
-                        <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">Questions Unanswered</h3>
-                        <p className="text-xs md:text-sm text-slate-500 font-medium">Your customer has doubts about price, quality, legitimacy, or fit</p>
+                  <div className="flex flex-col gap-10 md:gap-14 relative">
+                    {/* Step 1 - Left */}
+                    <motion.div 
+                      style={{ opacity: step1Opacity, x: step1X, scale: step1Scale }}
+                      className="flex flex-col md:flex-row items-center justify-start w-full relative"
+                    >
+                      {/* Badge */}
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
+                        01
                       </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Step 2 - Right */}
-                  <motion.div 
-                    style={{ opacity: step2Opacity, x: step2X, scale: step2Scale }}
-                    className="flex flex-col md:flex-row items-center justify-end w-full relative"
-                  >
-                    {/* Badge */}
-                    <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FFF0E6] text-orange-700 border border-orange-200 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
-                      02
-                    </div>
-                    {/* Content Card */}
-                    <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
-                      <div
-                        className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
-                      >
-                        <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Trust Built</h3>
-                        <p className="text-xs md:text-sm text-slate-500 font-medium">They hesitate because they don&apos;t have enough information to feel confident</p>
+                      {/* Content Card */}
+                      <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
+                        <div
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                        >
+                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">Questions Unanswered</h3>
+                          <p className="text-xs md:text-sm text-slate-500 font-medium">Your customer has doubts about price, quality, legitimacy, or fit</p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
 
-                  {/* Step 3 - Left */}
-                  <motion.div 
-                    style={{ opacity: step3Opacity, x: step3X, scale: step3Scale }}
-                    className="flex flex-col md:flex-row items-center justify-start w-full relative"
-                  >
-                    {/* Badge */}
-                    <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FEECE0] text-orange-800 border border-orange-300 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
-                      03
-                    </div>
-                    {/* Content Card */}
-                    <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
-                      <div
-                        className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
-                      >
-                        <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Conversation Starts</h3>
-                        <p className="text-xs md:text-sm text-slate-500 font-medium">They ghost you, message competitors, or keep browsing elsewhere</p>
+                    {/* Step 2 - Right */}
+                    <motion.div 
+                      style={{ opacity: step2Opacity, x: step2X, scale: step2Scale }}
+                      className="flex flex-col md:flex-row items-center justify-end w-full relative"
+                    >
+                      {/* Badge */}
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FFF0E6] text-orange-700 border border-orange-200 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
+                        02
                       </div>
-                    </div>
-                  </motion.div>
+                      {/* Content Card */}
+                      <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
+                        <div
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                        >
+                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Trust Built</h3>
+                          <p className="text-xs md:text-sm text-slate-500 font-medium">They hesitate because they don&apos;t have enough information to feel confident</p>
+                        </div>
+                      </div>
+                    </motion.div>
 
-                  {/* Step 4 - Right */}
-                  <motion.div 
-                    style={{ opacity: step4Opacity, x: step4X, scale: step4Scale }}
-                    className="flex flex-col md:flex-row items-center justify-end w-full relative"
-                  >
-                    {/* Badge */}
-                    <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
-                      ✕
-                    </div>
-                    {/* Content Card */}
-                    <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
-                      <div
-                        className="bg-gradient-to-br from-red-50 to-orange-50/50 border border-red-200 px-6 py-5 rounded-2xl shadow-[0_12px_24px_rgba(239,68,68,0.04)]"
-                      >
-                        <h3 className="text-lg md:text-xl font-black text-red-700 mb-1">Revenue Lost</h3>
-                        <p className="text-xs md:text-sm text-red-600 font-bold">A qualified lead walks away forever</p>
+                    {/* Step 3 - Left */}
+                    <motion.div 
+                      style={{ opacity: step3Opacity, x: step3X, scale: step3Scale }}
+                      className="flex flex-col md:flex-row items-center justify-start w-full relative"
+                    >
+                      {/* Badge */}
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FEECE0] text-orange-800 border border-orange-300 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
+                        03
                       </div>
-                    </div>
-                  </motion.div>
+                      {/* Content Card */}
+                      <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
+                        <div
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                        >
+                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Conversation Starts</h3>
+                          <p className="text-xs md:text-sm text-slate-500 font-medium">They ghost you, message competitors, or keep browsing elsewhere</p>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Step 4 - Right */}
+                    <motion.div 
+                      style={{ opacity: step4Opacity, x: step4X, scale: step4Scale }}
+                      className="flex flex-col md:flex-row items-center justify-end w-full relative"
+                    >
+                      {/* Badge */}
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
+                        ✕
+                      </div>
+                      {/* Content Card */}
+                      <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
+                        <div
+                          className="bg-gradient-to-br from-red-50 to-orange-50/50 border border-red-200 px-6 py-5 rounded-2xl shadow-[0_12px_24px_rgba(239,68,68,0.04)]"
+                        >
+                          <h3 className="text-lg md:text-xl font-black text-red-700 mb-1">Revenue Lost</h3>
+                          <p className="text-xs md:text-sm text-red-600 font-bold">A qualified lead walks away forever</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* The essence quote block with stronger design */}
               <motion.div 
-                style={{ opacity: quoteOpacity, y: quoteY }}
+                style={{ opacity: quoteOpacity, y: quoteY, display: quoteDisplay }}
                 className="max-w-3xl w-full text-center bg-gradient-to-br from-slate-900 to-slate-800 px-8 md:px-12 py-10 md:py-14 rounded-3xl shadow-[0_20px_60px_rgba(15,23,42,0.15)] border border-slate-700/30"
               >
                 <p className="text-xl md:text-2xl font-bold text-slate-200 leading-relaxed mb-3">
@@ -512,9 +574,9 @@ export default function StorySection() {
                 <p className="text-3xl md:text-4xl font-black text-white leading-relaxed mb-6">
                   They just weren&apos;t ready to trust.
                 </p>
-                <div className="h-1 w-16 mx-auto bg-gradient-to-r from-blue-500 to-violet-500 rounded-full mb-6" />
+                <div className="h-1 w-16 mx-auto bg-gradient-to-r from-[#2A5BEA] via-[#4E3BDA] to-[#7A44E8] rounded-full mb-6" />
                 <p className="text-sm font-bold tracking-[0.3em] text-slate-300 uppercase">
-                  This is exactly what FunnelLink solves
+                  This is exactly what <span className="text-white">Funnel</span><span className="brand-gradient-text">Link</span> solves
                 </p>
               </motion.div>
             </div>
