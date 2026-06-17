@@ -38,7 +38,7 @@ export default function SplitTransition() {
         >
           {/* Inner child height matches screen so text sits perfectly in the center */}
           <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center">
-            <h1 className="text-6xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-tanker tracking-[-0.02em] uppercase select-none whitespace-nowrap text-black">
+            <h1 className="text-6xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-black font-sans tracking-[-0.02em] uppercase select-none whitespace-nowrap text-black">
               Funnel<span className="brand-gradient-text">Link</span>
             </h1>
           </div>
@@ -51,7 +51,7 @@ export default function SplitTransition() {
         >
           {/* Inner child height matches screen so text sits perfectly in the center */}
           <div className="absolute bottom-0 left-0 w-full h-screen flex items-center justify-center">
-            <h1 className="text-6xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-tanker tracking-[-0.02em] uppercase select-none whitespace-nowrap text-black">
+            <h1 className="text-6xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-black font-sans tracking-[-0.02em] uppercase select-none whitespace-nowrap text-black">
               Funnel<span className="brand-gradient-text">Link</span>
             </h1>
           </div>

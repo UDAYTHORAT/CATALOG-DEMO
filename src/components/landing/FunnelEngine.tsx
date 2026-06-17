@@ -53,7 +53,20 @@ export default function FunnelEngine() {
   const [isActivated, setIsActivated] = useState(false);
 
   return (
-    <section id="flow-engine" className="relative w-full min-h-[1100px] pt-24 pb-32 border-t border-slate-100 overflow-hidden bg-slate-50 select-none">
+    <section id="flow-engine" className="relative w-full min-h-[1100px] pt-24 pb-32 border-t border-slate-100 overflow-hidden bg-slate-50 select-none satoshi-engine">
+      <style>{`
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+               url('/fonts/Satoshi-Variable.ttf') format('truetype');
+          font-weight: 300 900;
+          font-display: swap;
+          font-style: normal;
+        }
+        .satoshi-engine, .satoshi-engine * {
+          font-family: 'Satoshi', system-ui, sans-serif !important;
+        }
+      `}</style>
       <motion.div 
         animate={{ 
           y: isActivated ? 0 : 350,
@@ -64,11 +77,29 @@ export default function FunnelEngine() {
       >
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight flex flex-wrap items-center justify-center gap-x-1 md:gap-x-1.5 gap-y-1 text-[#0A0A0A] leading-tight">
           <span>The Funnel<span className={isActivated ? "text-[#2563eb] transition-colors duration-500" : "text-inherit transition-colors duration-500"}>Link</span></span>
-          <span className="inline-block scale-60 md:scale-75 transform origin-center -translate-y-1 md:-translate-y-1.5 mx-[-4px] md:mx-[-8px]">
+          <span className="inline-block scale-60 md:scale-75 transform origin-center -translate-y-1 md:-translate-y-1.5 mx-[-4px] md:mx-[-8px] relative">
             <LeverSwitch 
               isActivated={isActivated}
               onChange={(state) => setIsActivated(state)}
             />
+            {!isActivated && (
+              <motion.div
+                animate={{ 
+                  x: [-32, 22, -32],
+                  opacity: [0, 1, 1, 0, 0],
+                  scale: [0.9, 1.15, 0.9, 0.9, 0.9]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.8,
+                  times: [0, 0.5, 0.8, 0.9, 1.0],
+                  ease: "easeInOut"
+                }}
+                className="absolute top-1/2 -translate-y-1/2 left-1/2 z-50 pointer-events-none text-2xl drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
+              >
+                👆
+              </motion.div>
+            )}
           </span>
           <span>Engine</span>
         </h2>

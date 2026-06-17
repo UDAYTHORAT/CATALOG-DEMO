@@ -3,7 +3,20 @@ import Link from 'next/link';
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50 satoshi-nav">
+      <style>{`
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+               url('/fonts/Satoshi-Variable.ttf') format('truetype');
+          font-weight: 300 900;
+          font-display: swap;
+          font-style: normal;
+        }
+        .satoshi-nav, .satoshi-nav * {
+          font-family: 'Satoshi', system-ui, sans-serif !important;
+        }
+      `}</style>
       <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-10">
           <Link href="/" className="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-pointer">

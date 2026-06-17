@@ -6,6 +6,15 @@ import HeroTransitionZone from '@/components/landing/HeroTransitionZone';
 import StorySection from '@/components/landing/StorySection';
 import FunnelEngine from '@/components/landing/FunnelEngine';
 import SplitTransition from '@/components/landing/SplitTransition';
+import {
+  RevenueSection,
+  PositioningSection,
+  QuestionsSection,
+  ResultSection,
+  FinalSection
+} from '@/components/landing/WhatIsFunnelLink';
+import EditorDemoSection from '@/components/landing/EditorDemoSection';
+import Footer from '@/components/landing/Footer';
 
 function SmoothScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -35,6 +44,15 @@ export default function AttioLandingPage() {
 
         {/* CINEMATIC SPLIT REVEAL TRANSITION */}
         <SplitTransition />
+
+        {/* PRESENTATION PAGES SHOWN SCROLLABLY AFTER SIMULATOR */}
+        <RevenueSection />
+        <PositioningSection />
+        <QuestionsSection />
+        <ResultSection />
+        <FinalSection />
+        <EditorDemoSection />
+        <Footer />
       </div>
     </div>
   );

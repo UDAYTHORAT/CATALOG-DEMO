@@ -45,7 +45,20 @@ export default function PhoneMockup({ activeScene, overrideScene }: { activeScen
   const showChaos = displayScene === 4;
 
   return (
-    <div className="relative w-[300px] h-[620px] md:w-[340px] md:h-[680px] bg-white rounded-[44px] shadow-[0_30px_80px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] border-[10px] border-slate-900 overflow-hidden flex flex-col bg-slate-50 shrink-0 transform-gpu">
+    <div className="relative w-[300px] h-[620px] md:w-[340px] md:h-[680px] bg-white rounded-[44px] shadow-[0_30px_80px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] border-[10px] border-slate-900 overflow-hidden flex flex-col bg-slate-50 shrink-0 transform-gpu satoshi-mockup">
+      <style>{`
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+               url('/fonts/Satoshi-Variable.ttf') format('truetype');
+          font-weight: 300 900;
+          font-display: swap;
+          font-style: normal;
+        }
+        .satoshi-mockup, .satoshi-mockup * {
+          font-family: 'Satoshi', system-ui, sans-serif !important;
+        }
+      `}</style>
 
       {/* ─── HEADERS ─── */}
       <AnimatePresence mode="wait">

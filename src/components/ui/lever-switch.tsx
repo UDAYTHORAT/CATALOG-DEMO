@@ -112,6 +112,53 @@ export function LeverSwitch({ isActivated, onChange }: LeverSwitchProps) {
           inset 0 -2px 4px rgba(0, 0, 0, 0.4),
           inset 0 1.5px 3px rgba(255, 255, 255, 0.5);
       }
+
+      .toggle-handle-ghost {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        width: 0px;
+        height: 0px;
+        z-index: 15;
+        pointer-events: none;
+        transform-origin: bottom center;
+        opacity: 0.25;
+      }
+
+      .toggle-handle-ghost-left {
+        transform: translateX(-18px) rotate(-22deg);
+      }
+
+      .toggle-handle-ghost-right {
+        transform: translateX(18px) rotate(22deg);
+      }
+
+      .toggle-handle-shaft-ghost {
+        position: absolute;
+        bottom: 0;
+        left: -3.5px;
+        width: 7px;
+        height: 32px;
+        background: linear-gradient(90deg, #cbd5e1 0%, #ffffff 40%, #94a3b8 100%);
+        border-radius: 3.5px;
+        box-shadow: 
+          0 2px 4px rgba(0, 0, 0, 0.15),
+          inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      }
+
+      .toggle-handle-knob-ghost {
+        position: absolute;
+        bottom: 28px;
+        left: -13.5px;
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #ff8888 0%, #ef4444 38%, #b91c1c 78%, #7f1d1d 100%);
+        box-shadow: 
+          0 4px 8px rgba(0, 0, 0, 0.3),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+          inset 0 1.5px 3px rgba(255, 255, 255, 0.5);
+      }
     `}</style>
 
       <label className="toggle-container">
@@ -121,6 +168,13 @@ export function LeverSwitch({ isActivated, onChange }: LeverSwitchProps) {
           checked={isActivated}
           onChange={(e) => onChange(e.target.checked)}
         />
+        {/* Ghost/Outline at active position shown only when deactivated */}
+        {!isActivated && (
+          <div className="toggle-handle-ghost toggle-handle-ghost-right">
+            <div className="toggle-handle-shaft-ghost"></div>
+            <div className="toggle-handle-knob-ghost"></div>
+          </div>
+        )}
         <div className="toggle-handle-wrapper">
           <div className="toggle-handle-shaft"></div>
           <div className="toggle-handle-knob"></div>

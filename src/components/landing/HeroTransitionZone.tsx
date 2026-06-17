@@ -23,7 +23,20 @@ export default function HeroTransitionZone() {
   const borderRadius2 = useTransform(scrollYProgress, [0, 1], [40, 0]);
 
   return (
-    <div ref={container} className="relative h-[200vh] bg-[#0A0A0A]">
+    <div ref={container} className="relative h-[200vh] bg-[#0A0A0A] satoshi-hero">
+      <style>{`
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+               url('/fonts/Satoshi-Variable.ttf') format('truetype');
+          font-weight: 300 900;
+          font-display: swap;
+          font-style: normal;
+        }
+        .satoshi-hero, .satoshi-hero * {
+          font-family: 'Satoshi', system-ui, sans-serif !important;
+        }
+      `}</style>
       {/* SECTION 1: HERO */}
       <motion.div 
         style={{ scale: scale1, rotate: rotate1, opacity: opacity1, borderRadius: borderRadius1 }}

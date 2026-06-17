@@ -89,9 +89,11 @@ const previewModes: Array<{ id: PreviewMode; label: string; icon: React.ReactNod
 export default function FunnelAdFurnitureEditor({
   funnel,
   allProducts: products = [],
+  isDemo = false,
 }: {
   funnel: Funnel;
   allProducts?: Product[];
+  isDemo?: boolean;
 }) {
   const templateId = (funnel.story_mode_data?.[0]?.templateId as string | undefined) ?? 'funnelad-elite-furniture';
   const defaultSectionsRef = useRef<Section[]>(createDefaultSections(templateId));
@@ -620,13 +622,17 @@ export default function FunnelAdFurnitureEditor({
       }
 
       try {
-        await updateFunnel(funnel.id, {
-          story_mode_data: [{
-            ...(funnel.story_mode_data?.[0] ?? {}),
-            templateId,
-            content: liveContent,
-          }],
-        });
+        if (isDemo) {
+          await new Promise(r => setTimeout(r, 600));
+        } else {
+          await updateFunnel(funnel.id, {
+            story_mode_data: [{
+              ...(funnel.story_mode_data?.[0] ?? {}),
+              templateId,
+              content: liveContent,
+            }],
+          });
+        }
         lastSavedContentRef.current = structuredClone(liveContent);
         setSaveSuccess(true);
         setSaveError(null);
@@ -651,17 +657,23 @@ export default function FunnelAdFurnitureEditor({
       // 1. Force a save first
       const contentChanged = JSON.stringify(draftContent) !== JSON.stringify(lastSavedContentRef.current);
       if (contentChanged) {
-        await updateFunnel(funnel.id, {
-          story_mode_data: [{
-            ...(funnel.story_mode_data?.[0] ?? {}),
-            templateId,
-            content: draftContent,
-          }],
-          is_active: true
-        });
+        if (isDemo) {
+          await new Promise(r => setTimeout(r, 600));
+        } else {
+          await updateFunnel(funnel.id, {
+            story_mode_data: [{
+              ...(funnel.story_mode_data?.[0] ?? {}),
+              templateId,
+              content: draftContent,
+            }],
+            is_active: true
+          });
+        }
         lastSavedContentRef.current = structuredClone(draftContent);
       } else {
-        await updateFunnel(funnel.id, { is_active: true });
+        if (!isDemo) {
+          await updateFunnel(funnel.id, { is_active: true });
+        }
       }
       
       setShowPublishModal(true);
@@ -671,7 +683,7 @@ export default function FunnelAdFurnitureEditor({
     } finally {
       setIsPublishing(false);
     }
-  }, [draftContent, funnel?.id, funnel.story_mode_data, templateId]);
+  }, [draftContent, funnel?.id, funnel.story_mode_data, templateId, isDemo]);
 
   const handleWizardFinish = useCallback(async () => {
     await handlePublish();

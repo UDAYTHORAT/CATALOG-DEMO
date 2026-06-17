@@ -7,11 +7,11 @@ import {
   MessageCircle, ShoppingBag, ShieldCheck, Zap, RefreshCw, 
   ChevronRight, CheckCircle2, XCircle, MapPin, ArrowRight, 
   Star, ThumbsUp, Share2, HelpCircle, ChevronLeft, Truck, Menu, Eye, Users,
-  Globe, Link2, HelpCircle as QuestionIcon, Camera, Briefcase, DollarSign, Clock
+  Globe, Link2, HelpCircle as QuestionIcon, Camera, Briefcase, DollarSign, Clock, Rocket
 } from 'lucide-react';
 
-type Step = 'quiz' | 'feedback' | 'reveal' | 'simulation' | 'proof' | 'final';
-const STEPS: Step[] = ['quiz','feedback','reveal','simulation','proof','final'];
+type Step = 'start' | 'simulation' | 'revenue' | 'positioning' | 'questions' | 'result' | 'final';
+const STEPS: Step[] = ['start','simulation','revenue','positioning','questions','result','final'];
 const E: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
 const OPTIONS = [
@@ -22,6 +22,17 @@ const OPTIONS = [
 ];
 
 const INJECTED_STYLES = `
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+         url('/fonts/Satoshi-Variable.ttf') format('truetype');
+    font-weight: 300 900;
+    font-display: swap;
+    font-style: normal;
+  }
+  .what-is-funnellink-section, .what-is-funnellink-section * {
+    font-family: 'Satoshi', system-ui, sans-serif !important;
+  }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .brand-gradient {
@@ -67,6 +78,16 @@ const INJECTED_STYLES = `
   .click-guide-bounce {
     animation: click-bounce 1.0s infinite ease-in-out;
   }
+  @keyframes dash-flow {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+  @keyframes dash-flow-vertical {
+    to {
+      stroke-dashoffset: 20;
+    }
+  }
 `;
 
 const InstagramIcon = ({ size = 24, className = "" }) => (
@@ -82,6 +103,98 @@ const YoutubeIcon = ({ size = 24, className = "" }) => (
     <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
     <polygon fill="white" points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
   </svg>
+);
+
+const AnimatedConnector = ({ 
+  label, 
+  colorClass, 
+  active, 
+  flowColor = "text-[#2D63EC]" 
+}: { 
+  label: string; 
+  colorClass: string; 
+  active: boolean; 
+  flowColor?: string;
+}) => (
+  <div className="hidden md:flex flex-1 flex-col items-center justify-center px-2 relative min-w-[90px]">
+    <span className={`absolute -top-4 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
+      {label}
+    </span>
+    <svg className="w-full h-2 overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line 
+        x1="0" 
+        y1="4" 
+        x2="100%" 
+        y2="4" 
+        stroke="#E2E8F0" 
+        strokeWidth="2.5" 
+        strokeDasharray="5 5"
+        strokeLinecap="round"
+      />
+      {active && (
+        <line 
+          x1="0" 
+          y1="4" 
+          x2="100%" 
+          y2="4" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          className={`${flowColor} transition-colors duration-300`}
+          strokeDasharray="5 5"
+          strokeLinecap="round"
+          style={{
+            animation: 'dash-flow 1.0s linear infinite',
+          }}
+        />
+      )}
+    </svg>
+  </div>
+);
+
+const AnimatedConnectorVertical = ({ 
+  label, 
+  colorClass, 
+  active, 
+  flowColor = "text-[#2D63EC]" 
+}: { 
+  label: string; 
+  colorClass: string; 
+  active: boolean; 
+  flowColor?: string;
+}) => (
+  <div className="flex md:hidden h-10 w-6 flex-col items-center justify-center relative my-1">
+    <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
+      {label}
+    </span>
+    <svg className="w-2 h-full overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line 
+        x1="4" 
+        y1="0" 
+        x2="4" 
+        y2="100%" 
+        stroke="#E2E8F0" 
+        strokeWidth="2.5" 
+        strokeDasharray="5 5"
+        strokeLinecap="round"
+      />
+      {active && (
+        <line 
+          x1="4" 
+          y1="0" 
+          x2="4" 
+          y2="100%" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          className={`${flowColor} transition-colors duration-300`}
+          strokeDasharray="5 5"
+          strokeLinecap="round"
+          style={{
+            animation: 'dash-flow-vertical 1.0s linear infinite',
+          }}
+        />
+      )}
+    </svg>
+  </div>
 );
 
 const ClickGuide = ({ text, className = "", color = "bg-blue-600", delay = 2.0 }: { text: string; className?: string; color?: string; delay?: number }) => (
@@ -243,13 +356,13 @@ const SocialMediaScreen = ({ onAction, mode }: { onAction: () => void; mode: 'ba
                     onClick={onAction} 
                     className="w-full bg-blue-600 text-white py-3 rounded-full font-bold text-xs flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors relative"
                   >
-                    {mode === 'bad' ? 'Chat on WhatsApp' : 'Open Store'} <ArrowRight size={14} />
+                    {mode === 'bad' ? 'Chat on WhatsApp' : 'Start Customer Journey'} <ArrowRight size={14} />
                     <span className="absolute right-4 flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
                     </span>
                   </button>
-                  <ClickGuide text={mode === 'bad' ? "Click to Chat" : "Click to Open Store"} className="-top-12 left-1/2 -translate-x-1/2" />
+                  <ClickGuide text={mode === 'bad' ? "Click to Chat" : "Click to Start Journey"} className="-top-12 left-1/2 -translate-x-1/2" />
                 </div>
               </div>
             </motion.div>
@@ -368,7 +481,7 @@ const FunnelLinkStorefront = ({ onAction }: { onAction: () => void }) => {
       <div className="h-12 border-b border-black/5 flex items-center justify-between px-3 shrink-0 bg-white shadow-sm z-10">
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-6 bg-[#1C1B1A] rounded-full text-white flex items-center justify-center text-[10px] font-bold">U</div>
-          <span className="font-serif text-[13px] font-medium tracking-tight">Urban Living.</span>
+          <span className="font-sans text-[13px] font-medium tracking-tight">Urban Living.</span>
         </div>
         <Menu size={16} className="text-[#1C1B1A] opacity-60" />
       </div>
@@ -377,7 +490,7 @@ const FunnelLinkStorefront = ({ onAction }: { onAction: () => void }) => {
         {/* Storefront Hero section */}
         <div className="p-5 text-center bg-white rounded-b-[1.5rem] shadow-sm mb-4">
           <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#D47A5A] mb-1.5 block">Factory Direct</span>
-          <h1 className="font-serif text-[1.4rem] tracking-tight leading-[1.15] mb-1.5 text-slate-900">Luxury sofas,<br/>delivered fast.</h1>
+          <h1 className="font-sans text-[1.4rem] tracking-tight leading-[1.15] mb-1.5 text-slate-900">Luxury sofas,<br/>delivered fast.</h1>
           <p className="text-[11px] text-slate-400 max-w-[200px] mx-auto leading-relaxed">Browse details and purchase instantly via WhatsApp.</p>
         </div>
 
@@ -418,7 +531,7 @@ const FunnelLinkStorefront = ({ onAction }: { onAction: () => void }) => {
               </div>
               <div className="p-3.5 flex items-center justify-between">
                 <div>
-                  <h4 className="font-serif text-[14px] leading-tight mb-0.5 text-[#1C1B1A] font-bold">Milano 3-Seater</h4>
+                  <h4 className="font-sans text-[14px] leading-tight mb-0.5 text-[#1C1B1A] font-bold">Milano 3-Seater</h4>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[#D47A5A] font-bold text-xs">$400</span>
                     <span className="text-[9px] text-slate-400 line-through">$650</span>
@@ -446,7 +559,7 @@ const FunnelLinkStorefront = ({ onAction }: { onAction: () => void }) => {
                />
             </div>
             <div className="p-2.5 flex flex-col justify-center">
-               <h4 className="font-serif text-[11px] leading-tight mb-0.5 text-slate-900 font-bold">Rustic Bed Frame</h4>
+               <h4 className="font-sans text-[11px] leading-tight mb-0.5 text-slate-900 font-bold">Rustic Bed Frame</h4>
                <span className="text-[#D47A5A] font-bold text-[10px]">$550</span>
             </div>
           </div>
@@ -515,7 +628,7 @@ const FunnelLinkCatalog = ({
           </div>
         </div>
 
-        <h2 className="font-serif text-2xl tracking-tight text-[#1C1B1A] leading-tight mb-1">Milano Sofa</h2>
+        <h2 className="font-sans text-2xl tracking-tight text-[#1C1B1A] leading-tight mb-1">Milano Sofa</h2>
         
         <div className="flex items-center gap-1.5 mb-5">
           <div className="w-1.5 h-1.5 rounded-full bg-[#D47A5A] animate-pulse" />
@@ -565,8 +678,8 @@ const FunnelLinkCatalog = ({
             <Zap size={13} className="text-white fill-white" />
           </div>
           <div>
-            <h3 className="text-xs font-black tracking-widest uppercase text-blue-400">Conversion Layer</h3>
-            <p className="text-[9px] text-slate-400 font-medium leading-none mt-0.5">Answering customer objections pre-chat</p>
+            <h3 className="text-xs font-black tracking-widest uppercase text-blue-400">Trust Page</h3>
+            <p className="text-[9px] text-slate-400 font-medium leading-none mt-0.5">Objection-Handling Decision Page</p>
           </div>
         </div>
 
@@ -696,15 +809,15 @@ const CustomerMindSidebar = ({
     themeColor = "border-rose-200 bg-rose-50/20";
   } else if (gameState === 4 || gameState === 5) {
     title = "Customer Mind";
-    subtitle = "Entering pre-selling store... 🛍️";
+    subtitle = "Entering Customer Journey... ⚡";
     themeColor = "border-blue-200 bg-blue-50/20";
   } else if (gameState === 6) {
     title = "Customer Mind";
-    subtitle = "Pre-selling in real time... ✨";
+    subtitle = "Resolving objections on Trust Page... 🛡️";
     themeColor = "border-indigo-200 bg-indigo-50/20";
   } else if (gameState >= 7) {
     title = "Customer Mind";
-    subtitle = "100% Pre-sold & Ready! ✅";
+    subtitle = "Decision Made & Ready! ✅";
     themeColor = "border-emerald-200 bg-emerald-50/20";
   }
 
@@ -1012,20 +1125,26 @@ const DualMindSidebar = ({
   );
 };
 
-const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
-  const [gameState, setGameState] = useState(0);
+const CombinedSimulation = ({ 
+  gameState, 
+  setGameState, 
+  onNext 
+}: { 
+  gameState: number; 
+  setGameState: React.Dispatch<React.SetStateAction<number>>; 
+  onNext: () => void 
+}) => {
   const [catalogHighlight, setCatalogHighlight] = useState(-1);
 
   // Scripts for Chat Simulator
   const badScript = [
-    { text: "Hi, I saw your ad on social media.", time: "10:01 AM", sender: "user" as const, delay: 1000 },
-    { text: "What is the price of the sofa?", time: "10:02 AM", sender: "user" as const, delay: 1200 },
-    { text: "Hi! Let me check with the warehouse.", time: "10:25 AM", sender: "bot" as const, delay: 2000 },
-    { text: "Do you have it in blue?", time: "10:26 AM", sender: "user" as const, delay: 1200 },
-    { text: "Do you deliver to my area?", time: "10:28 AM", sender: "user" as const, delay: 1500 },
-    { text: "Hello?? Are you there?", time: "11:15 AM", sender: "user" as const, delay: 2500 },
-    { text: "Nevermind, buying somewhere else.", time: "11:40 AM", sender: "user" as const, delay: 1500 },
-    { text: "Sorry for delay! Yes we have blue. Delivery is $80.", time: "02:15 PM", sender: "bot" as const, delay: 2000 },
+    { text: "Hi, I saw your sofa ad.", time: "10:01 AM", sender: "user" as const, delay: 1000 },
+    { text: "But I couldn't find the price or sizing anywhere.", time: "10:02 AM", sender: "user" as const, delay: 1200 },
+    { text: "Hi! Sizing is 2.2m. Price starts at $400 depending on fabric.", time: "10:03 AM", sender: "bot" as const, delay: 2000 },
+    { text: "Are there any real customer reviews or photos?", time: "10:04 AM", sender: "user" as const, delay: 1250 },
+    { text: "Is delivery included? Or do I pay extra?", time: "10:05 AM", sender: "user" as const, delay: 1400 },
+    { text: "Let me check with shipping team. They reply slowly.", time: "10:06 AM", sender: "bot" as const, delay: 1800 },
+    { text: "Actually, it's too risky. I'll pass.", time: "10:08 AM", sender: "user" as const, delay: 1500 },
   ];
 
   const goodScript = [
@@ -1071,35 +1190,34 @@ const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 w-max">
           Interactive Simulator
         </div>
-        <h3 className="text-3xl font-tanker tracking-tight mb-3 text-slate-900 leading-[1.1]">
-          The Customer <span className="brand-gradient-text">Journey Game</span>
+        <h3 className="text-3xl font-black font-sans tracking-tight mb-3 text-slate-900 leading-[1.1] uppercase">
+          The Most Expensive <span className="brand-gradient-text">Problem In Business</span>
         </h3>
-        <p className="text-slate-500 text-sm leading-relaxed mb-6 font-sans">
-          Play the simulation to see how friction kills leads, and how clarity creates instant conversions.
+        <p className="text-slate-500 text-sm leading-relaxed mb-6 font-sans font-medium">
+          Customers are interested. But they aren't convinced. Watch what happens when traffic reaches WhatsApp before trust is built.
         </p>
 
         {/* Progress Tracker */}
-        <div className="space-y-4 border-l-2 border-slate-200 ml-3 pl-6 relative font-sans">
-          <div className="absolute -left-[2px] top-0 bottom-0 w-[2px] overflow-hidden">
-            <motion.div 
-              className="w-[2px] bg-blue-500 absolute top-0 left-0 rounded-full"
-              animate={{ height: `${(gameState / 8) * 100}%` }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
+        <div className="space-y-6 ml-3 pl-6 relative font-sans">
 
           <div className={`relative transition-colors duration-300 ${gameState >= 1 && gameState <= 3 ? 'text-slate-900 font-bold' : 'text-slate-400'}`}>
-            <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 bg-white transition-colors duration-300 ${gameState >= 1 && gameState <= 3 ? 'border-blue-500' : 'border-slate-300'}`}></div>
+            <div className={`absolute -left-[31px] top-[2px] w-3.5 h-3.5 rounded-full border-2 bg-white flex items-center justify-center transition-colors duration-300 ${gameState >= 1 && gameState <= 3 ? 'border-blue-500' : 'border-slate-300'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-colors ${gameState >= 1 && gameState <= 3 ? 'bg-blue-500 animate-pulse' : 'bg-transparent'}`} />
+            </div>
             <h4 className="text-xs">1. The Broken Reality</h4>
             <p className="text-[10px] mt-0.5 opacity-70 font-medium font-sans">Directing social traffic straight to WhatsApp.</p>
           </div>
           <div className={`relative transition-colors duration-300 ${gameState >= 4 && gameState <= 6 ? 'text-slate-900 font-bold' : 'text-slate-400'}`}>
-            <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 bg-white transition-colors duration-300 ${gameState >= 4 && gameState <= 6 ? 'border-blue-500' : 'border-slate-300'}`}></div>
-            <h4 className="text-xs">2. The FunnelLink Fix</h4>
-            <p className="text-[10px] mt-0.5 opacity-70 font-medium font-sans">Adding a pre-sales page before the chat.</p>
+            <div className={`absolute -left-[31px] top-[2px] w-3.5 h-3.5 rounded-full border-2 bg-white flex items-center justify-center transition-colors duration-300 ${gameState >= 4 && gameState <= 6 ? 'border-blue-500' : 'border-slate-300'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-colors ${gameState >= 4 && gameState <= 6 ? 'bg-blue-500 animate-pulse' : 'bg-transparent'}`} />
+            </div>
+            <h4 className="text-xs">2. The Conversion Layer</h4>
+            <p className="text-[10px] mt-0.5 opacity-70 font-medium font-sans">Adding an objection-handling page before the chat.</p>
           </div>
           <div className={`relative transition-colors duration-300 ${gameState >= 7 ? 'text-emerald-600 font-bold' : 'text-slate-400'}`}>
-            <div className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 bg-white transition-colors duration-300 ${gameState >= 7 ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300'}`}></div>
+            <div className={`absolute -left-[31px] top-[2px] w-3.5 h-3.5 rounded-full border-2 bg-white flex items-center justify-center transition-colors duration-300 ${gameState >= 7 ? 'border-emerald-500' : 'border-slate-300'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-colors ${gameState >= 7 ? 'bg-emerald-500' : 'bg-transparent'}`} />
+            </div>
             <h4 className="text-xs">3. Sale Closed</h4>
             <p className="text-[10px] mt-0.5 opacity-70 font-medium font-sans">A perfect, frictionless conversion.</p>
           </div>
@@ -1129,7 +1247,7 @@ const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
                   <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/10 shadow-lg">
                     <Play size={32} className="text-[#5DBEF5] ml-0.5" fill="currentColor" />
                   </div>
-                  <h2 className="text-2xl font-black text-white mb-2 font-tanker">Start Journey</h2>
+                  <h2 className="text-2xl font-black text-white mb-2 font-black font-sans">Start Journey</h2>
                   <p className="text-xs text-slate-400 mb-8 leading-relaxed font-sans">
                     Let's see what happens when you send Instagram or YouTube traffic directly to WhatsApp.
                   </p>
@@ -1165,9 +1283,9 @@ const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
                   <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-md text-rose-500">
                     <XCircle size={32} strokeWidth={2.5} />
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 mb-2 font-tanker">The Friction Trap</h2>
+                  <h2 className="text-2xl font-black text-slate-900 mb-2 font-black font-sans">The Friction Trap</h2>
                   <p className="text-xs text-slate-600 mb-8 leading-relaxed font-medium font-sans">
-                    Directing traffic to WhatsApp forces the client to ask basic questions. Slow replies kill 80% of sales.
+                    Directing traffic straight to chat leaves customers confused by unanswered questions, killing interest before they start.
                   </p>
                   
                   <div className="w-full h-px bg-slate-200 my-4"></div>
@@ -1224,7 +1342,7 @@ const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
                       <CheckCircle2 size={40} className="text-emerald-500" strokeWidth={2.5} />
                     </div>
                   </div>
-                  <h2 className="text-3xl font-black text-slate-900 mb-2 font-tanker">Intent over questions.</h2>
+                  <h2 className="text-3xl font-black text-slate-900 mb-2 font-black font-sans">Intent over questions.</h2>
                   <p className="text-xs text-slate-600 mb-8 leading-relaxed font-medium font-sans">
                     The customer arrived ready to buy. The conversation started with intent, not repetitive questions.
                   </p>
@@ -1266,42 +1384,24 @@ const CombinedSimulation = ({ onNext }: { onNext: () => void }) => {
 };
 
 export default function WhatIsFunnelLink() {
-  const [step, setStep] = useState<Step>('quiz');
-  const [feedbackLine1, setFeedbackLine1] = useState('Part of the problem.');
-  const [feedbackLine2, setFeedbackLine2] = useState('But the real issue runs deeper.');
+  const [step, setStep] = useState<Step>('start');
+  const [gameState, setGameState] = useState(0);
 
-  useEffect(() => {
-    const ms: Partial<Record<Step,number>> = {
-      feedback:1200, reveal:4000, proof:5000,
-    };
-    const d = ms[step];
-    if (!d) return;
-    const t = setTimeout(() => { const i = STEPS.indexOf(step); if (i < STEPS.length-1) setStep(STEPS[i+1]); }, d);
-    return () => clearTimeout(t);
-  }, [step]);
+  const restart = useCallback(() => {
+    setStep('start');
+    setGameState(0);
+  }, []);
 
-  const pick = useCallback((id: string) => {
-    if (step !== 'quiz') return;
-    if (id === 'd') {
-      setFeedbackLine1('Exactly.');
-      setFeedbackLine2("But why does this happen?");
-    } else {
-      setFeedbackLine1('Part of the problem.');
-      setFeedbackLine2("But the real issue runs deeper.");
-    }
-    setStep('feedback');
-  }, [step]);
-
-  const restart = useCallback(() => setStep('quiz'), []);
   const skip = useCallback(() => {
-    const i = STEPS.indexOf(step);
-    if (i < STEPS.length-1) setStep(STEPS[i+1]); else restart();
-  }, [step, restart]);
-
-  const ci = STEPS.indexOf(step);
+    if (step === 'start') {
+      setStep('simulation');
+    } else {
+      setGameState(8);
+    }
+  }, [step]);
 
   return (
-    <div className="min-h-screen w-full bg-white relative flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-6 py-20 select-none what-is-funnellink-section">
+    <div className="min-h-screen w-full bg-white relative flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-6 py-10 select-none what-is-funnellink-section">
 
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none" style={{
@@ -1309,172 +1409,429 @@ export default function WhatIsFunnelLink() {
       }}/>
 
       {/* Progress */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
-        {STEPS.map((s,i) => <div key={s} className={`h-1 rounded-full transition-all duration-500 ${i<=ci?'w-5 bg-slate-800':'w-1.5 bg-slate-200'}`}/>)}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 font-sans">
+        {step === 'start' ? (
+          <div className="h-1 w-5 rounded-full bg-slate-800" />
+        ) : (
+          [1, 2, 3].map((s) => {
+            let active = false;
+            if (s === 1 && gameState <= 3) active = true;
+            if (s === 2 && gameState >= 4 && gameState <= 6) active = true;
+            if (s === 3 && gameState >= 7) active = true;
+            return (
+              <div key={s} className={`h-1 rounded-full transition-all duration-500 ${active ? 'w-5 bg-slate-800' : 'w-1.5 bg-slate-200'}`} />
+            );
+          })
+        )}
       </div>
 
       <div className="relative z-10 w-full max-w-5xl flex flex-col items-center justify-center min-h-[500px]">
         <AnimatePresence mode="wait">
 
-          {/* ═══ QUIZ ═══ */}
-          {step==='quiz' && (
-            <motion.div key="quiz" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30,filter:'blur(4px)'}} transition={{duration:0.7,ease:E}} className="w-full flex flex-col items-center">
-              <h2 className="text-4xl sm:text-6xl md:text-7xl font-tanker tracking-[-0.02em] text-slate-900 leading-tight text-center mb-4 font-extrabold max-w-4xl">
-                Why do customers leave after clicking your ad?
-              </h2>
-              <p className="text-sm font-sans font-bold uppercase tracking-[0.3em] text-slate-400 mb-16">Choose the main reason</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl">
-                {OPTIONS.map((o,i) => {
-                  const Icon = o.icon;
-                  return (
-                    <motion.button key={o.id} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.15+i*0.08,duration:0.5,ease:E}}
-                      whileHover={{y:-3,boxShadow:'0 8px 30px rgba(0,0,0,0.08)'}} whileTap={{scale:0.97}}
-                      onClick={() => pick(o.id)}
-                      className="group relative p-6 rounded-2xl border border-slate-200/80 bg-white text-left transition-colors hover:border-slate-300 cursor-pointer">
-                      <span className="absolute top-4 right-4 text-[10px] font-bold text-slate-300 tracking-wider font-sans">{o.label}</span>
-                      <div className="flex items-start gap-4">
-                        <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-slate-100 transition-colors">
-                          <Icon size={20} className="text-slate-400 group-hover:text-slate-600 transition-colors"/>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-lg font-bold text-slate-900 leading-tight font-sans">{o.title}</span>
-                          <span className="text-sm text-slate-500 font-medium leading-snug font-sans">{o.desc}</span>
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ═══ FEEDBACK ═══ */}
-          {step==='feedback' && (
-            <motion.div key="fb" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:1.05,filter:'blur(6px)'}} transition={{duration:0.5}} className="text-center space-y-4">
-              <motion.p animate={{x:[-10,10,-10,10,0]}} transition={{duration:0.5}}
-                className="text-4xl sm:text-5xl md:text-6xl font-tanker tracking-tight text-slate-950 font-bold">
-                {feedbackLine1}
-              </motion.p>
-              {feedbackLine2 && (
-                <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.8,duration:0.5}}
-                  className="text-3xl sm:text-4xl md:text-5xl font-tanker tracking-tight text-slate-400 font-bold">
-                  {feedbackLine2}
-                </motion.p>
-              )}
-            </motion.div>
-          )}
-
-          {/* ═══ REVEAL & THE GAP ═══ */}
-          {step==='reveal' && (
-            <motion.div key="rev" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0,filter:'blur(8px)'}} className="text-center flex flex-col items-center gap-8 max-w-4xl px-4">
+          {/* ═══ START ═══ */}
+          {/* ═══ START ═══ */}
+          {step==='start' && (
+            <motion.div key="start-screen" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30,filter:'blur(4px)'}} transition={{duration:0.7,ease:E}} className="text-center flex flex-col items-center gap-4 max-w-4xl px-4">
               <motion.span initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.5}}
-                className="text-xl sm:text-2xl font-sans text-slate-400 font-bold uppercase tracking-wider">
-                The Real Problem
+                className="text-[10px] sm:text-xs font-sans font-black uppercase tracking-[0.2em] text-[#2D63EC] mb-2">
+                THE CONVERSION LAYER BETWEEN TRAFFIC AND WHATSAPP
               </motion.span>
-              <motion.h2 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.3,duration:0.8,ease:E}}
-                className="text-4xl sm:text-6xl md:text-7xl font-tanker tracking-[-0.03em] leading-[1.05] font-extrabold text-slate-900">
-                Is <span className="bg-gradient-to-r from-[#2D63EC] to-[#9A58F0] bg-clip-text text-transparent">Uncertainty</span>.
+              
+              <motion.h2 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.2,duration:0.8,ease:E}}
+                className="text-4xl sm:text-5xl md:text-6xl font-black font-sans tracking-[-0.03em] leading-[1.05] font-extrabold text-slate-900 uppercase">
+                Every Click Starts With <span className="bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">Questions</span>.<br/>
+                Every Sale Starts With <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">Answers</span>.
               </motion.h2>
-              <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.2,duration:0.8,ease:E}}
-                className="text-lg sm:text-2xl font-sans text-slate-500 font-medium leading-relaxed max-w-2xl">
-                Most customers leave between the click and the conversation.<br/>
-                <span className="font-bold text-[#2D63EC]">FunnelLink closes that gap.</span>
-              </motion.p>
-              <motion.div initial={{opacity:0,scale:0.5}} animate={{opacity:1,scale:1}} transition={{delay:1.5,duration:1.2}}
-                className="w-[350px] h-[350px] rounded-full absolute -z-10" style={{background:'radial-gradient(circle, rgba(45,99,236,0.06), transparent 70%)'}}/>
+
+              <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4,duration:0.8,ease:E}}
+                className="text-sm sm:text-base font-sans text-slate-500 font-semibold leading-relaxed max-w-2xl flex flex-col gap-2">
+                <p>Customers don't buy the moment they discover you.</p>
+                <p>They buy when they understand you.</p>
+                <p className="text-[#2D63EC] font-bold">FunnelLink answers the questions that stop sales before they reach WhatsApp.</p>
+              </motion.div>
+              
+              <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{delay:0.6,duration:0.5}}
+                className="relative mt-2">
+                <button
+                  onClick={() => setStep('simulation')}
+                  className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm tracking-wider uppercase transition-all shadow-[0_8px_30px_rgba(45,99,236,0.3)] flex items-center gap-2 hover:scale-[1.03]"
+                >
+                  Watch The Journey <ArrowRight size={16} />
+                </button>
+              </motion.div>
+
+              {/* Visual Flow Diagram */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.8, duration: 0.8 }}
+                className="w-full max-w-3xl mt-6 p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
+              >
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 relative z-10 font-sans">
+                  {/* Node 1: Traffic Sources */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all duration-300 hover:shadow-md">
+                      <span className="text-[9px] font-black tracking-wider uppercase text-slate-400">Traffic Sources</span>
+                      <div className="flex items-center gap-2.5 text-slate-700 text-xs font-bold">
+                        <InstagramIcon size={12} className="text-pink-500" />
+                        <span className="text-slate-300">•</span>
+                        <span className="text-slate-700">Ads</span>
+                        <span className="text-slate-300">•</span>
+                        <YoutubeIcon size={14} className="text-red-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Connection 1 */}
+                  <AnimatedConnector label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
+                  <AnimatedConnectorVertical label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
+
+                  {/* Node 2: FunnelLink */}
+                  <div className="flex flex-col items-center">
+                    <div className="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_8px_25px_rgba(45,99,236,0.25)] ring-4 ring-blue-500/10 flex flex-col gap-1 items-center transition-transform hover:scale-[1.02]">
+                      <span className="text-[9px] font-black tracking-widest uppercase opacity-90 flex items-center gap-1">
+                        <ShieldCheck size={10} className="text-blue-200" /> The Conversion Layer
+                      </span>
+                      <span className="text-sm font-black tracking-tight flex items-center gap-1">
+                        FunnelLink <Zap size={12} className="text-yellow-300 fill-yellow-300" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Connection 2 */}
+                  <AnimatedConnector label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
+                  <AnimatedConnectorVertical label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
+
+                  {/* Node 3: Chat */}
+                  <div className="flex flex-col items-center">
+                    <div className="px-4 py-2.5 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-emerald-700 shadow-sm flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
+                      <span className="text-[9px] font-black tracking-wider uppercase text-emerald-500 flex items-center gap-1">
+                        <MessageCircle size={10} className="text-emerald-500 fill-emerald-500" /> Instant Chat
+                      </span>
+                      <span className="text-xs font-bold text-emerald-950">WhatsApp Business</span>
+                    </div>
+                  </div>
+
+                  {/* Connection 3 */}
+                  <AnimatedConnector label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
+                  <AnimatedConnectorVertical label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
+
+                  {/* Node 4: Customer */}
+                  <div className="flex flex-col items-center">
+                    <div className="px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
+                      <span className="text-[9px] font-black tracking-wider uppercase text-slate-400 flex items-center gap-1">
+                        <CheckCircle2 size={10} className="text-emerald-500" /> Final Outcome
+                      </span>
+                      <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                        Closed Customer 💰
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+
             </motion.div>
           )}
 
           {/* ═══ COMBINED SIMULATION PATH ═══ */}
           {step==='simulation' && (
             <motion.div key="simulation" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0,filter:'blur(6px)'}} className="w-full flex flex-col items-center">
-              <CombinedSimulation onNext={skip} />
-            </motion.div>
-          )}
-
-          {/* ═══ PROOF / CONVERSION COMPARISON ═══ */}
-          {step==='proof' && (
-            <motion.div key="proof" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0,filter:'blur(6px)'}} className="w-full flex flex-col items-center gap-10">
-              <div className="text-center">
-                <motion.p initial={{opacity:0}} animate={{opacity:1}} className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-slate-300 mb-2">The Revenue Difference</motion.p>
-                <h3 className="text-3xl sm:text-4xl font-tanker text-slate-900 font-bold tracking-tight">How the revenue math changes</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-2xl">
-                {/* Without */}
-                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2,duration:0.6,ease:E}}
-                   className="p-8 rounded-2xl border border-slate-200 bg-white text-center flex flex-col items-center gap-6">
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-red-400">Without FunnelLink</span>
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex flex-col items-center"><span className="text-4xl font-tanker text-slate-900 font-bold">100</span><span className="text-xs font-sans font-medium text-slate-400 uppercase tracking-wider">ad clicks</span></div>
-                    <div className="w-px h-4 bg-slate-200"/>
-                    <div className="flex flex-col items-center"><span className="text-4xl font-tanker text-slate-900 font-bold">30</span><span className="text-xs font-sans font-medium text-slate-400 uppercase tracking-wider">chats (heavy manual burden)</span></div>
-                    <div className="w-px h-4 bg-slate-200"/>
-                    <div className="flex flex-col items-center"><span className="text-5xl font-tanker text-red-500 font-bold">4</span><span className="text-xs font-sans font-medium text-red-400 uppercase tracking-wider">sales (low conversion)</span></div>
-                  </div>
-                </motion.div>
-                {/* With */}
-                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.8,duration:0.6,ease:E}}
-                   className="p-8 rounded-2xl border border-[#2D63EC]/20 bg-[#2D63EC]/[0.02] text-center flex flex-col items-center gap-6">
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC]">With FunnelLink</span>
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex flex-col items-center"><span className="text-4xl font-tanker text-slate-900 font-bold">100</span><span className="text-xs font-sans font-medium text-slate-400 uppercase tracking-wider">ad clicks</span></div>
-                    <div className="w-px h-4 bg-[#2D63EC]/20"/>
-                    <div className="flex flex-col items-center"><span className="text-4xl font-tanker text-[#2D63EC] font-bold">12</span><span className="text-xs font-sans font-medium text-[#2D63EC] uppercase tracking-wider">qualified chats (pre-sold)</span></div>
-                    <div className="w-px h-4 bg-[#2D63EC]/20"/>
-                    <div className="flex flex-col items-center">
-                      <motion.span initial={{scale:0.8}} animate={{scale:[0.8,1.1,1]}} transition={{delay:1.4,duration:0.6}} className="text-5xl font-tanker text-emerald-600 font-bold">8</motion.span>
-                      <span className="text-xs font-sans font-medium text-emerald-500 uppercase tracking-wider">sales (conceptual projection)</span>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-              <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.8,duration:0.6}}
-                className="text-sm font-sans text-slate-500 font-semibold text-center max-w-md">
-                Questions become answers &rarr; Answers become confidence &rarr; Confidence becomes revenue.
-              </motion.p>
-            </motion.div>
-          )}
-
-          {/* ═══ FINAL ═══ */}
-          {step==='final' && (
-            <motion.div key="final" initial={{opacity:0,y:40,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{duration:0.9,ease:E}}
-              className="text-center flex flex-col items-center gap-8">
-              <div className="flex flex-col items-center gap-4">
-                <span className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC]">FunnelLink</span>
-                <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-tanker tracking-[-0.03em] text-slate-955 leading-[0.95] max-w-4xl font-extrabold">
-                  The missing step<br/>between{' '}
-                  <span className="bg-gradient-to-r from-[#2D63EC] to-[#7c3aed] bg-clip-text text-transparent">traffic</span>
-                  {' '}and{' '}
-                  <span className="bg-gradient-to-r from-[#7c3aed] to-[#2D63EC] bg-clip-text text-transparent">customers</span>.
-                </h2>
-              </div>
-
-              <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6,duration:0.6}}
-                className="max-w-lg flex flex-col items-center gap-4">
-                <p className="text-lg sm:text-xl font-sans text-slate-500 font-medium leading-relaxed">
-                  Most businesses focus on getting clicks.
-                </p>
-                <p className="text-xl sm:text-2xl font-sans text-slate-900 font-bold leading-relaxed">
-                  FunnelLink focuses on what happens next.
-                </p>
-              </motion.div>
-
-              <motion.button initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.2}} onClick={restart}
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-sans font-bold tracking-tight transition-all active:scale-95 shadow-sm hover:shadow">
-                <RefreshCw size={14}/> Replay
-              </motion.button>
+              <CombinedSimulation gameState={gameState} setGameState={setGameState} onNext={() => setGameState(8)} />
             </motion.div>
           )}
 
         </AnimatePresence>
       </div>
 
+      {/* Scroll Down Cue */}
+      {step === 'simulation' && gameState === 8 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1.5 pointer-events-none"
+        >
+          <span className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#2D63EC] animate-pulse">
+            Scroll down to see the revenue math
+          </span>
+          <motion.div 
+            animate={{ y: [0, 4, 0] }} 
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            className="w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm text-[#2D63EC]"
+          >
+            <ChevronRight size={10} className="rotate-90" />
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Skip button */}
-      {step!=='final' && (
+      {gameState !== 8 && (
         <button onClick={skip} className="absolute bottom-6 right-6 z-20 flex items-center gap-1 text-[11px] font-sans font-semibold text-slate-300 hover:text-slate-600 transition-colors uppercase tracking-widest py-2 px-3 rounded-lg hover:bg-slate-50 active:scale-95">
           Skip <ChevronRight size={12}/>
         </button>
       )}
     </div>
+  );
+}
+
+export function RevenueSection() {
+  return (
+    <section className="w-full bg-white text-slate-900 py-32 px-6 flex flex-col items-center justify-center relative border-t border-slate-100 font-sans overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background:'radial-gradient(ellipse 60% 45% at 50% 40%, rgba(45,99,236,0.03), transparent)'
+      }}/>
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center gap-16">
+        <div className="text-center max-w-2xl">
+          <p className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC] mb-3">The Best Revenue Section</p>
+          <h2 className="text-4xl sm:text-6xl font-black font-sans text-slate-900 font-extrabold tracking-tight mb-4 uppercase leading-none">Every Question Costs You Money.</h2>
+          <p className="text-sm sm:text-base font-sans text-slate-500 font-semibold max-w-lg mx-auto leading-relaxed">
+            Customers don't leave because they aren't interested. They leave because they don't have enough information to make a decision.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+          {/* Without */}
+          <div className="p-8 rounded-2xl border border-slate-200 bg-white text-center flex flex-col items-center justify-between gap-6 shadow-sm">
+            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-red-400">Without FunnelLink</span>
+            <div className="flex flex-col items-center gap-3 w-full">
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-slate-900 font-bold">100</span><span className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-wider">Visitors</span></div>
+              <div className="w-px h-3.5 bg-slate-200"/>
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-slate-900 font-bold">35</span><span className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-wider">WhatsApp Chats</span></div>
+              <div className="w-px h-3.5 bg-slate-200"/>
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-slate-900 font-bold">22</span><span className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-wider">Price Questions</span></div>
+              <div className="w-px h-3.5 bg-slate-200"/>
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-slate-900 font-bold">14</span><span className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-wider">Ghosted Conversations</span></div>
+              <div className="w-px h-3.5 bg-slate-200"/>
+              <div className="flex flex-col items-center"><span className="text-4xl font-black font-sans text-red-500 font-bold">4</span><span className="text-[10px] font-sans font-bold text-red-400 uppercase tracking-wider">Customers</span></div>
+            </div>
+          </div>
+
+          {/* With */}
+          <div className="p-8 rounded-2xl border border-[#2D63EC]/20 bg-[#2D63EC]/[0.02] text-center flex flex-col items-center justify-between gap-6 shadow-md relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
+            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC]">With FunnelLink</span>
+            <div className="flex flex-col items-center gap-3 w-full">
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-slate-900 font-bold">100</span><span className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-wider">Visitors</span></div>
+              <div className="w-px h-3.5 bg-[#2D63EC]/20"/>
+              <div className="flex flex-col items-center"><span className="text-3xl font-black font-sans text-[#2D63EC] font-bold">12</span><span className="text-[10px] font-sans font-bold text-[#2D63EC] uppercase tracking-wider">Qualified Conversations</span></div>
+              <div className="w-px h-3.5 bg-[#2D63EC]/20"/>
+              
+              {/* What they already saw checklist */}
+              <div className="bg-white/80 backdrop-blur-sm border border-slate-100 rounded-xl p-3 w-full max-w-[200px] flex flex-col items-start gap-1 text-[11px] font-sans font-bold text-slate-800 shadow-sm font-sans">
+                <p className="text-[8px] uppercase tracking-wider text-slate-400 mb-1">Customers Already Saw:</p>
+                <span className="text-emerald-600">✓ Pricing</span>
+                <span className="text-emerald-600">✓ Reviews</span>
+                <span className="text-emerald-600">✓ Portfolio</span>
+                <span className="text-emerald-600">✓ FAQs</span>
+                <span className="text-emerald-600">✓ Location</span>
+              </div>
+
+              <div className="w-px h-3.5 bg-[#2D63EC]/20"/>
+              <div className="flex flex-col items-center">
+                <span className="text-5xl font-black font-sans text-emerald-600 font-bold">8</span>
+                <span className="text-[10px] font-sans font-bold text-emerald-500 uppercase tracking-wider">Customers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-12 text-center">
+          <span className="text-xl sm:text-2xl font-black font-sans text-slate-900 font-bold uppercase tracking-tight">Fewer Chats.</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-300 hidden sm:block"/>
+          <span className="text-xl sm:text-2xl font-black font-sans text-slate-900 font-bold uppercase tracking-tight">Better Customers.</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-300 hidden sm:block"/>
+          <span className="text-xl sm:text-2xl font-black font-sans text-emerald-600 font-bold uppercase tracking-tight">More Sales.</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function PositioningSection() {
+  return (
+    <section className="w-full bg-white text-slate-900 py-32 px-6 flex flex-col items-center justify-center relative border-t border-slate-100 font-sans overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background:'radial-gradient(ellipse 60% 45% at 50% 40%, rgba(45,99,236,0.02), transparent)'
+      }}/>
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center gap-12 text-center">
+        <div>
+          <p className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC] mb-3">The Strongest Positioning Section</p>
+          <h2 className="text-4xl sm:text-6xl font-black font-sans text-slate-900 font-extrabold tracking-tight mb-4 uppercase leading-none">Stop Paying For Clicks That Go Nowhere.</h2>
+          <p className="text-sm sm:text-base font-sans text-slate-500 font-semibold max-w-lg mx-auto leading-relaxed">
+            Most businesses spend money getting attention. Very few optimize what happens after the click. <br/>FunnelLink turns traffic into informed buyers before the conversation starts.
+          </p>
+        </div>
+
+        <div className="w-full max-w-2xl bg-slate-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-white/5 relative overflow-hidden flex flex-col items-center text-center gap-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10 opacity-50" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="space-y-2 relative z-10">
+            <p className="text-base sm:text-lg font-sans font-semibold text-slate-400 uppercase tracking-widest">Traffic is not the problem.</p>
+            <h4 className="text-4xl sm:text-6xl font-black font-sans font-bold tracking-tight text-white uppercase">Conversion is.</h4>
+          </div>
+
+          <div className="w-12 h-px bg-white/10 relative z-10" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full relative z-10 font-sans">
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#5DBEF5] mb-1">Instagram</p>
+              <p className="text-xs font-bold text-slate-200">gets attention.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-purple-400 mb-1">WhatsApp</p>
+              <p className="text-xs font-bold text-slate-200">starts conversations.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(45,99,236,0.15)] ring-1 ring-blue-500/30">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">FunnelLink</p>
+              <p className="text-xs font-black text-white">creates buyers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function QuestionsSection() {
+  return (
+    <section className="w-full bg-white text-slate-900 py-32 px-6 flex flex-col items-center justify-center relative border-t border-slate-100 font-sans overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background:'radial-gradient(ellipse 60% 45% at 50% 40%, rgba(45,99,236,0.02), transparent)'
+      }}/>
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center gap-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC] mb-3">The "Will Make Me Money" Section</p>
+          <h2 className="text-4xl sm:text-6xl font-black font-sans text-slate-900 font-extrabold tracking-tight mb-4 uppercase leading-none">Your Team Shouldn't Answer The Same Questions 100 Times.</h2>
+          <p className="text-sm sm:text-base font-sans text-slate-500 font-semibold max-w-lg mx-auto leading-relaxed">
+            Every unanswered question is a lost sale. Customers don't buy when they're confused—they buy when they're confident. FunnelLink builds that confidence before they reach WhatsApp.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+          {/* Repeated Price? bubble stack */}
+          <div className="p-8 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center gap-4 relative min-h-[220px] overflow-hidden">
+            <div className="absolute top-3 left-4 text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Repetitive Chat Fatigue</div>
+            
+            <motion.div animate={{y: [10, -10, 10]}} transition={{repeat: Infinity, duration: 3, ease: "easeInOut"}}
+              className="flex flex-col gap-2 w-full max-w-[200px] font-sans">
+              <div className="bg-white p-2.5 rounded-2xl rounded-bl-none shadow-sm border border-slate-200 text-xs font-bold text-slate-800 self-start">Price?</div>
+              <div className="bg-white p-2.5 rounded-2xl rounded-br-none shadow-sm border border-slate-200 text-xs font-bold text-slate-800 self-end">Is it in stock?</div>
+              <div className="bg-white p-2.5 rounded-2xl rounded-bl-none shadow-sm border border-slate-200 text-xs font-bold text-slate-800 self-start">Where are you located?</div>
+            </motion.div>
+            
+            <div className="absolute bottom-4 inset-x-4 bg-gradient-to-t from-slate-50 to-transparent h-8 pointer-events-none"/>
+          </div>
+
+          {/* FunnelLink answers once benefits grid */}
+          <div className="p-8 rounded-2xl border border-blue-100 bg-blue-50/10 flex flex-col gap-4 relative justify-center font-sans">
+            <div className="absolute top-3 left-4 text-[9px] font-bold text-[#2D63EC] uppercase tracking-wider">FunnelLink answers them once</div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><Clock size={16} /></div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Less Support</h4>
+                  <p className="text-[10px] text-slate-500">Eliminate 90% of basic informational queries.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><XCircle size={16} /></div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Less Ghosting</h4>
+                  <p className="text-[10px] text-slate-500">No more drop-offs while waiting for a response.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><RefreshCw size={16} /></div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Less Repetition</h4>
+                  <p className="text-[10px] text-slate-500">FunnelLink answers them once on the trust page.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0"><DollarSign size={16} /></div>
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-700">More Revenue</h4>
+                  <p className="text-[10px] text-slate-500">Arriving leads are fully pre-sold and ready to pay.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function ResultSection() {
+  return (
+    <section className="w-full bg-white text-slate-900 py-32 px-6 flex flex-col items-center justify-center relative border-t border-slate-100 font-sans overflow-hidden">
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center gap-12 text-center">
+        <div>
+          <p className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC] mb-3">The Section That Makes People Pay</p>
+          <h2 className="text-4xl sm:text-6xl font-black font-sans text-slate-900 font-extrabold tracking-tight mb-4 uppercase leading-none">The Result</h2>
+          <p className="text-sm sm:text-base font-sans text-slate-500 font-semibold max-w-lg mx-auto leading-relaxed">
+            Instead of answering basic questions all day, you spend your time closing sales.
+          </p>
+        </div>
+
+        <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-xl flex flex-col gap-6 text-left font-sans">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3">Customers Arrive Already Knowing:</div>
+          
+          <div className="flex flex-col gap-3 font-bold text-slate-800 text-sm">
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              <span>What you sell</span>
+            </div>
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              <span>How much it costs</span>
+            </div>
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              <span>Why they should trust you</span>
+            </div>
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              <span>What happens next</span>
+            </div>
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              <span>How to buy</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-8 mt-2">
+          <span className="text-2xl sm:text-3xl font-black font-sans text-slate-900 font-bold uppercase">Less Explaining.</span>
+          <div className="w-2 h-2 rounded-full bg-slate-300"/>
+          <span className="text-2xl sm:text-3xl font-black font-sans text-emerald-600 font-bold uppercase">More Closing.</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function FinalSection() {
+  return (
+    <section className="w-full bg-white text-slate-900 py-32 px-6 flex flex-col items-center justify-center relative border-t border-slate-100 font-sans overflow-hidden">
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center gap-8 text-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="text-xs font-sans font-bold uppercase tracking-[0.3em] text-[#2D63EC]">The Highest-Converting Message</span>
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black font-sans tracking-[-0.03em] text-slate-900 leading-[1.05] max-w-3xl font-extrabold uppercase">
+            FunnelLink Doesn't Generate More Traffic.
+          </h2>
+          <p className="text-2xl sm:text-4xl font-black font-sans text-emerald-600 font-bold leading-tight max-w-2xl uppercase">
+            It helps you make more money from the traffic you already have.
+          </p>
+        </div>
+
+        <div className="max-w-lg flex flex-col items-center gap-4 mt-2">
+          <p className="text-sm sm:text-base font-sans text-slate-500 font-semibold leading-relaxed">
+            Stop letting confused clicks walk away. Establish a conversion layer, resolve friction automatically, and filter for ready-to-buy conversations.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -264,7 +264,20 @@ export default function StorySection() {
   const quoteDisplay = useTransform(scrollYProgress, [0, 0.899, 0.90, 1], ['none', 'none', 'block', 'block']);
 
   return (
-    <div ref={containerRef} className="h-[1250vh] bg-slate-50 relative border-t border-slate-100">
+    <div ref={containerRef} className="h-[1250vh] bg-slate-50 relative border-t border-slate-100 satoshi-story">
+      <style>{`
+        @font-face {
+          font-family: 'Satoshi';
+          src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+               url('/fonts/Satoshi-Variable.ttf') format('truetype');
+          font-weight: 300 900;
+          font-display: swap;
+          font-style: normal;
+        }
+        .satoshi-story, .satoshi-story * {
+          font-family: 'Satoshi', system-ui, sans-serif !important;
+        }
+      `}</style>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
 
         <motion.div style={{ x }} className="flex w-[700vw] h-full items-stretch">
