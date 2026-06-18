@@ -13,14 +13,25 @@ export default function HeroTransitionZone() {
     offset: ['start start', 'end end'],
   });
 
-  const scale1 = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
-  const rotate1 = useTransform(scrollYProgress, [0, 1], [0, -4]);
-  const opacity1 = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
-  const borderRadius1 = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const scale1 = useTransform(scrollYProgress, [0, 1], isMobile ? [1, 1] : [1, 0.85]);
+  const rotate1 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, -4]);
+  const opacity1 = useTransform(scrollYProgress, [0, 1], isMobile ? [1, 0.5] : [1, 0.3]);
+  const borderRadius1 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, 40]);
   
-  const scale2 = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
-  const rotate2 = useTransform(scrollYProgress, [0, 1], [4, 0]);
-  const borderRadius2 = useTransform(scrollYProgress, [0, 1], [40, 0]);
+  const scale2 = useTransform(scrollYProgress, [0, 1], isMobile ? [1, 1] : [0.9, 1]);
+  const rotate2 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [4, 0]);
+  const borderRadius2 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [40, 0]);
 
   return (
     <div ref={container} className="relative h-[200vh] bg-[#0A0A0A] satoshi-hero">
@@ -52,7 +63,7 @@ export default function HeroTransitionZone() {
             initial={{ opacity: 0, y: 30, filter: "blur(10px)", scale: 0.95 }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="text-[54px] leading-[1.05] md:text-[96px] font-extrabold tracking-[-0.04em] text-[#0A0A0A]"
+            className="text-[38px] sm:text-[54px] leading-[1.05] md:text-[96px] font-extrabold tracking-[-0.04em] text-[#0A0A0A]"
           >
             Turn Traffic <br />
             <span className="brand-gradient-text">Into Customers.</span>
@@ -64,7 +75,7 @@ export default function HeroTransitionZone() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
             className="mt-8 text-lg md:text-2xl text-slate-500 max-w-3xl font-medium leading-relaxed tracking-tight"
           >
-            Transform traffic from Instagram, Google Maps, Facebook, WhatsApp, QR codes, and ads into interactive customer journeys that drive reservations, bookings, site visits, and sales.
+            Customers arrive with questions. FunnelLink gives them answers before they reach WhatsApp.
           </motion.p>
 
           <motion.div 
@@ -99,8 +110,8 @@ export default function HeroTransitionZone() {
       >
         <div className="max-w-5xl mx-auto text-center px-6">
           <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-tight text-[#0A0A0A] leading-[1.1]">
-            Every Business Has Traffic.<br />
-            <span className="text-slate-400">Very Few Have A Customer Journey.</span>
+            Customers Don't Buy When They <span className="underline decoration-slate-300 underline-offset-[6px] md:underline-offset-[12px] decoration-[3px] md:decoration-[6px]">Discover</span> You.<br />
+            <span className="text-slate-400">They Buy When They <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent font-black">Understand</span> You.</span>
           </h2>
         </div>
       </motion.div>

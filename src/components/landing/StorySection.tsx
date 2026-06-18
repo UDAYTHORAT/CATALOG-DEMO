@@ -57,7 +57,7 @@ function useElementScrollProgress(ref: React.RefObject<HTMLDivElement | null>) {
   return scrollYProgress;
 }
 import PhoneMockup from './PhoneMockup';
-import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowRight, X } from 'lucide-react';
 
 // Scattered questions — positioned absolutely across the viewport with dominant indicators
 const REDESIGNED_QUESTIONS = [
@@ -293,15 +293,20 @@ export default function StorySection() {
               </span>
               <h2 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold tracking-[-0.03em] text-[#0A0A0A] leading-[1.05]">
                 Why sending traffic straight to WhatsApp or a generic website{' '}
-                <span className="text-slate-400">fails.</span>
+                <span className="text-red-600">fails.</span>
               </h2>
             </div>
             <motion.div
               style={{ opacity: useTransform(scrollYProgress, [0, 0.08], [1, 0]) }}
               className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400"
             >
-              <span className="text-[9px] font-bold tracking-[0.3em] uppercase">Scroll to explore</span>
-              <ArrowDown size={14} className="animate-bounce" />
+              <span className="text-[9px] font-bold tracking-[0.3em] uppercase">Scroll sideways to explore</span>
+              <motion.div
+                animate={{ x: [-4, 4, -4] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ArrowRight size={14} />
+              </motion.div>
             </motion.div>
           </div>
 
@@ -309,7 +314,7 @@ export default function StorySection() {
               SLIDE 2 — The Hook
           ═══════════════════════════════════════════ */}
           <div className="w-[100vw] h-full flex items-center justify-center px-6 md:px-16 lg:px-24 shrink-0">
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
               <div className="lg:w-1/2 flex flex-col justify-center">
                 <SlideLabel number="01" label="The Hook" />
                 <h3 className="text-3xl md:text-5xl lg:text-[56px] font-extrabold tracking-[-0.03em] text-slate-900 leading-[1.1] mb-6">
@@ -319,7 +324,7 @@ export default function StorySection() {
                   You run a perfect ad. The customer loves the product. They click your Call to Action — ready to buy.
                 </p>
               </div>
-              <div className="lg:w-1/2 flex items-center justify-center">
+              <div className="lg:w-1/2 h-[380px] sm:h-[480px] lg:h-auto flex items-center justify-center overflow-visible">
                 <PhoneMockup activeScene={activeScene} overrideScene={1} />
               </div>
             </div>
@@ -329,7 +334,7 @@ export default function StorySection() {
               SLIDE 3 — The WhatsApp Trap
           ═══════════════════════════════════════════ */}
           <div className="w-[100vw] h-full flex items-center justify-center px-6 md:px-16 lg:px-24 shrink-0">
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
               <div className="lg:w-1/2 flex flex-col justify-center">
                 <SlideLabel number="02" label="The WhatsApp Trap" />
                 <h3 className="text-3xl md:text-5xl lg:text-[56px] font-extrabold tracking-[-0.03em] text-slate-900 leading-[1.1] mb-6">
@@ -344,7 +349,7 @@ export default function StorySection() {
                   <BulletPoint delay={0.2}>Stressful, chaotic & unscalable</BulletPoint>
                 </div>
               </div>
-              <div className="lg:w-1/2 flex items-center justify-center">
+              <div className="lg:w-1/2 h-[380px] sm:h-[480px] lg:h-auto flex items-center justify-center overflow-visible">
                 <PhoneMockup activeScene={activeScene} overrideScene={2} />
               </div>
             </div>
@@ -354,7 +359,7 @@ export default function StorySection() {
               SLIDE 4 — The Website Trap
           ═══════════════════════════════════════════ */}
           <div className="w-[100vw] h-full flex items-center justify-center px-6 md:px-16 lg:px-24 shrink-0">
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 max-w-6xl w-full">
               <div className="lg:w-1/2 flex flex-col justify-center">
                 <SlideLabel number="03" label="The Website Trap" />
                 <h3 className="text-3xl md:text-5xl lg:text-[56px] font-extrabold tracking-[-0.03em] text-slate-900 leading-[1.1] mb-6">
@@ -369,7 +374,7 @@ export default function StorySection() {
                   <BulletPoint delay={0.2}>Too many decisions</BulletPoint>
                 </div>
               </div>
-              <div className="lg:w-1/2 flex items-center justify-center">
+              <div className="lg:w-1/2 h-[380px] sm:h-[480px] lg:h-auto flex items-center justify-center overflow-visible">
                 <PhoneMockup activeScene={activeScene} overrideScene={activeScene >= 4 ? 4 : 3} />
               </div>
             </div>
@@ -482,33 +487,33 @@ export default function StorySection() {
               >
                 <motion.h2 
                   style={{ opacity: level7TitleOpacity, y: level7TitleY }}
-                  className="text-4xl md:text-6xl lg:text-[72px] font-black tracking-[-0.03em] text-[#0A0A0A] mt-12 mb-16 leading-[1.1]"
+                  className="text-3xl md:text-5xl lg:text-[54px] font-black tracking-[-0.03em] text-[#0A0A0A] mt-6 mb-8 leading-[1.1]"
                 >
                   The Cost of <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Unanswered Questions.</span>
                 </motion.h2>
 
                 {/* Zig-Zag Timeline */}
-                <div className="relative w-full max-w-4xl mx-auto mb-16">
+                <div className="relative w-full max-w-4xl mx-auto mb-6">
                   {/* Vertical Center Line (Desktop Only) */}
-                  <div className="absolute left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-slate-200 via-orange-300 to-red-400 -translate-x-1/2 hidden md:block z-0" />
+                  <div className="absolute left-1/2 top-[26px] bottom-[26px] w-[2px] bg-gradient-to-b from-slate-200 via-orange-300 to-red-400 -translate-x-1/2 hidden md:block z-0" />
 
-                  <div className="flex flex-col gap-10 md:gap-14 relative">
+                  <div className="flex flex-col gap-4 md:gap-6 relative">
                     {/* Step 1 - Left */}
                     <motion.div 
                       style={{ opacity: step1Opacity, x: step1X, scale: step1Scale }}
                       className="flex flex-col md:flex-row items-center justify-start w-full relative"
                     >
                       {/* Badge */}
-                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-md mb-2 md:mb-0">
                         01
                       </div>
                       {/* Content Card */}
-                      <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
+                      <div className="w-full md:w-[45%] pr-0 md:pr-6 text-center md:text-right">
                         <div
-                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-5 py-3 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
                         >
-                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">Questions Unanswered</h3>
-                          <p className="text-xs md:text-sm text-slate-500 font-medium">Your customer has doubts about price, quality, legitimacy, or fit</p>
+                          <h3 className="text-base md:text-lg font-black text-slate-900 mb-0.5">Questions Unanswered</h3>
+                          <p className="text-[11px] md:text-xs text-slate-500 font-semibold">Your customer has doubts about price, quality, legitimacy, or&nbsp;fit</p>
                         </div>
                       </div>
                     </motion.div>
@@ -519,16 +524,16 @@ export default function StorySection() {
                       className="flex flex-col md:flex-row items-center justify-end w-full relative"
                     >
                       {/* Badge */}
-                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FFF0E6] text-orange-700 border border-orange-200 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-9 h-9 rounded-full bg-[#FFF0E6] text-orange-700 border border-orange-200 flex items-center justify-center font-black text-sm shadow-sm mb-2 md:mb-0">
                         02
                       </div>
                       {/* Content Card */}
-                      <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
+                      <div className="w-full md:w-[45%] pl-0 md:pl-6 text-center md:text-left">
                         <div
-                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-5 py-3 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
                         >
-                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Trust Built</h3>
-                          <p className="text-xs md:text-sm text-slate-500 font-medium">They hesitate because they don&apos;t have enough information to feel confident</p>
+                          <h3 className="text-base md:text-lg font-black text-slate-900 mb-0.5">No Trust Built</h3>
+                          <p className="text-[11px] md:text-xs text-slate-500 font-semibold">They hesitate because they don&apos;t have enough information to feel&nbsp;confident</p>
                         </div>
                       </div>
                     </motion.div>
@@ -539,16 +544,16 @@ export default function StorySection() {
                       className="flex flex-col md:flex-row items-center justify-start w-full relative"
                     >
                       {/* Badge */}
-                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-[#FEECE0] text-orange-800 border border-orange-300 flex items-center justify-center font-black text-lg shadow-sm mb-3 md:mb-0">
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-9 h-9 rounded-full bg-[#FEECE0] text-orange-800 border border-orange-300 flex items-center justify-center font-black text-sm shadow-sm mb-2 md:mb-0">
                         03
                       </div>
                       {/* Content Card */}
-                      <div className="w-full md:w-[45%] pr-0 md:pr-8 text-center md:text-right">
+                      <div className="w-full md:w-[45%] pr-0 md:pr-6 text-center md:text-right">
                         <div
-                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-6 py-4 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+                          className="bg-white/95 backdrop-blur-sm border border-slate-200/60 px-5 py-3 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
                         >
-                          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-1">No Conversation Starts</h3>
-                          <p className="text-xs md:text-sm text-slate-500 font-medium">They ghost you, message competitors, or keep browsing elsewhere</p>
+                          <h3 className="text-base md:text-lg font-black text-slate-900 mb-0.5">No Conversation Starts</h3>
+                          <p className="text-[11px] md:text-xs text-slate-500 font-semibold">They ghost you, message competitors, or keep browsing&nbsp;elsewhere</p>
                         </div>
                       </div>
                     </motion.div>
@@ -559,16 +564,16 @@ export default function StorySection() {
                       className="flex flex-col md:flex-row items-center justify-end w-full relative"
                     >
                       {/* Badge */}
-                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center font-black text-lg shadow-md mb-3 md:mb-0">
-                        ✕
+                      <div className="relative md:absolute md:left-1/2 md:-translate-x-1/2 z-20 w-9 h-9 rounded-full bg-red-500 text-white flex items-center justify-center shadow-md mb-2 md:mb-0">
+                        <X size={14} className="stroke-[3]" />
                       </div>
                       {/* Content Card */}
-                      <div className="w-full md:w-[45%] pl-0 md:pl-8 text-center md:text-left">
+                      <div className="w-full md:w-[45%] pl-0 md:pl-6 text-center md:text-left">
                         <div
-                          className="bg-gradient-to-br from-red-50 to-orange-50/50 border border-red-200 px-6 py-5 rounded-2xl shadow-[0_12px_24px_rgba(239,68,68,0.04)]"
+                          className="bg-gradient-to-br from-red-50 to-orange-50/50 border border-red-200 px-5 py-3.5 rounded-xl shadow-[0_12px_24px_rgba(239,68,68,0.04)]"
                         >
-                          <h3 className="text-lg md:text-xl font-black text-red-700 mb-1">Revenue Lost</h3>
-                          <p className="text-xs md:text-sm text-red-600 font-bold">A qualified lead walks away forever</p>
+                          <h3 className="text-base md:text-lg font-black text-red-700 mb-0.5">Revenue Lost</h3>
+                          <p className="text-[11px] md:text-xs text-red-600 font-black">A qualified lead walks away&nbsp;forever</p>
                         </div>
                       </div>
                     </motion.div>

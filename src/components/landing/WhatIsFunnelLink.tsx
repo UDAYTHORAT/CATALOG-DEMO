@@ -116,7 +116,7 @@ const AnimatedConnector = ({
   active: boolean; 
   flowColor?: string;
 }) => (
-  <div className="hidden md:flex flex-1 flex-col items-center justify-center px-2 relative min-w-[90px]">
+  <div className="flex flex-1 flex-col items-center justify-center px-1 relative min-w-[40px] sm:min-w-[45px] lg:min-w-[55px] xl:min-w-[70px] shrink-0">
     <span className={`absolute -top-4 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
       {label}
     </span>
@@ -162,7 +162,7 @@ const AnimatedConnectorVertical = ({
   active: boolean; 
   flowColor?: string;
 }) => (
-  <div className="flex md:hidden h-10 w-6 flex-col items-center justify-center relative my-1">
+  <div className="flex lg:hidden h-10 w-6 flex-col items-center justify-center relative my-1">
     <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
       {label}
     </span>
@@ -1069,7 +1069,7 @@ const DualMindSidebar = ({
   }, [gameState]);
 
   return (
-    <div className="w-full max-w-sm lg:w-[320px] xl:w-[350px] shrink-0 z-30 flex flex-col gap-4">
+    <div className="hidden lg:flex w-full max-w-sm lg:w-[320px] xl:w-[350px] shrink-0 z-30 flex flex-col gap-4">
       {/* Segmented Control Selector */}
       <div className="flex p-1 bg-slate-100/80 backdrop-blur rounded-xl border border-slate-200/50">
         <button 
@@ -1186,7 +1186,7 @@ const CombinedSimulation = ({
       </div>
 
       {/* Context Sidebar (Left side) */}
-      <div className="flex flex-col max-w-sm relative z-10 text-left shrink-0">
+      <div className="hidden lg:flex flex-col max-w-sm relative z-10 text-left shrink-0">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 w-max">
           Interactive Simulator
         </div>
@@ -1401,7 +1401,7 @@ export default function WhatIsFunnelLink() {
   }, [step]);
 
   return (
-    <div className="min-h-screen w-full bg-white relative flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-6 py-10 select-none what-is-funnellink-section">
+    <div className="min-h-screen w-full bg-white relative flex flex-col items-center justify-start md:justify-center overflow-x-hidden overflow-y-auto px-6 py-10 select-none what-is-funnellink-section">
 
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none" style={{
@@ -1425,13 +1425,13 @@ export default function WhatIsFunnelLink() {
         )}
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl flex flex-col items-center justify-center min-h-[500px]">
+      <div className="relative z-10 w-full max-w-5xl flex flex-col items-center justify-center min-h-[500px] my-auto">
         <AnimatePresence mode="wait">
 
           {/* ═══ START ═══ */}
           {/* ═══ START ═══ */}
           {step==='start' && (
-            <motion.div key="start-screen" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30,filter:'blur(4px)'}} transition={{duration:0.7,ease:E}} className="text-center flex flex-col items-center gap-4 max-w-4xl px-4">
+            <motion.div key="start-screen" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30,filter:'blur(4px)'}} transition={{duration:0.7,ease:E}} className="text-center flex flex-col items-center gap-4 max-w-5xl px-4">
               <motion.span initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.5}}
                 className="text-[10px] sm:text-xs font-sans font-black uppercase tracking-[0.2em] text-[#2D63EC] mb-2">
                 THE CONVERSION LAYER BETWEEN TRAFFIC AND WHATSAPP
@@ -1465,12 +1465,12 @@ export default function WhatIsFunnelLink() {
                 initial={{ opacity: 0, y: 30 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="w-full max-w-3xl mt-6 p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
+                className="w-full max-w-5xl mt-6 p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
               >
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 relative z-10 font-sans">
+                <div className="flex flex-row items-center justify-start lg:justify-between gap-4 lg:gap-2.5 lg:gap-4 relative z-10 font-sans overflow-x-auto no-scrollbar w-full py-1">
                   {/* Node 1: Traffic Sources */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all duration-300 hover:shadow-md">
+                  <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all duration-300 hover:shadow-md">
                       <span className="text-[9px] font-black tracking-wider uppercase text-slate-400">Traffic Sources</span>
                       <div className="flex items-center gap-2.5 text-slate-700 text-xs font-bold">
                         <InstagramIcon size={12} className="text-pink-500" />
@@ -1481,14 +1481,13 @@ export default function WhatIsFunnelLink() {
                       </div>
                     </div>
                   </div>
-
+ 
                   {/* Connection 1 */}
                   <AnimatedConnector label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
-                  <AnimatedConnectorVertical label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
-
+ 
                   {/* Node 2: FunnelLink */}
-                  <div className="flex flex-col items-center">
-                    <div className="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_8px_25px_rgba(45,99,236,0.25)] ring-4 ring-blue-500/10 flex flex-col gap-1 items-center transition-transform hover:scale-[1.02]">
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="px-3 lg:px-5 py-2 lg:py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_8px_25px_rgba(45,99,236,0.25)] ring-4 ring-blue-500/10 flex flex-col gap-1 items-center transition-transform hover:scale-[1.02]">
                       <span className="text-[9px] font-black tracking-widest uppercase opacity-90 flex items-center gap-1">
                         <ShieldCheck size={10} className="text-blue-200" /> The Conversion Layer
                       </span>
@@ -1497,33 +1496,31 @@ export default function WhatIsFunnelLink() {
                       </span>
                     </div>
                   </div>
-
+ 
                   {/* Connection 2 */}
                   <AnimatedConnector label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
-                  <AnimatedConnectorVertical label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
-
+ 
                   {/* Node 3: Chat */}
-                  <div className="flex flex-col items-center">
-                    <div className="px-4 py-2.5 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-emerald-700 shadow-sm flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-emerald-700 shadow-sm flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
                       <span className="text-[9px] font-black tracking-wider uppercase text-emerald-500 flex items-center gap-1">
                         <MessageCircle size={10} className="text-emerald-500 fill-emerald-500" /> Instant Chat
                       </span>
                       <span className="text-xs font-bold text-emerald-950">WhatsApp Business</span>
                     </div>
                   </div>
-
+ 
                   {/* Connection 3 */}
                   <AnimatedConnector label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
-                  <AnimatedConnectorVertical label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
-
+ 
                   {/* Node 4: Customer */}
-                  <div className="flex flex-col items-center">
-                    <div className="px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
                       <span className="text-[9px] font-black tracking-wider uppercase text-slate-400 flex items-center gap-1">
                         <CheckCircle2 size={10} className="text-emerald-500" /> Final Outcome
                       </span>
                       <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
-                        Closed Customer 💰
+                        Closed Customer
                       </span>
                     </div>
                   </div>
