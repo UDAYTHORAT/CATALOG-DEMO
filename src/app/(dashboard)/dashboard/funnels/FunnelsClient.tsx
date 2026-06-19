@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Layers, Plus, Trash2, ExternalLink, Loader2, Pencil, 
   Zap, Copy, CheckCircle2, Search,
-  LayoutGrid, List, MessageSquare, Target, Eye
+  LayoutGrid, List, MessageSquare, Target, Eye, Clock, CreditCard
 } from 'lucide-react';
 import { TemplateGallery } from '@/components/dashboard/TemplateGallery';
 import { CreateFunnelModal } from '@/components/dashboard/CreateFunnelModal';
@@ -13,6 +13,8 @@ import { Product } from '@/app/actions/products';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
+import { useRazorpay } from '@/hooks/useRazorpay';
+import { getTemplatePrice } from '@/data/templatePricing';
 
 interface Lead {
   id: string;
@@ -40,6 +42,36 @@ export function FunnelsClient({ initialFunnels, availableProducts, initialLeads 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const { initiatePayment, isProcessing } = useRazorpay();
+
+  // Helper to get expiry info for a funnel
+  const getExpiryInfo = (funnel: Funnel) => {
+    const expiresAt = (funnel as any).expires_at;
+    if (!expiresAt) return null;
+    const now = new Date();
+    const expiry = new Date(expiresAt);
+    const diffMs = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const isExpired = diffDays <= 0;
+    return { diffDays, isExpired, expiresAt: expiry };
+  };
+
+  const handleRenew = (funnel: Funnel) => {
+    const templateId = funnel.story_mode_data?.[0]?.templateId || 'funnelad-elite-furniture';
+    const pricing = getTemplatePrice(templateId);
+    
+    initiatePayment({
+      templateId,
+      templateName: funnel.name,
+      funnelId: funnel.id,
+      onSuccess: () => {
+        window.location.reload();
+      },
+      onError: (error) => {
+        alert('Renewal failed: ' + error);
+      },
+    });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -288,18 +320,49 @@ export function FunnelsClient({ initialFunnels, availableProducts, initialLeads 
                                   {funnel.is_active ? 'Active' : 'Paused'}
                                 </span>
                               </div>
+
+                              {/* Expiry Timer */}
+                              {mounted && (() => {
+                                const expiry = getExpiryInfo(funnel);
+                                if (!expiry) return null;
+                                const { diffDays, isExpired } = expiry;
+                                if (isExpired) {
+                                  return (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-50 rounded-lg border border-red-100 mb-1">
+                                      <Clock size={11} className="text-red-500" />
+                                      <span className="text-[10px] font-bold text-red-600">Expired</span>
+                                    </div>
+                                  );
+                                }
+                                return (
+                                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border mb-1 ${
+                                    diffDays <= 5 
+                                      ? 'bg-amber-50 border-amber-100' 
+                                      : 'bg-emerald-50 border-emerald-100'
+                                  }`}>
+                                    <Clock size={11} className={diffDays <= 5 ? 'text-amber-500' : 'text-emerald-500'} />
+                                    <span className={`text-[10px] font-bold ${
+                                      diffDays <= 5 ? 'text-amber-600' : 'text-emerald-600'
+                                    }`}>
+                                      {diffDays} day{diffDays !== 1 ? 's' : ''} left
+                                    </span>
+                                  </div>
+                                );
+                              })()}
                               
                               <h3 className="text-lg font-black text-slate-800 tracking-tight line-clamp-1 group-hover:text-indigo-600 transition-colors">
                                 {funnel.name}
                               </h3>
-                              <div className="flex items-center gap-1.5 mt-1">
-                                <span className="text-[11px] font-mono text-slate-400">/{funnel.slug}</span>
+                              <div className="mt-3 flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg group/link">
+                                <span className="text-[10px] font-mono text-slate-500 truncate flex-1 pl-1">
+                                  {typeof window !== 'undefined' ? window.location.host : 'funnellink.co'}/{funnel.slug}
+                                </span>
                                 <button 
                                   onClick={() => handleCopyLink(funnel.slug, funnel.id)}
-                                  className="p-1 text-slate-300 hover:text-indigo-600 transition-colors"
+                                  className="p-1.5 bg-white text-slate-400 border border-slate-200 rounded hover:text-indigo-600 hover:border-indigo-200 transition-colors shadow-sm"
                                   title="Copy Link"
                                 >
-                                  {copiedId === funnel.id ? <CheckCircle2 size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                                  {copiedId === funnel.id ? <CheckCircle2 size={12} className="text-emerald-500" /> : <Copy size={12} />}
                                 </button>
                               </div>
                             </div>
@@ -357,12 +420,27 @@ export function FunnelsClient({ initialFunnels, availableProducts, initialLeads 
 
                             {/* Actions */}
                             <div className="flex items-center gap-2 pt-2">
-                              <Link 
-                                href={`/dashboard/funnels/${funnel.id}/edit`}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-indigo-600 transition-all shadow-sm active:scale-[0.98]"
-                              >
-                                Configure
-                              </Link>
+                              {/* Show Renew button if expired */}
+                              {mounted && getExpiryInfo(funnel)?.isExpired ? (
+                                <button
+                                  onClick={() => handleRenew(funnel)}
+                                  disabled={isProcessing}
+                                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:from-indigo-500 hover:to-violet-500 transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
+                                >
+                                  {isProcessing ? (
+                                    <><Loader2 size={12} className="animate-spin" /> Processing...</>
+                                  ) : (
+                                    <><CreditCard size={12} /> Renew +30 Days</>
+                                  )}
+                                </button>
+                              ) : (
+                                <Link 
+                                  href={`/dashboard/funnels/${funnel.id}/edit`}
+                                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-indigo-600 transition-all shadow-sm active:scale-[0.98]"
+                                >
+                                  Configure
+                                </Link>
+                              )}
                               <Link 
                                 href={`/${funnel.slug}`} 
                                 target="_blank"

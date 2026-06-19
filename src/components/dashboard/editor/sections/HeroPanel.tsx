@@ -8,11 +8,15 @@ export default React.memo(function HeroPanel({
   onChange,
   hideCtaSection,
   hideTrustBar,
+  hideHeroBadge = false,
+  hideSecondaryCta = false,
 }: {
   data: HeroData;
   onChange: (updates: Partial<HeroData>) => void;
   hideCtaSection?: boolean;
   hideTrustBar?: boolean;
+  hideHeroBadge?: boolean;
+  hideSecondaryCta?: boolean;
 }) {
   return (
     <div className="space-y-8">
@@ -58,17 +62,19 @@ export default React.memo(function HeroPanel({
               </Field>
             </div>
             
-            <div id="tour-content-herobadge">
-              <Field label="Hero Badge (Optional)">
-                <input
-                  type="text"
-                  value={data.heroBadge ?? ''}
-                  onChange={(event) => onChange({ heroBadge: event.target.value })}
-                  className={inputClass}
-                  placeholder="e.g. always fresh"
-                />
-              </Field>
-            </div>
+            {!hideHeroBadge && (
+              <div id="tour-content-herobadge">
+                <Field label="Hero Badge (Optional)">
+                  <input
+                    type="text"
+                    value={data.heroBadge ?? ''}
+                    onChange={(event) => onChange({ heroBadge: event.target.value })}
+                    className={inputClass}
+                    placeholder="e.g. always fresh"
+                  />
+                </Field>
+              </div>
+            )}
           </div>
         </div>
 
@@ -115,14 +121,16 @@ export default React.memo(function HeroPanel({
                 className={inputClass}
               />
             </Field>
-            <Field label="Secondary Button Text (Optional)">
-              <input
-                value={data.heroSecondaryCtaText ?? ''}
-                onChange={(event) => onChange({ heroSecondaryCtaText: event.target.value })}
-                className={inputClass}
-                placeholder="e.g. Reserve Table"
-              />
-            </Field>
+            {!hideSecondaryCta && (
+              <Field label="Secondary Button Text (Optional)">
+                <input
+                  value={data.heroSecondaryCtaText ?? ''}
+                  onChange={(event) => onChange({ heroSecondaryCtaText: event.target.value })}
+                  className={inputClass}
+                  placeholder="e.g. Reserve Table"
+                />
+              </Field>
+            )}
             <Field label="Trust Hook (Helper Text)">
               <input
                 value={data.heroCtaSubtext}

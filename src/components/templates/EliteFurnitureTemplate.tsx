@@ -275,6 +275,7 @@ export default React.memo(function EliteFurnitureTemplate({
           base.subTitle = sec.data.subTitle;
         } else if (sec.id === 'testimonials') {
           base.testimonials = sec.data.testimonials;
+          base.testimonialsCities = sec.data.cities;
         } else if (sec.id === 'location') {
           Object.assign(base, sec.data);
         } else if (sec.id === 'whatsapp') {
@@ -360,6 +361,7 @@ export default React.memo(function EliteFurnitureTemplate({
         { id: "t2", name: "Priya K.", city: "Bangalore", text: "Loved the fact that they sent me photos straight from their Jodhpur factory before shipping. 10/10.", rating: 5 },
         { id: "t3", name: "Ananya M.", city: "Delhi", text: "Incredible design and flawless finish. The buying experience over WhatsApp was so simple.", rating: 5 },
       ]).slice(0, 3),
+      testimonialsCities: base.testimonialsCities,
       categoriesStepTitle: base.categoriesStepTitle || "What are you looking for?",
       categoriesStepSubTitle: base.categoriesStepSubTitle || "Select a category to view our factory-direct collections.",
       bottomCtaTitle: base.bottomCtaTitle || "Need help?",
@@ -461,6 +463,20 @@ export default React.memo(function EliteFurnitureTemplate({
     );
 
     const whatsappSettings = (content as any).whatsapp;
+
+    // Build products list for the selected category
+    const buildProductsList = (cat: Category | null) => {
+      if (!cat) return '';
+      const catId = String(cat.id).toLowerCase();
+      const catLabel = String(cat.label).toLowerCase();
+      const categoryProducts = (content.products || []).filter((p: Product) => {
+        const pCatId = String(p.category_id || '').toLowerCase();
+        return pCatId === catId || pCatId === catLabel;
+      });
+      if (categoryProducts.length === 0) return '';
+      const list = categoryProducts.map((p: Product) => `  • ${p.name}${p.priceLabel ? ` (${p.priceLabel})` : ''}`).join('\n');
+      return `\nHere are the options I can see:\n${list}\n\nWhich ones do you have in stock? Please share photos & details.\n`;
+    };
     
     if (intent_type === "custom_request_cta") {
       const customMessage = `Hi ${content.storeName},\n\nI couldn't find exactly what I was looking for.\n\nHere is what I need:\n"${customRequestText}"\n\nPlease let me know if you have something similar or can arrange this for me.`;
@@ -476,9 +492,11 @@ export default React.memo(function EliteFurnitureTemplate({
       if (whatsappSettings?.welcomeMessage) {
         message = whatsappSettings.welcomeMessage
           .replaceAll('{category}', categoryToUse?.label || 'Furniture')
-          .replaceAll('{store_name}', content.storeName || 'Store');
+          .replaceAll('{store_name}', content.storeName || 'Store')
+          .replaceAll('{products_list}', buildProductsList(categoryToUse));
       } else {
-        message += `I'm planning to buy furniture.\n\nHere's what I'm looking for:\n• Requirement: ${categoryToUse?.label || 'Furniture'}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode`;
+        const productsList = buildProductsList(categoryToUse);
+        message += `I'm interested in your *${categoryToUse?.label || 'Furniture'}* collection.\n${productsList}\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode`;
       }
     } else if (intent_type === "product_inquiry_cta" || product) {
       if (whatsappSettings?.productInquiryText) {
@@ -894,7 +912,16 @@ export default React.memo(function EliteFurnitureTemplate({
                     Installed In Real Homes
                   </h3>
                   <p className={`${isMobileMode ? 'text-[12px]' : 'text-[12px] md:text-[14px]'} text-[#6B665F] font-light max-w-md mx-auto`}>
-                    Real deliveries across Mumbai, Bangalore, Pune & Dubai residences.
+                    {(() => {
+                      const cities = (content.testimonialsCities || 'Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai')
+                        .split(',')
+                        .map((c: string) => c.trim())
+                        .filter(Boolean);
+                      const citiesText = cities.length <= 1 
+                        ? (cities[0] || '') 
+                        : `${cities.slice(0, -1).join(', ')} & ${cities[cities.length - 1]}`;
+                      return `Real deliveries across ${citiesText} residences.`;
+                    })()}
                   </p>
                 </div>
                 
@@ -970,14 +997,18 @@ export default React.memo(function EliteFurnitureTemplate({
                     Delivered Across Residences In
                   </span>
                   <div className="flex flex-wrap justify-center gap-2 max-w-xl px-4">
-                    {['Mumbai', 'Pune', 'Bangalore', 'Hyderabad', 'Delhi', 'Dubai'].map((city) => (
-                      <span 
-                        key={city} 
-                        className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-[#1C1B1A] bg-white border border-black/5 rounded-full shadow-sm"
-                      >
-                        {city}
-                      </span>
-                    ))}
+                    {(content.testimonialsCities || 'Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai')
+                      .split(',')
+                      .map((c: string) => c.trim())
+                      .filter(Boolean)
+                      .map((city: string) => (
+                        <span 
+                          key={city} 
+                          className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-[#1C1B1A] bg-white border border-black/5 rounded-full shadow-sm"
+                        >
+                          {city}
+                        </span>
+                      ))}
                   </div>
                 </div>
               </motion.div>

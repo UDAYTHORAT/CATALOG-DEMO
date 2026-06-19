@@ -12,6 +12,12 @@ import type { Product } from '@/app/actions/products';
 import { FALLBACK_PRODUCT_IMAGE, formatProductPrice } from '../utils';
 import { ImageUpload } from '@/components/dashboard/ImageUpload';
 
+const DEFAULT_BENEFITS = [
+  { title: "Certified Solid Wood", desc: "No MDF or particle board. Only premium seasoned Sheesham/Teak." },
+  { title: "Factory-Direct Pricing", desc: "Save up to 40% by avoiding showroom markups and agent commissions." },
+  { title: "Customizable Finish", desc: "WhatsApp us to choose your preferred wood stain or fabric color." }
+];
+
 export default React.memo(function ProductsPanel({
   data,
   categories,
@@ -366,8 +372,10 @@ export default React.memo(function ProductsPanel({
                       </div>
                       <div className="space-y-4">
                         <AnimatePresence mode="popLayout">
-                          {(product.benefits || []).map((benefit, bIndex) => (
-                            <motion.div 
+                          {(() => {
+                            const activeBenefits = product.benefits && product.benefits.length > 0 ? product.benefits : DEFAULT_BENEFITS;
+                            return activeBenefits.map((benefit, bIndex) => (
+                              <motion.div 
                               key={bIndex} 
                               layout
                               initial={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -380,7 +388,8 @@ export default React.memo(function ProductsPanel({
                                 <input
                                   value={benefit.title}
                                   onChange={(e) => {
-                                    const newBenefits = [...(product.benefits || [])];
+                                    const activeBenefits = product.benefits && product.benefits.length > 0 ? product.benefits : DEFAULT_BENEFITS;
+                                    const newBenefits = [...activeBenefits];
                                     newBenefits[bIndex] = { ...benefit, title: e.target.value };
                                     onUpdate(index, { benefits: newBenefits });
                                   }}
@@ -391,7 +400,8 @@ export default React.memo(function ProductsPanel({
                               <textarea
                                 value={benefit.desc}
                                 onChange={(e) => {
-                                  const newBenefits = [...(product.benefits || [])];
+                                  const activeBenefits = product.benefits && product.benefits.length > 0 ? product.benefits : DEFAULT_BENEFITS;
+                                  const newBenefits = [...activeBenefits];
                                   newBenefits[bIndex] = { ...benefit, desc: e.target.value };
                                   onUpdate(index, { benefits: newBenefits });
                                 }}
@@ -401,7 +411,8 @@ export default React.memo(function ProductsPanel({
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const newBenefits = product.benefits?.filter((_, i) => i !== bIndex);
+                                  const activeBenefits = product.benefits && product.benefits.length > 0 ? product.benefits : DEFAULT_BENEFITS;
+                                  const newBenefits = activeBenefits.filter((_, i) => i !== bIndex);
                                   onUpdate(index, { benefits: newBenefits });
                                 }}
                                 className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-rose-500 shadow-lg border border-slate-100 opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-50 hover:scale-110 active:scale-95"
@@ -409,22 +420,27 @@ export default React.memo(function ProductsPanel({
                                 <X size={14} />
                               </button>
                             </motion.div>
-                          ))}
+                            ));
+                          })()}
                         </AnimatePresence>
                         
-                        {(product.benefits || []).length < 3 && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newBenefits = [...(product.benefits || []), { title: '', desc: '' }];
-                              onUpdate(index, { benefits: newBenefits });
-                            }}
-                            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 py-4 text-[11px] font-black uppercase tracking-widest text-emerald-600 transition-all hover:bg-white hover:border-emerald-400 hover:shadow-md active:scale-[0.98]"
-                          >
-                            <Plus size={16} />
-                            Add Benefit
-                          </button>
-                        )}
+                          {(() => {
+                            const activeBenefits = product.benefits && product.benefits.length > 0 ? product.benefits : DEFAULT_BENEFITS;
+                            if (activeBenefits.length >= 3) return null;
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newBenefits = [...activeBenefits, { title: '', desc: '' }];
+                                  onUpdate(index, { benefits: newBenefits });
+                                }}
+                                className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 py-4 text-[11px] font-black uppercase tracking-widest text-emerald-600 transition-all hover:bg-white hover:border-emerald-400 hover:shadow-md active:scale-[0.98]"
+                              >
+                                <Plus size={16} />
+                                Add Benefit
+                              </button>
+                            );
+                          })()}
                       </div>
                     </div>
                   </div>

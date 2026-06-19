@@ -349,6 +349,7 @@ const defaultTestimonials: TestimonialsData = {
       detail2: 'Teak wood & bouclé fabric',
     },
   ],
+  cities: 'Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai',
 };
 
 const defaultRealEstateTestimonials: TestimonialsData = {
@@ -375,6 +376,7 @@ const defaultRealEstateTestimonials: TestimonialsData = {
       rating: 5,
     },
   ],
+  cities: 'Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai',
 };
 
 const defaultLocation: LocationData = {
@@ -401,8 +403,8 @@ const defaultWhatsAppData: WhatsAppData = {
   title: 'Get Best Price Instantly',
   subTitle: 'Chat directly with factory & save more',
   ctaText: 'Chat Directly with Factory',
-  welcomeMessage: 'Hi {store_name},\n\nI’m planning to buy furniture.\n\nHere’s what I’m looking for:\n• Requirement: {category}\n\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode',
-  productInquiryText: 'Hi {store_name},\n\nI’m interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city',
+  welcomeMessage: `Hi {store_name},\n\nI'm interested in your *{category}* collection.\n{products_list}\nPlease share:\n1. Final factory price\n2. Available customization options\n3. Delivery time to my pincode`,
+  productInquiryText: `Hi {store_name},\n\nI'm interested in this:\n\n• Product: {product_name}\n\nPlease share:\n1. Best final factory price\n2. Customization (size, fabric, wood)\n3. Delivery time to my city`,
 };
 
 const defaultRealEstateWhatsAppData: WhatsAppData = {
@@ -478,6 +480,7 @@ const defaultCafeTestimonials: TestimonialsData = {
     { id: 't2', name: 'Magnus J.', city: 'Local', text: 'A weekend staple for our family. Hearty meals that taste exactly like my grandmother used to make.', rating: 5 },
     { id: 't3', name: 'Elena V.', city: 'Food Blogger', text: 'Impeccable service, stunning rustic decor, and artisanal coffee that hits all the right notes.', rating: 5 },
   ],
+  cities: 'Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai',
 };
 
 const defaultCafeLocation: LocationData = {

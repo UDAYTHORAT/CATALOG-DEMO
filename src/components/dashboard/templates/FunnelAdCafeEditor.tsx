@@ -64,6 +64,8 @@ import StorePanel from '@/components/dashboard/editor/sections/StorePanel';
 import TestimonialsPanel from '@/components/dashboard/editor/sections/TestimonialsPanel';
 import WhatsAppPanel from '@/components/dashboard/editor/sections/WhatsAppPanel';
 import CafeFullMenuPanel from '@/components/dashboard/editor/sections/CafeFullMenuPanel';
+import { useRazorpay } from '@/hooks/useRazorpay';
+import { getTemplatePrice } from '@/data/templatePricing';
 import type {
   CategoriesData,
   CategoryItem,
@@ -674,8 +676,54 @@ export default function FunnelAdCafeEditor({
     [liveContent, funnel?.id, funnel.story_mode_data, templateId]
   );
 
+  const { initiatePayment, isProcessing: isPaymentProcessing } = useRazorpay();
+
   const handlePublish = useCallback(async () => {
     if (!funnel?.id) return;
+    
+    // Check if payment is needed
+    const isPremium = ['funnelad-elite-furniture', 'funnelad-elite-real-estate', 'funnelad-elite-cafe'].includes(templateId);
+    const expiresAt = (funnel as any).expires_at;
+    const isExpiredOrUnpaid = !expiresAt || new Date() > new Date(expiresAt);
+
+    if (isPremium && isExpiredOrUnpaid) {
+      initiatePayment({
+        templateId,
+        templateName: funnel.name || 'Cafe Template',
+        funnelId: funnel.id,
+        onSuccess: async () => {
+          // Proceed with publishing after successful payment
+          setIsPublishing(true);
+          try {
+            const contentChanged = JSON.stringify(draftContent) !== JSON.stringify(lastSavedContentRef.current);
+            if (contentChanged) {
+              await updateFunnel(funnel.id, {
+                story_mode_data: [{
+                  ...(funnel.story_mode_data?.[0] ?? {}),
+                  templateId,
+                  content: draftContent,
+                }],
+                is_active: true
+              });
+              lastSavedContentRef.current = structuredClone(draftContent);
+            } else {
+              await updateFunnel(funnel.id, { is_active: true });
+            }
+            setShowPublishModal(true);
+          } catch (err) {
+            console.error('Failed to publish:', err);
+            setSaveError('Payment successful, but failed to publish funnel. Please check your connection.');
+          } finally {
+            setIsPublishing(false);
+          }
+        },
+        onError: (err) => {
+          setSaveError('Payment failed: ' + err);
+        }
+      });
+      return;
+    }
+
     setIsPublishing(true);
     try {
       const contentChanged = JSON.stringify(draftContent) !== JSON.stringify(lastSavedContentRef.current);
@@ -700,7 +748,7 @@ export default function FunnelAdCafeEditor({
     } finally {
       setIsPublishing(false);
     }
-  }, [draftContent, funnel?.id, funnel.story_mode_data, templateId]);
+  }, [draftContent, funnel?.id, funnel.name, funnel.story_mode_data, templateId, initiatePayment]);
 
   const handleWizardFinish = useCallback(async () => {
     await handlePublish();
@@ -1417,11 +1465,11 @@ export default function FunnelAdCafeEditor({
           <button
             id="tour-launch-desktop"
             onClick={() => void handlePublish()}
-            disabled={isPublishing}
+            disabled={isPublishing || isPaymentProcessing}
             className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white shadow-lg hover:bg-black active:scale-95 transition-all disabled:opacity-50"
           >
-            {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-orange-400" />}
-            {isPublishing ? 'Publishing...' : 'Publish'}
+            {isPublishing || isPaymentProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-orange-400" />}
+            {isPublishing ? 'Publishing...' : isPaymentProcessing ? 'Processing...' : 'Publish'}
           </button>
         </div>
 

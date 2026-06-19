@@ -116,7 +116,7 @@ const AnimatedConnector = ({
   active: boolean; 
   flowColor?: string;
 }) => (
-  <div className="flex flex-1 flex-col items-center justify-center px-1 relative min-w-[40px] sm:min-w-[45px] lg:min-w-[55px] xl:min-w-[70px] shrink-0">
+  <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-1 relative min-w-[40px] sm:min-w-[45px] lg:min-w-[55px] xl:min-w-[70px] shrink-0">
     <span className={`absolute -top-4 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
       {label}
     </span>
@@ -162,7 +162,7 @@ const AnimatedConnectorVertical = ({
   active: boolean; 
   flowColor?: string;
 }) => (
-  <div className="flex lg:hidden h-10 w-6 flex-col items-center justify-center relative my-1">
+  <div className="flex lg:hidden h-5 w-6 flex-col items-center justify-center relative my-0">
     <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
       {label}
     </span>
@@ -1053,10 +1053,12 @@ const OwnersMindSidebar = ({ gameState }: { gameState: number }) => {
 
 const DualMindSidebar = ({ 
   gameState, 
-  catalogHighlight 
+  catalogHighlight,
+  isVisibleMobile
 }: { 
   gameState: number; 
   catalogHighlight: number;
+  isVisibleMobile: boolean;
 }) => {
   const [activeTab, setActiveTab] = useState<'customer' | 'owner'>('customer');
 
@@ -1069,7 +1071,7 @@ const DualMindSidebar = ({
   }, [gameState]);
 
   return (
-    <div className="hidden lg:flex w-full max-w-sm lg:w-[320px] xl:w-[350px] shrink-0 z-30 flex flex-col gap-4">
+    <div className={`${isVisibleMobile ? 'flex w-full max-w-[310px] mx-auto' : 'hidden'} lg:flex w-full max-w-sm lg:w-[320px] xl:w-[350px] shrink-0 z-30 flex flex-col gap-4`}>
       {/* Segmented Control Selector */}
       <div className="flex p-1 bg-slate-100/80 backdrop-blur rounded-xl border border-slate-200/50">
         <button 
@@ -1135,6 +1137,7 @@ const CombinedSimulation = ({
   onNext: () => void 
 }) => {
   const [catalogHighlight, setCatalogHighlight] = useState(-1);
+  const [mobileTab, setMobileTab] = useState<'simulator' | 'mind' | 'progress'>('simulator');
 
   // Scripts for Chat Simulator
   const badScript = [
@@ -1185,8 +1188,45 @@ const CombinedSimulation = ({
         }`} />
       </div>
 
+      {/* Mobile-only Segmented Tab Control */}
+      <div className="flex lg:hidden w-full max-w-[310px] p-1 bg-slate-100/90 backdrop-blur rounded-xl border border-slate-200/50 mb-2 z-30">
+        <button 
+          type="button"
+          onClick={() => setMobileTab('simulator')}
+          className={`flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === 'simulator' 
+              ? 'bg-white text-slate-800 shadow-sm' 
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Play size={12} className="fill-current" /> Simulator
+        </button>
+        <button 
+          type="button"
+          onClick={() => setMobileTab('mind')}
+          className={`flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === 'mind' 
+              ? 'bg-white text-slate-800 shadow-sm' 
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Users size={12} /> Mind
+        </button>
+        <button 
+          type="button"
+          onClick={() => setMobileTab('progress')}
+          className={`flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === 'progress' 
+              ? 'bg-white text-slate-800 shadow-sm' 
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Menu size={12} /> Progress
+        </button>
+      </div>
+
       {/* Context Sidebar (Left side) */}
-      <div className="hidden lg:flex flex-col max-w-sm relative z-10 text-left shrink-0">
+      <div className={`${mobileTab === 'progress' ? 'flex w-full max-w-[310px] mx-auto' : 'hidden'} lg:flex flex-col max-w-sm relative z-10 text-left shrink-0`}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 w-max">
           Interactive Simulator
         </div>
@@ -1225,7 +1265,7 @@ const CombinedSimulation = ({
       </div>
 
       {/* Mobile Phone Mockup Container (Middle) */}
-      <div className="relative shrink-0">
+      <div className={`${mobileTab === 'simulator' ? 'block' : 'hidden'} lg:block relative shrink-0`}>
         <div className="relative w-[310px] h-[610px] bg-slate-900 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] border-[10px] border-slate-900 overflow-hidden z-20">
           
           {/* Dynamic Notch */}
@@ -1348,15 +1388,6 @@ const CombinedSimulation = ({
                   </p>
                   
                   <div className="flex flex-col gap-2.5 w-full font-sans">
-                    <div className="relative w-full">
-                      <button 
-                        onClick={onNext}
-                        className="w-full bg-emerald-600 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow"
-                      >
-                        Continue Journey <ArrowRight size={14} />
-                      </button>
-                      <ClickGuide text="Click to Continue" className="-top-12 left-1/2 -translate-x-1/2 bg-emerald-600" color="bg-emerald-600" />
-                    </div>
                     <button 
                       onClick={() => setGameState(0)}
                       className="w-full bg-white border border-slate-200 text-slate-600 py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors"
@@ -1378,7 +1409,7 @@ const CombinedSimulation = ({
       </div>
 
       {/* Right sidebar: Dual Perspective selector */}
-      <DualMindSidebar gameState={gameState} catalogHighlight={catalogHighlight} />
+      <DualMindSidebar gameState={gameState} catalogHighlight={catalogHighlight} isVisibleMobile={mobileTab === 'mind'} />
     </div>
   );
 };
@@ -1401,7 +1432,7 @@ export default function WhatIsFunnelLink() {
   }, [step]);
 
   return (
-    <div className="min-h-screen w-full bg-white relative flex flex-col items-center justify-start md:justify-center overflow-x-hidden overflow-y-auto px-6 py-10 select-none what-is-funnellink-section">
+    <div id="simulator" className="min-h-screen w-full bg-white relative flex flex-col items-center justify-start md:justify-center overflow-x-hidden overflow-y-auto px-6 py-10 select-none what-is-funnellink-section">
 
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none" style={{
@@ -1465,61 +1496,64 @@ export default function WhatIsFunnelLink() {
                 initial={{ opacity: 0, y: 30 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="w-full max-w-5xl mt-6 p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
+                className="w-full max-w-5xl mt-3 lg:mt-6 p-3 lg:p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
               >
-                <div className="flex flex-row items-center justify-start lg:justify-between gap-4 lg:gap-2.5 lg:gap-4 relative z-10 font-sans overflow-x-auto no-scrollbar w-full py-1">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-2.5 lg:gap-4 relative z-10 font-sans w-full py-1">
                   {/* Node 1: Traffic Sources */}
-                  <div className="flex flex-col items-center gap-2 shrink-0">
-                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all duration-300 hover:shadow-md">
-                      <span className="text-[9px] font-black tracking-wider uppercase text-slate-400">Traffic Sources</span>
-                      <div className="flex items-center gap-2.5 text-slate-700 text-xs font-bold">
-                        <InstagramIcon size={12} className="text-pink-500" />
+                  <div className="flex flex-col items-center gap-1.5 shrink-0">
+                    <div className="px-2 lg:px-4 py-1.5 lg:py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1 items-center transition-all duration-300 hover:shadow-md">
+                      <span className="text-[8px] lg:text-[9px] font-black tracking-wider uppercase text-slate-400">Traffic Sources</span>
+                      <div className="flex items-center gap-2 text-slate-700 text-[10px] lg:text-xs font-bold">
+                        <InstagramIcon size={11} className="text-pink-500" />
                         <span className="text-slate-300">•</span>
                         <span className="text-slate-700">Ads</span>
                         <span className="text-slate-300">•</span>
-                        <YoutubeIcon size={14} className="text-red-500" />
+                        <YoutubeIcon size={12} className="text-red-500" />
                       </div>
                     </div>
                   </div>
  
                   {/* Connection 1 */}
                   <AnimatedConnector label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
+                  <AnimatedConnectorVertical label="Questions" colorClass="text-red-500" active={true} flowColor="text-red-500" />
  
                   {/* Node 2: FunnelLink */}
                   <div className="flex flex-col items-center shrink-0">
-                    <div className="px-3 lg:px-5 py-2 lg:py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_8px_25px_rgba(45,99,236,0.25)] ring-4 ring-blue-500/10 flex flex-col gap-1 items-center transition-transform hover:scale-[1.02]">
-                      <span className="text-[9px] font-black tracking-widest uppercase opacity-90 flex items-center gap-1">
-                        <ShieldCheck size={10} className="text-blue-200" /> The Conversion Layer
+                    <div className="px-2.5 lg:px-5 py-1.5 lg:py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_8px_25px_rgba(45,99,236,0.25)] ring-4 ring-blue-500/10 flex flex-col gap-0.5 items-center transition-transform hover:scale-[1.02]">
+                      <span className="text-[8px] lg:text-[9px] font-black tracking-widest uppercase opacity-90 flex items-center gap-1">
+                        <ShieldCheck size={9} className="text-blue-200" /> The Conversion Layer
                       </span>
-                      <span className="text-sm font-black tracking-tight flex items-center gap-1">
-                        FunnelLink <Zap size={12} className="text-yellow-300 fill-yellow-300" />
+                      <span className="text-xs lg:text-sm font-black tracking-tight flex items-center gap-1">
+                        FunnelLink <Zap size={11} className="text-yellow-300 fill-yellow-300" />
                       </span>
                     </div>
                   </div>
  
                   {/* Connection 2 */}
                   <AnimatedConnector label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
+                  <AnimatedConnectorVertical label="Trust" colorClass="text-[#2D63EC]" active={true} flowColor="text-[#2D63EC]" />
  
                   {/* Node 3: Chat */}
                   <div className="flex flex-col items-center shrink-0">
-                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-emerald-700 shadow-sm flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
-                      <span className="text-[9px] font-black tracking-wider uppercase text-emerald-500 flex items-center gap-1">
-                        <MessageCircle size={10} className="text-emerald-500 fill-emerald-500" /> Instant Chat
+                    <div className="px-2 lg:px-4 py-1.5 lg:py-2 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-emerald-700 shadow-sm flex flex-col gap-1 items-center transition-all hover:shadow-md">
+                      <span className="text-[8px] lg:text-[9px] font-black tracking-wider uppercase text-emerald-500 flex items-center gap-1">
+                        <MessageCircle size={9} className="text-emerald-500 fill-emerald-500" /> Instant Chat
                       </span>
-                      <span className="text-xs font-bold text-emerald-950">WhatsApp Business</span>
+                      <span className="text-[10px] lg:text-xs font-bold text-emerald-950">WhatsApp Business</span>
                     </div>
                   </div>
  
                   {/* Connection 3 */}
                   <AnimatedConnector label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
+                  <AnimatedConnectorVertical label="Intent" colorClass="text-emerald-500" active={true} flowColor="text-emerald-500" />
  
                   {/* Node 4: Customer */}
                   <div className="flex flex-col items-center shrink-0">
-                    <div className="px-2.5 lg:px-4 py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1.5 items-center transition-all hover:shadow-md">
-                      <span className="text-[9px] font-black tracking-wider uppercase text-slate-400 flex items-center gap-1">
-                        <CheckCircle2 size={10} className="text-emerald-500" /> Final Outcome
+                    <div className="px-2 lg:px-4 py-1.5 lg:py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1 items-center transition-all hover:shadow-md">
+                      <span className="text-[8px] lg:text-[9px] font-black tracking-wider uppercase text-slate-400 flex items-center gap-1">
+                        <CheckCircle2 size={9} className="text-emerald-500" /> Final Outcome
                       </span>
-                      <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-slate-900 flex items-center gap-1">
                         Closed Customer
                       </span>
                     </div>

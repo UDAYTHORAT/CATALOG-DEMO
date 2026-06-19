@@ -10,12 +10,14 @@ export default React.memo(function TestimonialsPanel({
   onUpdate,
   onRemove,
   templateId,
+  onUpdateCities,
 }: {
   data: TestimonialsData;
   onAdd: () => void;
   onUpdate: (index: number, updates: Partial<TestimonialItem>) => void;
   onRemove: (id: string) => void;
   templateId?: string;
+  onUpdateCities?: (cities: string) => void;
 }) {
   const testimonials = data.testimonials;
 
@@ -132,6 +134,21 @@ export default React.memo(function TestimonialsPanel({
           </div>
         ))}
       </div>
+
+      {onUpdateCities && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Delivered Across Cities</p>
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Cities list (comma-separated)</label>
+            <input
+              value={data.cities ?? ''}
+              onChange={(event) => onUpdateCities(event.target.value)}
+              placeholder="e.g. Mumbai, Pune, Bangalore, Hyderabad, Delhi, Dubai"
+              className={subtleInputClass}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 });

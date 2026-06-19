@@ -206,16 +206,18 @@ export default function EditorDemoSection() {
                         {step.desc}
                      </p>
 
-                     {/* Mobile Inline Mockup (hidden on desktop) */}
-                     <div className="block md:hidden mt-8 w-full h-[480px] bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden relative">
-                        <EditorMockupContent 
-                           activeStep={index} 
-                           storeName={storeName || (index > 0 ? targetStoreName : "")} 
-                           whatsapp={whatsapp || (index > 0 ? targetWhatsapp : "")} 
-                           headline={headline || (index > 1 ? targetHeadline : "")}
-                           subheadline={subheadline || (index > 1 ? targetSubheadline : "")}
-                        />
-                     </div>
+                      {/* Mobile Inline Mockup (hidden on desktop) */}
+                      <div className="block md:hidden mt-8 w-screen -ml-4 sm:-ml-6 h-[352px] min-[410px]:h-[388px] sm:h-[480px] bg-white border-y border-slate-200 overflow-hidden relative">
+                        <div className="w-[768px] h-[720px] origin-top scale-[0.49] min-[410px]:scale-[0.54] sm:scale-[0.68] absolute top-0 left-1/2 -translate-x-1/2 shrink-0">
+                           <EditorMockupContent 
+                              activeStep={index} 
+                              storeName={storeName || (index > 0 ? targetStoreName : "")} 
+                              whatsapp={whatsapp || (index > 0 ? targetWhatsapp : "")} 
+                              headline={headline || (index > 1 ? targetHeadline : "")}
+                              subheadline={subheadline || (index > 1 ? targetSubheadline : "")}
+                           />
+                        </div>
+                      </div>
                   </div>
                </div>
             ))}

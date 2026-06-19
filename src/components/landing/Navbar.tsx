@@ -2,6 +2,21 @@ import React from 'react';
 import Link from 'next/link';
 
 export default function Navbar() {
+  const handleScrollTo = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      // Offset scroll slightly to account for the sticky navbar height (64px / 16rem)
+      const offset = 64;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - offset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50 satoshi-nav">
       <style>{`
@@ -28,10 +43,30 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-7 text-sm font-bold text-slate-600">
-            <span className="hover:text-black cursor-pointer transition-colors">Platform</span>
-            <span className="hover:text-black cursor-pointer transition-colors">Resources</span>
-            <span className="hover:text-black cursor-pointer transition-colors">Customers</span>
-            <span className="hover:text-black cursor-pointer transition-colors">Pricing</span>
+            <button 
+              onClick={() => handleScrollTo('trap')} 
+              className="hover:text-black transition-colors focus:outline-none"
+            >
+              The Trap
+            </button>
+            <button 
+              onClick={() => handleScrollTo('flow-engine')} 
+              className="hover:text-black transition-colors focus:outline-none"
+            >
+              How it Works
+            </button>
+            <button 
+              onClick={() => handleScrollTo('simulator')} 
+              className="hover:text-black transition-colors focus:outline-none"
+            >
+              Live Simulator
+            </button>
+            <button 
+              onClick={() => handleScrollTo('editor-demo')} 
+              className="hover:text-black transition-colors focus:outline-none"
+            >
+              Funnel Editor
+            </button>
           </div>
         </div>
         <div className="flex items-center gap-5 text-sm font-bold">

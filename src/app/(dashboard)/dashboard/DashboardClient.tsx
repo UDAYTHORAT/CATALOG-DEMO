@@ -298,27 +298,27 @@ export default function DashboardClient({
           label="Views" 
           value={filteredMetrics.totalViews} 
           icon={<Eye size={18} />} 
-          sparkData={[15, 25, 42, 38, 55, filteredMetrics.totalViews]}
+          sparkData={filteredMetrics.totalViews > 0 ? [15, 25, 42, 38, 55, filteredMetrics.totalViews] : [0, 0, 0, 0, 0, 0]}
         />
         <StatCard 
           label="WhatsApp Clicks" 
           value={filteredMetrics.totalWhatsAppClicks} 
           icon={<MessageSquare size={18} />} 
-          trend={{ value: 18, isPositive: true }}
-          sparkData={[5, 12, 22, 28, 35, filteredMetrics.totalWhatsAppClicks]}
+          trend={filteredMetrics.totalWhatsAppClicks > 0 ? { value: 18, isPositive: true } : undefined}
+          sparkData={filteredMetrics.totalWhatsAppClicks > 0 ? [5, 12, 22, 28, 35, filteredMetrics.totalWhatsAppClicks] : [0, 0, 0, 0, 0, 0]}
         />
         <StatCard 
           label="Total Leads" 
           value={filteredMetrics.totalLeads} 
           icon={<Target size={18} />} 
-          trend={{ value: 24, isPositive: true }}
-          sparkData={[2, 6, 11, 14, 18, filteredMetrics.totalLeads]}
+          trend={filteredMetrics.totalLeads > 0 ? { value: 24, isPositive: true } : undefined}
+          sparkData={filteredMetrics.totalLeads > 0 ? [2, 6, 11, 14, 18, filteredMetrics.totalLeads] : [0, 0, 0, 0, 0, 0]}
         />
         <StatCard 
           label="Conversion" 
           value={`${filteredMetrics.overallConversionRate}%`} 
           icon={<TrendingUp size={18} />} 
-          sparkData={[8, 12, 10, 15, 14, filteredMetrics.overallConversionRate]}
+          sparkData={filteredMetrics.overallConversionRate > 0 ? [8, 12, 10, 15, 14, filteredMetrics.overallConversionRate] : [0, 0, 0, 0, 0, 0]}
         />
       </div>
 

@@ -1,10 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, Eye, TrendingUp, Users, Zap, Flame, HelpCircle, X } from 'lucide-react';
+import { ArrowRight, Check, Eye, TrendingUp, Users, Zap, Flame, HelpCircle, X, CreditCard, Loader2, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { TemplatePreviewModal } from './TemplatePreviewModal';
 import { MASTER_TEMPLATES, TEMPLATE_CATEGORIES, type FunnelTemplate } from '@/data/funnelTemplates';
+import { getTemplatePrice } from '@/data/templatePricing';
 
 interface TemplateGalleryProps { onSelect: (template: FunnelTemplate) => void; }
 
@@ -214,22 +215,33 @@ export function TemplateGallery({ onSelect }: TemplateGalleryProps) {
                 </span>
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-2 mt-auto">
-                <button
-                  onClick={() => onSelect(t)}
-                  className="flex-1 py-2.5 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
-                  style={{ backgroundColor: t.accentColor }}
-                >
-                  <Zap size={13} /> Deploy <ArrowRight size={13} />
-                </button>
-                <button
-                  onClick={() => setPreview(t)}
-                  className="py-2.5 px-3.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 hover:text-slate-600 transition-all"
-                  title="Preview"
-                >
-                  <Eye size={15} />
-                </button>
+              {/* Pricing + Actions */}
+              <div className="space-y-2.5 mt-auto">
+                {/* Price badge */}
+                <div className="flex items-center justify-between py-2.5 px-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl border border-indigo-100/60">
+                  <div className="flex items-center gap-2">
+                    <CreditCard size={13} className="text-indigo-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-500">30-Day Access</span>
+                  </div>
+                  <span className="text-lg font-black text-indigo-700 tracking-tight">{getTemplatePrice(t.id).priceDisplay}</span>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onSelect(t)}
+                    className="flex-1 py-2.5 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+                    style={{ backgroundColor: t.accentColor }}
+                  >
+                    Deploy {getTemplatePrice(t.id).priceDisplay} <ArrowRight size={13} />
+                  </button>
+                  <button
+                    onClick={() => setPreview(t)}
+                    className="py-2.5 px-3.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 hover:text-slate-600 transition-all"
+                    title="Preview"
+                  >
+                    <Eye size={15} />
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>

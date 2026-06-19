@@ -58,13 +58,53 @@ export default async function PublicFunnelPage({ params }: { params: Promise<{ s
     notFound();
   }
 
-  // 2. Extract products from story_mode_data (Source of truth for Elite Funnels)
+  // 2. Check if funnel has expired (paid template with expiry)
+  if (funnel.expires_at) {
+    const now = new Date();
+    const expiresAt = new Date(funnel.expires_at);
+    if (now > expiresAt) {
+      const storeName = (funnel.stores as any)?.name || 'Store';
+      return (
+        <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4">
+          <div className="max-w-md w-full text-center space-y-6">
+            <div className="w-20 h-20 mx-auto bg-red-50 rounded-2xl flex items-center justify-center border border-red-100">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-2">
+                Page Not Available
+              </h1>
+              <p className="text-sm text-slate-500 leading-relaxed max-w-sm mx-auto">
+                This page from <span className="font-bold text-slate-700">{storeName}</span> is currently inactive. 
+                The subscription period has ended.
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">What happened?</p>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                The 30-day access period for this funnel has expired. 
+                The owner can renew it from their dashboard to make it live again.
+              </p>
+            </div>
+            <p className="text-xs text-slate-400">
+              Powered by <span className="font-bold">FunnelLink</span>
+            </p>
+          </div>
+        </main>
+      );
+    }
+  }
+
+  // 3. Extract products from story_mode_data (Source of truth for Elite Funnels)
   const storyModeContent = funnel.story_mode_data?.[0]?.content;
   const storyModeSections = storyModeContent?.sections || [];
   const storyModeProductsData = storyModeSections.find((s: any) => s.id === 'products')?.data;
   const storyModeProducts = storyModeProductsData?.products || [];
 
-  // 3. Fallback: Fetch linked products via funnel_products junction (Legacy/Secondary)
+  // 4. Fallback: Fetch linked products via funnel_products junction (Legacy/Secondary)
   const { data: funnelProducts } = await supabase
     .from('funnel_products')
     .select(`

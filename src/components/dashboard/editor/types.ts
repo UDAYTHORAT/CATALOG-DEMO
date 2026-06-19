@@ -122,6 +122,7 @@ export interface ProductsData {
 
 export interface TestimonialsData {
   testimonials: TestimonialItem[];
+  cities?: string;
 }
 
 export interface LocationData {

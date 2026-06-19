@@ -705,6 +705,7 @@ export default React.memo(function WhatsAppPanel({
                         .replaceAll('{store_name}', storeName || 'Company Identity')
                         .replaceAll('{cafe_name}', storeName || 'Cafe Name')
                         .replaceAll('{category}', 'SOFA')
+                        .replaceAll('{products_list}', '\nHere are the options I can see:\n  • Chesterfield Sofa (Rs 24,999)\n  • L-Shape Sectional (Rs 32,499)\n  • Recliner Sofa (Rs 18,999)\n\nWhich ones do you have in stock? Please share photos & details.\n')
                         .replaceAll('Urban Living', storeName || 'Company Identity')
                         .replaceAll('{name}', 'John Doe')
                         .replaceAll('{party_size}', '2')
@@ -875,6 +876,17 @@ export default React.memo(function WhatsAppPanel({
                       <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{date}"}</code>
                       <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{time}"}</code>
                     </div>
+                  </div>
+                )}
+                {!isCafe && (
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400 italic leading-loose mt-2">
+                    <span>Use</span>
+                    <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{store_name}"}</code>
+                    <span>,</span>
+                    <code className="rounded bg-slate-100 px-1.5 py-0.5 font-black text-slate-600">{"{category}"}</code>
+                    <span>or</span>
+                    <code className="rounded bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 font-black text-emerald-700">{"{products_list}"}</code>
+                    <span>for dynamic text.</span>
                   </div>
                 )}
               </div>

@@ -264,7 +264,7 @@ export default function StorySection() {
   const quoteDisplay = useTransform(scrollYProgress, [0, 0.899, 0.90, 1], ['none', 'none', 'block', 'block']);
 
   return (
-    <div ref={containerRef} className="h-[1250vh] bg-slate-50 relative border-t border-slate-100 satoshi-story">
+    <div ref={containerRef} id="trap" className="h-[1250vh] bg-slate-50 relative border-t border-slate-100 satoshi-story">
       <style>{`
         @font-face {
           font-family: 'Satoshi';
