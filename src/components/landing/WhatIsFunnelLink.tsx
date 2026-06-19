@@ -162,8 +162,8 @@ const AnimatedConnectorVertical = ({
   active: boolean; 
   flowColor?: string;
 }) => (
-  <div className="flex lg:hidden h-5 w-6 flex-col items-center justify-center relative my-0">
-    <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
+  <div className="flex lg:hidden h-6 w-6 flex-col items-center justify-center relative my-1">
+    <span className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-black uppercase tracking-wider ${colorClass} whitespace-nowrap bg-white/90 px-1.5 py-0.5 rounded shadow-[0_1px_3px_rgba(0,0,0,0.02)] z-10 transition-colors duration-300`}>
       {label}
     </span>
     <svg className="w-2 h-full overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1462,16 +1462,16 @@ export default function WhatIsFunnelLink() {
           {/* ═══ START ═══ */}
           {/* ═══ START ═══ */}
           {step==='start' && (
-            <motion.div key="start-screen" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30,filter:'blur(4px)'}} transition={{duration:0.7,ease:E}} className="text-center flex flex-col items-center gap-4 max-w-5xl px-4">
+            <motion.div key="start-screen" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-30}} transition={{duration:0.7,ease:E}} className="text-center flex flex-col items-center gap-4 max-w-5xl px-4">
               <motion.span initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.5}}
                 className="text-[10px] sm:text-xs font-sans font-black uppercase tracking-[0.2em] text-[#2D63EC] mb-2">
                 THE CONVERSION LAYER BETWEEN TRAFFIC AND WHATSAPP
               </motion.span>
               
-              <motion.h2 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.2,duration:0.8,ease:E}}
-                className="text-4xl sm:text-5xl md:text-6xl font-black font-sans tracking-[-0.03em] leading-[1.05] font-extrabold text-slate-900 uppercase">
-                Every Click Starts With <span className="bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">Questions</span>.<br/>
-                Every Sale Starts With <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">Answers</span>.
+              <motion.h2 initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{delay:0.2,duration:0.8,ease:E}}
+                className="text-[32px] sm:text-5xl md:text-6xl font-black font-sans tracking-tight sm:tracking-[-0.03em] leading-tight sm:leading-[1.05] text-slate-900 uppercase">
+                Every Click Starts With <br className="block sm:hidden" /><span className="bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">Questions</span>.<br className="hidden sm:block"/>
+                Every Sale Starts With <br className="block sm:hidden" /><span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">Answers</span>.
               </motion.h2>
 
               <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4,duration:0.8,ease:E}}
@@ -1496,9 +1496,9 @@ export default function WhatIsFunnelLink() {
                 initial={{ opacity: 0, y: 30 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="w-full max-w-5xl mt-3 lg:mt-6 p-3 lg:p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
+                className="w-full max-w-5xl mt-6 lg:mt-6 p-5 lg:p-5 rounded-3xl border border-slate-100 bg-slate-50/50 relative overflow-hidden"
               >
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-2.5 lg:gap-4 relative z-10 font-sans w-full py-1">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-4 relative z-10 font-sans w-full py-1">
                   {/* Node 1: Traffic Sources */}
                   <div className="flex flex-col items-center gap-1.5 shrink-0">
                     <div className="px-2 lg:px-4 py-1.5 lg:py-2 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col gap-1 items-center transition-all duration-300 hover:shadow-md">
@@ -1567,7 +1567,7 @@ export default function WhatIsFunnelLink() {
 
           {/* ═══ COMBINED SIMULATION PATH ═══ */}
           {step==='simulation' && (
-            <motion.div key="simulation" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0,filter:'blur(6px)'}} className="w-full flex flex-col items-center">
+            <motion.div key="simulation" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="w-full flex flex-col items-center">
               <CombinedSimulation gameState={gameState} setGameState={setGameState} onNext={() => setGameState(8)} />
             </motion.div>
           )}
